@@ -47,6 +47,28 @@
         animation: ripple 0.8s ease-out;
     }
 
+    /* Estilos para fortaleza de contraseña */
+    .password-strength-meter {
+        height: 4px;
+        width: 100%;
+        background: #DDD;
+        margin-top: 6px;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .password-strength-meter span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    .strength-weak span { width: 25%; background: #FF4136; }
+    .strength-medium span { width: 50%; background: #FF851B; }
+    .strength-good span { width: 75%; background: #FFDC00; }
+    .strength-strong span { width: 100%; background: #2ECC40; }
+
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
@@ -72,28 +94,6 @@
             transform: scale(40, 40);
         }
     }
-
-    /* Estilos para fortaleza de contraseña */
-    .password-strength-meter {
-        height: 4px;
-        width: 100%;
-        background: #DDD;
-        margin-top: 6px;
-        border-radius: 2px;
-        overflow: hidden;
-    }
-
-    .password-strength-meter span {
-        display: block;
-        height: 100%;
-        width: 0%;
-        transition: width 0.3s ease;
-    }
-
-    .strength-weak span { width: 25%; background: #FF4136; }
-    .strength-medium span { width: 50%; background: #FF851B; }
-    .strength-good span { width: 75%; background: #FFDC00; }
-    .strength-strong span { width: 100%; background: #2ECC40; }
 </style>
 @endsection
 
@@ -102,35 +102,22 @@
     <div class="w-full max-w-md p-0 bg-white rounded-lg shadow-lg overflow-hidden sap-card animate-fade-in">
         <div class="p-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
             <div class="flex items-center justify-center">
-                <i class="material-icons mr-3 animate-bounce-slow" style="font-size:28px;">app_registration</i>
-                <h2 class="text-2xl font-bold">Registro de Usuario</h2>
+                <i class="material-icons mr-3 animate-bounce-slow" style="font-size:28px;">lock_reset</i>
+                <h2 class="text-2xl font-bold">Restablecer Contraseña</h2>
             </div>
         </div>
 
         <div class="p-6 bg-blue-50 border-b border-blue-100">
             <div class="flex items-center">
                 <i class="material-icons text-blue-600 mr-3" style="font-size:24px;">info</i>
-                <p class="text-blue-800">Complete el formulario para crear una nueva cuenta en el sistema.</p>
+                <p class="text-blue-800">Ingrese su nueva contraseña para completar el restablecimiento.</p>
             </div>
         </div>
 
         <div class="p-6">
-            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+            <form method="POST" action="{{ route('password.update') }}" class="space-y-4">
                 @csrf
-                <div class="sap-form-group">
-                    <label class="sap-form-label" for="name">
-                        <i class="material-icons align-middle text-blue-600 mr-1" style="font-size:18px;">person</i>
-                        Nombre
-                    </label>
-                    <div class="relative">
-                        <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus
-                            class="sap-form-input @error('name') error @enderror">
-                        <span class="input-focus-effect"></span>
-                    </div>
-                    @error('name')
-                        <p class="sap-form-error">{{ $message }}</p>
-                    @enderror
-                </div>
+                <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
                 <div class="sap-form-group">
                     <label class="sap-form-label" for="email">
@@ -138,8 +125,8 @@
                         Correo electrónico
                     </label>
                     <div class="relative">
-                        <input id="email" type="email" name="email" value="{{ old('email') }}" required
-                            class="sap-form-input @error('email') error @enderror">
+                        <input id="email" type="email" name="email" value="{{ old('email', $request->email) }}" required readonly
+                            class="sap-form-input @error('email') error @enderror bg-gray-50">
                         <span class="input-focus-effect"></span>
                     </div>
                     @error('email')
@@ -150,10 +137,10 @@
                 <div class="sap-form-group">
                     <label class="sap-form-label" for="password">
                         <i class="material-icons align-middle text-blue-600 mr-1" style="font-size:18px;">lock</i>
-                        Contraseña
+                        Nueva contraseña
                     </label>
                     <div class="relative">
-                        <input id="password" type="password" name="password" required
+                        <input id="password" type="password" name="password" required autofocus
                             class="sap-form-input @error('password') error @enderror">
                         <span class="input-focus-effect"></span>
                     </div>
@@ -168,8 +155,8 @@
 
                 <div class="sap-form-group">
                     <label class="sap-form-label" for="password_confirmation">
-                        <i class="material-icons align-middle text-blue-600 mr-1" style="font-size:18px;">lock_reset</i>
-                        Confirmar contraseña
+                        <i class="material-icons align-middle text-blue-600 mr-1" style="font-size:18px;">lock_clock</i>
+                        Confirmar nueva contraseña
                     </label>
                     <div class="relative">
                         <input id="password_confirmation" type="password" name="password_confirmation" required
@@ -179,19 +166,12 @@
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" class="sap-btn sap-btn-primary w-full py-2">
-                        <i class="material-icons mr-2" style="font-size:18px;">how_reg</i>
-                        Registrarse
+                    <button type="submit" class="sap-btn sap-btn-primary w-full py-2" id="resetBtn">
+                        <i class="material-icons mr-2" style="font-size:18px;">save</i>
+                        <span id="resetBtnText">Restablecer contraseña</span>
                     </button>
                 </div>
             </form>
-
-            <div class="mt-6 pt-4 border-t border-gray-200 text-center">
-                <span class="text-gray-600 text-sm">¿Ya tienes una cuenta?</span>
-                <a href="{{ route('login') }}" class="text-blue-600 font-semibold hover:text-blue-800 ml-1 text-sm">
-                    Ingresar aquí
-                </a>
-            </div>
         </div>
 
         <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 text-center text-gray-500 text-xs">
@@ -202,7 +182,24 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Form submit handling
+        const form = document.querySelector('form');
+        const resetBtn = document.getElementById('resetBtn');
+        const resetBtnText = document.getElementById('resetBtnText');
+
+        form.addEventListener('submit', function() {
+            // Disable button and show loading state
+            resetBtn.disabled = true;
+            resetBtn.classList.add('opacity-75');
+            resetBtnText.innerHTML = '<span class="inline-block animate-spin mr-2">↻</span> Procesando...';
+
+            // Return true to allow form submission
+            return true;
+        });
+
+        // Password strength meter
         const passwordInput = document.getElementById('password');
+        const passwordConfirmInput = document.getElementById('password_confirmation');
         const passwordStrengthMeter = document.getElementById('password-strength-meter');
         const passwordStrengthText = document.getElementById('password-strength-text');
 
@@ -212,6 +209,17 @@
                 const strength = checkPasswordStrength(password);
                 updatePasswordStrengthUI(strength);
             });
+
+            // Add match validation
+            if (passwordConfirmInput) {
+                passwordConfirmInput.addEventListener('input', function() {
+                    if (passwordInput.value !== this.value) {
+                        this.classList.add('error');
+                    } else {
+                        this.classList.remove('error');
+                    }
+                });
+            }
         }
 
         function checkPasswordStrength(password) {
