@@ -2,30 +2,51 @@
 
 @section('content')
 <div class="container mx-auto py-8">
-    <div class="max-w-lg mx-auto bg-white p-8 rounded shadow">
-        <h2 class="text-2xl font-bold text-green-700 mb-6">Editar Propiedad</h2>
+    <div class="sap-card max-w-xl mx-auto overflow-hidden">
+        <div class="flex items-center p-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+            <i class="material-icons mr-3" style="font-size:24px;">edit_location_alt</i>
+            <h2 class="text-xl font-bold">Editar Propiedad</h2>
+        </div>
+
         @if (session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
+            <div class="sap-alert sap-alert-success mx-6 mt-6">
+                <div class="flex items-center">
+                    <i class="material-icons mr-3" style="font-size:24px;">check_circle</i>
+                    <p>{{ session('success') }}</p>
+                </div>
+            </div>
         @endif
-        <form method="POST" action="{{ route('propiedades.update', $propiedad) }}">
-            @csrf
-            @method('PUT')
-            <div class="mb-4">
-                <label class="block text-gray-700 font-semibold mb-1" for="nombre">Nombre</label>
-                <input id="nombre" name="nombre" type="text" class="w-full p-2 border border-gray-300 rounded" value="{{ old('nombre', $propiedad->nombre) }}" required>
-                @error('nombre')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-semibold mb-1" for="ubicacion">Ubicación</label>
-                <input id="ubicacion" name="ubicacion" type="text" class="w-full p-2 border border-gray-300 rounded" value="{{ old('ubicacion', $propiedad->ubicacion) }}" required>
-                @error('ubicacion')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
-            <button type="submit" class="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded">Guardar Cambios</button>
-        </form>
+
+        <div class="p-6">
+            <form method="POST" action="{{ route('propiedades.update', $propiedad) }}">
+                @csrf
+                @method('PUT')
+                <div class="sap-form-group">
+                    <label class="sap-form-label" for="nombre">Nombre</label>
+                    <input id="nombre" name="nombre" type="text" class="sap-form-input @error('nombre') error @enderror" value="{{ old('nombre', $propiedad->nombre) }}" required>
+                    @error('nombre')
+                        <p class="sap-form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="sap-form-group">
+                    <label class="sap-form-label" for="ubicacion">Ubicación</label>
+                    <input id="ubicacion" name="ubicacion" type="text" class="sap-form-input @error('ubicacion') error @enderror" value="{{ old('ubicacion', $propiedad->ubicacion) }}" required>
+                    @error('ubicacion')
+                        <p class="sap-form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <a href="{{ route('propiedades.index') }}" class="sap-btn sap-btn-outline flex items-center">
+                        <i class="material-icons mr-2" style="font-size:18px;">arrow_back</i> Volver
+                    </a>
+                    <button type="submit" class="sap-btn sap-btn-primary flex items-center">
+                        <i class="material-icons mr-2" style="font-size:18px;">save</i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 @endsection
