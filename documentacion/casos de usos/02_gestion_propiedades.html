@@ -1,0 +1,176 @@
+<html>
+      <head>
+        <meta charset="UTF-8">
+        <title>02_gestion_propiedades.md</title>
+      </head>
+      <body>
+        <h1 id="casos-de-uso-gesti-n-de-propiedades">Casos de Uso - Gestión de Propiedades</h1>
+<h2 id="cu-06-listar-propiedades">CU-06: Listar propiedades</h2>
+<p><strong>Actor Principal</strong>: Usuario autenticado (Productor o Administrador)<br><strong>Objetivo</strong>: Visualizar todas las propiedades registradas<br><strong>Precondición</strong>: Usuario autenticado en el sistema<br><strong>Postcondición</strong>: Lista de propiedades mostrada  </p>
+<p><strong>Flujo Básico</strong>:</p>
+<ol>
+<li>El usuario accede al módulo &quot;Propiedades&quot; desde el menú lateral.</li>
+<li>El sistema muestra una tabla con todas las propiedades registradas con diseño SAP Fiori.</li>
+<li>La tabla muestra: ID, Ubicación, Superficie (ha), Malla Antigranizo (Sí/No), Propietario (Sí/No), Derecho de Riego (Sí/No) y opciones de acciones.</li>
+<li>El usuario puede ordenar y filtrar los resultados usando los controles de la tabla.</li>
+</ol>
+<p><strong>Flujos Alternativos</strong>:</p>
+<ul>
+<li><strong>Sin propiedades</strong>: Si no hay propiedades registradas, el sistema muestra un estado vacío con ilustración y mensaje &quot;No hay propiedades registradas&quot;.</li>
+<li><strong>Filtrado de datos</strong>: El usuario puede utilizar la barra de búsqueda para filtrar por ubicación u otros criterios.</li>
+<li><strong>Rol administrador</strong>: Si el usuario es administrador, puede ver propiedades de todos los usuarios, mientras que los productores solo ven sus propias propiedades.</li>
+</ul>
+<h2 id="cu-07-crear-nueva-propiedad">CU-07: Crear nueva propiedad</h2>
+<p><strong>Actor Principal</strong>: Usuario autenticado (Productor o Administrador)<br><strong>Objetivo</strong>: Registrar una nueva propiedad agrícola<br><strong>Precondición</strong>: Usuario autenticado en el sistema<br><strong>Postcondición</strong>: Nueva propiedad registrada en el sistema  </p>
+<p><strong>Flujo Básico</strong>:</p>
+<ol>
+<li>El usuario accede al módulo &quot;Propiedades&quot; desde el menú lateral.</li>
+<li>El usuario selecciona la opción &quot;Nueva Propiedad&quot; (botón con icono de + en la esquina superior derecha).</li>
+<li>El sistema muestra un formulario de creación en una ventana modal o pestaña nueva según el diseño MDI.</li>
+<li>El usuario completa los campos requeridos:<ul>
+<li>Ubicación (texto obligatorio)</li>
+<li>Superficie en hectáreas (número decimal positivo obligatorio)</li>
+<li>Malla antigranizo (toggle switch - opcional)</li>
+<li>Es propietario (toggle switch - opcional)</li>
+<li>Derecho de riego (toggle switch - opcional)</li>
+</ul>
+</li>
+<li>El usuario envía el formulario mediante el botón &quot;Guardar&quot;.</li>
+<li>El sistema valida los datos en tiempo real, mostrando indicadores visuales de validación.</li>
+<li>El sistema registra la nueva propiedad en la base de datos.</li>
+<li>El sistema muestra una notificación de éxito con animación tipo toast.</li>
+<li>El sistema actualiza la tabla de propiedades para incluir la nueva entrada.</li>
+</ol>
+<p><strong>Flujos Alternativos</strong>:</p>
+<ul>
+<li><strong>Error de validación</strong>: Si algún campo no cumple con los requisitos, el sistema muestra mensajes de error específicos bajo cada campo, resaltando los campos problemáticos con borde rojo.</li>
+<li><strong>Cancelar operación</strong>: El usuario puede cancelar la creación en cualquier momento haciendo clic en &quot;Cancelar&quot;, cerrando la ventana modal, o cambiando de pestaña. El sistema pide confirmación si hay datos no guardados.</li>
+</ul>
+<h2 id="cu-08-editar-propiedad">CU-08: Editar propiedad</h2>
+<p><strong>Actor Principal</strong>: Usuario autenticado (Productor o Administrador)<br><strong>Objetivo</strong>: Modificar información de una propiedad existente<br><strong>Precondición</strong>: Propiedad existente en el sistema<br><strong>Postcondición</strong>: Información de propiedad actualizada  </p>
+<p><strong>Flujo Básico</strong>:</p>
+<ol>
+<li>El usuario accede al módulo &quot;Propiedades&quot; desde el menú lateral.</li>
+<li>El usuario identifica la propiedad a editar y selecciona el icono de edición (lápiz) en la columna de acciones.</li>
+<li>El sistema muestra un formulario con la información actual de la propiedad en una ventana modal o pestaña según el diseño MDI.</li>
+<li>El usuario modifica los campos deseados:<ul>
+<li>Ubicación (texto obligatorio)</li>
+<li>Superficie en hectáreas (número decimal positivo obligatorio)</li>
+<li>Malla antigranizo (toggle switch)</li>
+<li>Es propietario (toggle switch)</li>
+<li>Derecho de riego (toggle switch)</li>
+</ul>
+</li>
+<li>El usuario hace clic en el botón &quot;Guardar Cambios&quot;.</li>
+<li>El sistema valida los datos modificados en tiempo real.</li>
+<li>El sistema actualiza la información en la base de datos.</li>
+<li>El sistema muestra una notificación de éxito con animación tipo toast.</li>
+<li>El sistema actualiza la tabla de propiedades para reflejar los cambios.</li>
+</ol>
+<p><strong>Flujos Alternativos</strong>:</p>
+<ul>
+<li><strong>Error de validación</strong>: Si algún campo no cumple con los requisitos, el sistema muestra mensajes de error específicos bajo cada campo con el estilo Fiori.</li>
+<li><strong>Cancelar edición</strong>: El usuario puede cancelar la edición haciendo clic en &quot;Cancelar&quot; o cerrando la ventana. Si hay cambios no guardados, el sistema solicita confirmación.</li>
+<li><strong>Error de permisos</strong>: Si el usuario intenta editar una propiedad que no le pertenece (excepto administradores), el sistema muestra un mensaje de error de permisos.</li>
+</ul>
+<h2 id="cu-09-eliminar-propiedad">CU-09: Eliminar propiedad</h2>
+<p><strong>Actor Principal</strong>: Usuario autenticado (Productor o Administrador)<br><strong>Objetivo</strong>: Eliminar una propiedad del sistema<br><strong>Precondición</strong>: Propiedad existente en el sistema<br><strong>Postcondición</strong>: Propiedad eliminada del sistema  </p>
+<p><strong>Flujo Básico</strong>:</p>
+<ol>
+<li>El usuario accede al módulo &quot;Propiedades&quot; desde el menú lateral.</li>
+<li>El usuario identifica la propiedad a eliminar y selecciona el icono de eliminación (papelera) en la columna de acciones.</li>
+<li>El sistema muestra un diálogo de confirmación con estilo Fiori:<ul>
+<li>Título: &quot;Confirmar eliminación&quot;</li>
+<li>Mensaje: &quot;¿Está seguro que desea eliminar la propiedad ubicada en [ubicación]? Esta acción no se puede deshacer.&quot;</li>
+<li>Botones: &quot;Cancelar&quot; (botón secundario) y &quot;Eliminar&quot; (botón de peligro)</li>
+</ul>
+</li>
+<li>El usuario confirma la eliminación haciendo clic en &quot;Eliminar&quot;.</li>
+<li>El sistema elimina la propiedad y todas sus entidades relacionadas (maquinarias, cultivos, etc.) de la base de datos.</li>
+<li>El sistema muestra una notificación de éxito con animación tipo toast.</li>
+<li>El sistema actualiza la tabla de propiedades, eliminando la fila correspondiente.</li>
+</ol>
+<p><strong>Flujos Alternativos</strong>:</p>
+<ul>
+<li><strong>Cancelar eliminación</strong>: El usuario puede cancelar la eliminación haciendo clic en &quot;Cancelar&quot; o cerrando el diálogo.</li>
+<li><strong>Error de permisos</strong>: Si el usuario intenta eliminar una propiedad que no le pertenece (excepto administradores), el sistema muestra un mensaje de error de permisos.</li>
+<li><strong>Error de dependencias</strong>: Si la eliminación falla debido a restricciones de integridad referencial, el sistema muestra un mensaje explicativo.</li>
+</ul>
+<h2 id="cu-10-visualizar-detalle-de-propiedad">CU-10: Visualizar detalle de propiedad</h2>
+<p><strong>Actor Principal</strong>: Usuario autenticado (Productor o Administrador)<br><strong>Objetivo</strong>: Ver información detallada de una propiedad y sus entidades relacionadas<br><strong>Precondición</strong>: Propiedad existente en el sistema<br><strong>Postcondición</strong>: Información detallada de la propiedad mostrada  </p>
+<p><strong>Flujo Básico</strong>:</p>
+<ol>
+<li>El usuario accede al módulo &quot;Propiedades&quot; desde el menú lateral.</li>
+<li>El usuario identifica la propiedad de interés y selecciona el icono de detalles (ojo) en la columna de acciones.</li>
+<li>El sistema abre una nueva pestaña o panel según el diseño MDI con la vista detallada de la propiedad.</li>
+<li>La vista de detalle incluye:<ul>
+<li>Cabecera con la ubicación y características principales de la propiedad</li>
+<li>Pestañas o secciones para cada tipo de entidad relacionada:<ul>
+<li>Maquinarias</li>
+<li>Cultivos</li>
+<li>Tecnologías de riego</li>
+<li>Archivos/Documentos</li>
+</ul>
+</li>
+<li>Gráficos y estadísticas relevantes (uso de superficie, distribución de cultivos)</li>
+<li>Mapa de ubicación si está disponible</li>
+</ul>
+</li>
+<li>El usuario puede navegar entre las diferentes secciones para ver toda la información relacionada.</li>
+<li>El usuario puede realizar acciones contextuales como:<ul>
+<li>Agregar nuevas entidades relacionadas</li>
+<li>Editar la información de la propiedad</li>
+<li>Generar reportes</li>
+</ul>
+</li>
+</ol>
+<p><strong>Flujos Alternativos</strong>:</p>
+<ul>
+<li><strong>Sin datos relacionados</strong>: Si una sección no tiene datos (por ejemplo, no hay cultivos), el sistema muestra un estado vacío con ilustración y opción para agregar.</li>
+<li><strong>Error de permisos</strong>: Si el usuario intenta ver detalles de una propiedad que no le pertenece (excepto administradores), el sistema muestra un mensaje de error de permisos.</li>
+<li>El sistema actualiza la información y muestra un mensaje de éxito.</li>
+<li>El sistema redirecciona a la lista de propiedades.</li>
+</ul>
+<p><strong>Flujos Alternativos</strong>:</p>
+<ul>
+<li><strong>Error en validación</strong>: Si algún campo no cumple con los requisitos, el sistema muestra mensajes de error.</li>
+</ul>
+<h2 id="cu-09-eliminar-propiedad">CU-09: Eliminar propiedad</h2>
+<p><strong>Actor Principal</strong>: Usuario autenticado<br><strong>Objetivo</strong>: Eliminar una propiedad existente<br><strong>Precondición</strong>: Propiedad existente en el sistema<br><strong>Postcondición</strong>: Propiedad eliminada del sistema  </p>
+<p><strong>Flujo Básico</strong>:</p>
+<ol>
+<li>El usuario accede al módulo &quot;Propiedades&quot;.</li>
+<li>El usuario selecciona la opción &quot;Eliminar&quot; en la propiedad deseada.</li>
+<li>El sistema muestra un mensaje de confirmación.</li>
+<li>El usuario confirma la eliminación.</li>
+<li>El sistema elimina la propiedad y sus relaciones asociadas.</li>
+<li>El sistema muestra un mensaje de éxito.</li>
+<li>El sistema actualiza la lista de propiedades.</li>
+</ol>
+<p><strong>Flujos Alternativos</strong>:</p>
+<ul>
+<li><strong>Cancelar eliminación</strong>: Si el usuario cancela la confirmación, el sistema no realiza cambios.</li>
+<li><strong>Propiedad con dependencias</strong>: Si la propiedad tiene elementos asociados (cultivos, maquinarias, etc.), el sistema puede mostrar una advertencia adicional.</li>
+</ul>
+<h2 id="cu-10-visualizar-detalle-de-propiedad">CU-10: Visualizar detalle de propiedad</h2>
+<p><strong>Actor Principal</strong>: Usuario autenticado<br><strong>Objetivo</strong>: Ver información detallada de una propiedad<br><strong>Precondición</strong>: Propiedad existente en el sistema<br><strong>Postcondición</strong>: Información detallada mostrada  </p>
+<p><strong>Flujo Básico</strong>:</p>
+<ol>
+<li>El usuario accede al módulo &quot;Propiedades&quot;.</li>
+<li>El usuario selecciona la opción &quot;Ver detalle&quot; o hace clic en el nombre de la propiedad.</li>
+<li>El sistema muestra toda la información de la propiedad:<ul>
+<li>Datos básicos (nombre, ubicación)</li>
+<li>Cultivos asociados</li>
+<li>Maquinarias asociadas</li>
+<li>Tecnologías de riego asociadas</li>
+<li>Archivos asociados</li>
+</ul>
+</li>
+</ol>
+<p><strong>Flujos Alternativos</strong>:</p>
+<ul>
+<li><strong>Sin elementos asociados</strong>: Si la propiedad no tiene elementos asociados, el sistema muestra secciones vacías con opciones para agregar.</li>
+</ul>
+
+      </body>
+    </html>

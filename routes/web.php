@@ -5,9 +5,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
 Route::get('/', function () {
-    return view('home');
-});
+    return redirect('/dashboard');
+})->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -96,6 +97,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/tecnologia-riego', function () {
         return view('tecnologia_riego.index');
     })->name('tecnologia_riego.index');
+
+    // Rutas para productores
+    Route::get('/productores', function () {
+        return view('productores.index');
+    })->name('productores.index');
+
+    // Rutas para productos
+    Route::get('/productos', function () {
+        return view('productos.index');
+    })->name('productos.index');
 });
 
 require __DIR__.'/auth.php';

@@ -1,0 +1,341 @@
+<html>
+      <head>
+        <meta charset="UTF-8">
+        <title>guia_estilo_ui.md</title>
+      </head>
+      <body>
+        <h1 id="gu-a-de-estilo-y-componentes-ui-sistema-de-gesti-n-para-productores-agr-colas">Guía de Estilo y Componentes UI - Sistema de Gestión para Productores Agrícolas</h1>
+<p>Esta guía documenta los estilos visuales y componentes de interfaz de usuario utilizados en el Sistema de Gestión para Productores Agrícolas, basado en el diseño SAP Fiori.</p>
+<h2 id="-ndice">Índice</h2>
+<ol>
+<li><a href="#introducción-a-sap-fiori">Introducción a SAP Fiori</a></li>
+<li><a href="#paleta-de-colores">Paleta de Colores</a></li>
+<li><a href="#tipografía">Tipografía</a></li>
+<li><a href="#componentes-básicos">Componentes Básicos</a></li>
+<li><a href="#patrones-de-diseño">Patrones de Diseño</a></li>
+<li><a href="#iconografía">Iconografía</a></li>
+<li><a href="#estados-y-mensajes">Estados y Mensajes</a></li>
+<li><a href="#responsive-design">Responsive Design</a></li>
+<li><a href="#implementación-técnica">Implementación Técnica</a></li>
+<li><a href="#buenas-prácticas">Buenas Prácticas</a></li>
+</ol>
+<h2 id="introducci-n-a-sap-fiori">Introducción a SAP Fiori</h2>
+<p>SAP Fiori es un conjunto de pautas de diseño y una biblioteca de componentes que ofrece una experiencia de usuario coherente y moderna para aplicaciones empresariales. Nuestro sistema adopta estos principios para proporcionar:</p>
+<ul>
+<li><strong>Simpleza</strong>: Interfaces limpias centradas en tareas específicas</li>
+<li><strong>Coherencia</strong>: Experiencia unificada a través de todos los módulos</li>
+<li><strong>Eficiencia</strong>: Flujos de trabajo optimizados para tareas empresariales</li>
+<li><strong>Responsividad</strong>: Adaptabilidad a diferentes dispositivos y tamaños de pantalla</li>
+</ul>
+<h2 id="paleta-de-colores">Paleta de Colores</h2>
+<h3 id="colores-primarios">Colores Primarios</h3>
+<ul>
+<li><strong>Azul Principal</strong>: <code>#0A6ED1</code> - Usado en cabeceras, botones primarios y elementos de navegación</li>
+<li><strong>Azul Oscuro</strong>: <code>#0070F2</code> - Para estados hover, elementos destacados</li>
+<li><strong>Azul Grisáceo</strong>: <code>#354A5F</code> - Elementos secundarios, bordes de paneles importantes</li>
+</ul>
+<h3 id="colores-neutros">Colores Neutros</h3>
+<ul>
+<li><strong>Fondo Principal</strong>: <code>#F5F6F7</code> - Fondo general de la aplicación</li>
+<li><strong>Gris Claro</strong>: <code>#D9D9D9</code> - Bordes, separadores, elementos deshabilitados</li>
+<li><strong>Texto Principal</strong>: <code>#32363A</code> - Texto principal, títulos</li>
+<li><strong>Texto Secundario</strong>: <code>#6A6D70</code> - Texto de ayuda, etiquetas, pie de página</li>
+</ul>
+<h3 id="colores-de-estado">Colores de Estado</h3>
+<ul>
+<li><strong>Verde (Éxito)</strong>: <code>#107E3E</code> - Mensajes de éxito, acciones completadas</li>
+<li><strong>Rojo (Error)</strong>: <code>#BB0000</code> - Mensajes de error, acciones peligrosas</li>
+<li><strong>Naranja (Advertencia)</strong>: <code>#E9730C</code> - Advertencias, acciones que requieren atención</li>
+<li><strong>Azul (Información)</strong>: <code>#0A6ED1</code> - Mensajes informativos</li>
+<li><strong>Amarillo (En Proceso)</strong>: <code>#E9A713</code> - Estados en proceso, pendientes</li>
+</ul>
+<h3 id="uso-de-colores">Uso de Colores</h3>
+<pre><code class="lang-css">/* Ejemplo de uso */
+.btn-primary {
+    background-color: #0A6ED1;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0070F2;
+}
+
+.alert-success {
+    background-color: rgba(16, 126, 62, 0.1);
+    border-left: 4px solid #107E3E;
+    color: #107E3E;
+}
+</code></pre>
+<h2 id="tipograf-a">Tipografía</h2>
+<p>El sistema utiliza una jerarquía tipográfica clara para mejorar la legibilidad y estructurar la información:</p>
+<h3 id="fuente-principal">Fuente Principal</h3>
+<ul>
+<li><strong>Familia</strong>: &quot;72&quot;, &quot;72-Light&quot;, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif</li>
+<li><strong>Alternativa</strong>: Si la fuente &quot;72&quot; no está disponible, se utiliza Roboto o una fuente sans-serif del sistema</li>
+</ul>
+<h3 id="tama-os">Tamaños</h3>
+<ul>
+<li><strong>Títulos Principales</strong>: 24px (1.5rem)</li>
+<li><strong>Subtítulos</strong>: 20px (1.25rem)</li>
+<li><strong>Títulos de Sección</strong>: 16px (1rem)</li>
+<li><strong>Texto Regular</strong>: 14px (0.875rem)</li>
+<li><strong>Texto Pequeño</strong>: 12px (0.75rem)</li>
+</ul>
+<h3 id="estilos">Estilos</h3>
+<ul>
+<li><strong>Negrita</strong>: 700 (títulos, elementos importantes)</li>
+<li><strong>Semi-negrita</strong>: 600 (subtítulos, elementos destacados)</li>
+<li><strong>Regular</strong>: 400 (texto general)</li>
+<li><strong>Ligera</strong>: 300 (texto secundario, etiquetas)</li>
+</ul>
+<pre><code class="lang-css">/* Ejemplo de implementación */
+body {
+    font-family: &quot;72&quot;, &quot;72-Light&quot;, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+    font-size: 14px;
+    color: #32363A;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+</code></pre>
+<h2 id="componentes-b-sicos">Componentes Básicos</h2>
+<h3 id="botones">Botones</h3>
+<h4 id="bot-n-primario">Botón Primario</h4>
+<ul>
+<li>Fondo: <code>#0A6ED1</code></li>
+<li>Texto: Blanco</li>
+<li>Borde: Ninguno</li>
+<li>Hover: <code>#0070F2</code></li>
+<li>Bordes redondeados: 4px</li>
+</ul>
+<h4 id="bot-n-secundario">Botón Secundario</h4>
+<ul>
+<li>Fondo: Transparente</li>
+<li>Texto: <code>#0A6ED1</code></li>
+<li>Borde: 1px sólido <code>#0A6ED1</code></li>
+<li>Hover: Fondo <code>rgba(10, 110, 209, 0.1)</code></li>
+</ul>
+<h4 id="bot-n-de-peligro">Botón de Peligro</h4>
+<ul>
+<li>Fondo: <code>#BB0000</code></li>
+<li>Texto: Blanco</li>
+<li>Hover: Sombra y oscurecimiento leve</li>
+</ul>
+<h4 id="bot-n-deshabilitado">Botón Deshabilitado</h4>
+<ul>
+<li>Fondo: <code>#D9D9D9</code></li>
+<li>Texto: <code>#6A6D70</code></li>
+<li>Cursor: not-allowed</li>
+</ul>
+<h3 id="campos-de-formulario">Campos de Formulario</h3>
+<h4 id="input-de-texto">Input de Texto</h4>
+<ul>
+<li>Borde: 1px sólido <code>#D9D9D9</code></li>
+<li>Fondo: Blanco</li>
+<li>Texto: <code>#32363A</code></li>
+<li>Focus: Borde <code>#0A6ED1</code></li>
+<li>Padding: 8px 12px</li>
+<li>Bordes redondeados: 4px</li>
+</ul>
+<h4 id="select">Select</h4>
+<ul>
+<li>Apariencia similar a inputs de texto</li>
+<li>Indicador de flecha personalizado</li>
+</ul>
+<h4 id="checkbox-y-radio">Checkbox y Radio</h4>
+<ul>
+<li>Estilo personalizado siguiendo el diseño Fiori</li>
+<li>Estados hover y checked con animación sutil</li>
+</ul>
+<h3 id="tablas">Tablas</h3>
+<ul>
+<li>Cabeceras: Fondo <code>#F5F6F7</code>, texto en negrita</li>
+<li>Filas: Borde inferior 1px sólido <code>#D9D9D9</code></li>
+<li>Filas alternas: Fondo <code>#FAFAFA</code></li>
+<li>Hover: Fondo <code>rgba(10, 110, 209, 0.05)</code></li>
+<li>Celdas: Padding 12px 16px</li>
+</ul>
+<h3 id="tarjetas-cards-">Tarjetas (Cards)</h3>
+<ul>
+<li>Fondo: Blanco</li>
+<li>Sombra: 0 2px 6px rgba(0, 0, 0, 0.1)</li>
+<li>Bordes redondeados: 4px</li>
+<li>Cabecera: Padding 16px, borde inferior 1px sólido <code>#D9D9D9</code></li>
+<li>Cuerpo: Padding 16px</li>
+</ul>
+<h2 id="patrones-de-dise-o">Patrones de Diseño</h2>
+<h3 id="interfaz-mdi-multiple-document-interface-">Interfaz MDI (Multiple Document Interface)</h3>
+<p>El sistema implementa un patrón MDI donde:</p>
+<ol>
+<li><strong>Panel de Navegación Principal</strong>: Ubicado a la izquierda, con categorías y acciones principales</li>
+<li><strong>Área de Trabajo Central</strong>: Donde se abren múltiples &quot;documentos&quot; o formularios</li>
+<li><strong>Barra Superior</strong>: Contiene el logo, buscador global, notificaciones y perfil de usuario</li>
+</ol>
+<h3 id="gesti-n-de-formularios">Gestión de Formularios</h3>
+<ul>
+<li><strong>Formularios en Pestañas</strong>: Permite trabajar con múltiples entidades simultáneamente</li>
+<li><strong>Formularios en Modal</strong>: Para acciones rápidas que no requieren un contexto completo</li>
+</ul>
+<h3 id="estructura-de-p-gina">Estructura de Página</h3>
+<ul>
+<li><strong>Encabezado</strong>: Título de sección + acciones principales</li>
+<li><strong>Filtros y Búsqueda</strong>: Ubicados bajo el encabezado</li>
+<li><strong>Contenido Principal</strong>: Tablas o tarjetas con datos</li>
+<li><strong>Pie de Página</strong>: Acciones secundarias, paginación, totales</li>
+</ul>
+<h2 id="iconograf-a">Iconografía</h2>
+<p>El sistema utiliza iconos de Material Design con estilos adaptados a SAP Fiori:</p>
+<ul>
+<li><strong>Tamaño</strong>: 20px para navegación, 16px para acciones contextuales</li>
+<li><strong>Color</strong>: Heredado del texto o específico según contexto</li>
+<li><strong>Nombres de Iconos Comunes</strong>:<ul>
+<li><code>add</code> - Añadir nuevo elemento</li>
+<li><code>edit</code> - Editar elemento</li>
+<li><code>delete</code> - Eliminar elemento</li>
+<li><code>search</code> - Buscar</li>
+<li><code>filter_list</code> - Filtrar</li>
+<li><code>description</code> - Ver detalles</li>
+<li><code>check_circle</code> - Completado/Éxito</li>
+<li><code>warning</code> - Advertencia</li>
+<li><code>error</code> - Error</li>
+</ul>
+</li>
+</ul>
+<pre><code class="lang-html">&lt;!-- Ejemplo de uso --&gt;
+&lt;button class=&quot;btn-primary&quot;&gt;
+    &lt;span class=&quot;material-icons&quot;&gt;add&lt;/span&gt;
+    Añadir Propiedad
+&lt;/button&gt;
+</code></pre>
+<h2 id="estados-y-mensajes">Estados y Mensajes</h2>
+<h3 id="notificaciones">Notificaciones</h3>
+<ul>
+<li><strong>Éxito</strong>: Fondo verde claro, icono de verificación, tiempo de auto-cierre: 5s</li>
+<li><strong>Error</strong>: Fondo rojo claro, icono de error, requiere acción para cerrar</li>
+<li><strong>Advertencia</strong>: Fondo naranja claro, icono de advertencia</li>
+<li><strong>Información</strong>: Fondo azul claro, icono de información</li>
+</ul>
+<h3 id="estados-de-formulario">Estados de Formulario</h3>
+<ul>
+<li><strong>Validación Inline</strong>: Mensajes bajo cada campo con error</li>
+<li><strong>Feedback Visual</strong>: Cambios de color de borde y fondo para validación</li>
+<li><strong>Indicadores de Carga</strong>: Spinners y barras de progreso consistentes</li>
+</ul>
+<h2 id="responsive-design">Responsive Design</h2>
+<h3 id="puntos-de-quiebre">Puntos de Quiebre</h3>
+<ul>
+<li><strong>Móvil</strong>: &lt; 600px</li>
+<li><strong>Tablet</strong>: 600px - 1024px</li>
+<li><strong>Desktop</strong>: &gt; 1024px</li>
+</ul>
+<h3 id="adaptaciones">Adaptaciones</h3>
+<ul>
+<li>En móvil, el menú lateral se colapsa a un menú hamburguesa</li>
+<li>Las tablas se transforman en tarjetas en vista móvil</li>
+<li>Los formularios se reorganizan en una sola columna en dispositivos pequeños</li>
+</ul>
+<h2 id="implementaci-n-t-cnica">Implementación Técnica</h2>
+<h3 id="css-framework">CSS Framework</h3>
+<p>El sistema utiliza una combinación de Tailwind CSS personalizado y estilos propios:</p>
+<pre><code class="lang-js">// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        &#39;fiori-blue&#39;: &#39;#0A6ED1&#39;,
+        &#39;fiori-blue-dark&#39;: &#39;#0070F2&#39;,
+        &#39;fiori-text&#39;: &#39;#32363A&#39;,
+        &#39;fiori-success&#39;: &#39;#107E3E&#39;,
+        &#39;fiori-error&#39;: &#39;#BB0000&#39;,
+        &#39;fiori-warning&#39;: &#39;#E9730C&#39;,
+        // ...otros colores
+      },
+      // ...otras personalizaciones
+    }
+  }
+}
+</code></pre>
+<h3 id="componentes-blade">Componentes Blade</h3>
+<p>El sistema utiliza componentes Blade para mantener la consistencia:</p>
+<pre><code class="lang-php">// Ejemplo de componente botón
+@component(&#39;components.button&#39;, [&#39;type&#39; =&gt; &#39;primary&#39;])
+    {{ $slot }}
+@endcomponent
+</code></pre>
+<h3 id="javascript-interacciones">JavaScript Interacciones</h3>
+<ul>
+<li>Usa clases de utilidad para comportamientos comunes</li>
+<li>Interacciones basadas en eventos para componentes interactivos</li>
+<li>Transiciones y animaciones sutiles para mejorar la experiencia</li>
+</ul>
+<h2 id="buenas-pr-cticas">Buenas Prácticas</h2>
+<h3 id="creaci-n-de-nuevas-interfaces">Creación de Nuevas Interfaces</h3>
+<ol>
+<li><strong>Seguir la jerarquía visual establecida</strong></li>
+<li><strong>Mantener la consistencia</strong> con componentes existentes</li>
+<li><strong>Priorizar la simplicidad</strong> y la claridad</li>
+<li><strong>Utilizar componentes reutilizables</strong> en lugar de crear nuevos estilos</li>
+<li><strong>Validar la accesibilidad</strong> de nuevos componentes</li>
+</ol>
+<h3 id="extensi-n-de-componentes">Extensión de Componentes</h3>
+<p>Para extender la biblioteca de componentes:</p>
+<ol>
+<li>Documentar el nuevo componente en esta guía</li>
+<li>Crear un componente Blade reutilizable</li>
+<li>Añadir ejemplos de uso</li>
+<li>Asegurar compatibilidad con diferentes tamaños de pantalla</li>
+</ol>
+<h3 id="checklist-de-dise-o">Checklist de Diseño</h3>
+<ul>
+<li>[ ] Los colores utilizados pertenecen a la paleta oficial</li>
+<li>[ ] La tipografía sigue la jerarquía establecida</li>
+<li>[ ] Los componentes son consistentes con el resto del sistema</li>
+<li>[ ] La interfaz es usable en dispositivos móviles</li>
+<li>[ ] Se han seguido las prácticas de accesibilidad básicas</li>
+</ul>
+<hr>
+<h2 id="ejemplos-visuales">Ejemplos Visuales</h2>
+<h3 id="ejemplo-de-botones">Ejemplo de Botones</h3>
+<pre><code class="lang-html">&lt;button class=&quot;btn-primary&quot;&gt;Botón Primario&lt;/button&gt;
+&lt;button class=&quot;btn-secondary&quot;&gt;Botón Secundario&lt;/button&gt;
+&lt;button class=&quot;btn-danger&quot;&gt;Botón de Peligro&lt;/button&gt;
+&lt;button class=&quot;btn-primary&quot; disabled&gt;Botón Deshabilitado&lt;/button&gt;
+</code></pre>
+<h3 id="ejemplo-de-formulario">Ejemplo de Formulario</h3>
+<pre><code class="lang-html">&lt;div class=&quot;fiori-form-group&quot;&gt;
+  &lt;label for=&quot;fieldName&quot;&gt;Nombre del Campo&lt;/label&gt;
+  &lt;input type=&quot;text&quot; id=&quot;fieldName&quot; class=&quot;fiori-input&quot; placeholder=&quot;Ingrese un valor&quot;&gt;
+  &lt;small class=&quot;fiori-help-text&quot;&gt;Texto de ayuda para este campo&lt;/small&gt;
+&lt;/div&gt;
+</code></pre>
+<h3 id="ejemplo-de-tabla">Ejemplo de Tabla</h3>
+<pre><code class="lang-html">&lt;table class=&quot;fiori-table&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Nombre&lt;/th&gt;
+      &lt;th&gt;Descripción&lt;/th&gt;
+      &lt;th&gt;Estado&lt;/th&gt;
+      &lt;th&gt;Acciones&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Propiedad 1&lt;/td&gt;
+      &lt;td&gt;Descripción de la propiedad&lt;/td&gt;
+      &lt;td&gt;&lt;span class=&quot;badge badge-success&quot;&gt;Activo&lt;/span&gt;&lt;/td&gt;
+      &lt;td class=&quot;actions&quot;&gt;
+        &lt;button class=&quot;btn-icon&quot;&gt;&lt;span class=&quot;material-icons&quot;&gt;edit&lt;/span&gt;&lt;/button&gt;
+        &lt;button class=&quot;btn-icon&quot;&gt;&lt;span class=&quot;material-icons&quot;&gt;delete&lt;/span&gt;&lt;/button&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+</code></pre>
+<hr>
+<p>Esta guía de estilo debe considerarse como un documento vivo que evolucionará con el sistema. Para cualquier consulta o sugerencia relacionada con el diseño, contacte al equipo de UX/UI.</p>
+
+      </body>
+    </html>

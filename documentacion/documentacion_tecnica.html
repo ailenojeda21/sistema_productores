@@ -1,0 +1,377 @@
+<html>
+      <head>
+        <meta charset="UTF-8">
+        <title>documentacion_tecnica.md</title>
+      </head>
+      <body>
+        <h1 id="documentaci-n-t-cnica-sistema-agr-cola-sap">Documentación Técnica - Sistema Agrícola SAP</h1>
+<h2 id="arquitectura-del-sistema">Arquitectura del Sistema</h2>
+<h3 id="tecnolog-as-utilizadas">Tecnologías Utilizadas</h3>
+<p>El Sistema Agrícola SAP está desarrollado utilizando las siguientes tecnologías:</p>
+<ul>
+<li><strong>Backend</strong>: Laravel 10 (PHP 8.1+)</li>
+<li><strong>Frontend</strong>: <ul>
+<li>Blade Templates</li>
+<li>TailwindCSS</li>
+<li>Alpine.js para interactividad en el cliente</li>
+</ul>
+</li>
+<li><strong>Base de Datos</strong>: SQLite (desarrollo) / MySQL (producción)</li>
+<li><strong>Entorno de Desarrollo</strong>: Visual Studio Code, Laravel Sail</li>
+<li><strong>Control de Versiones</strong>: Git</li>
+</ul>
+<h3 id="estructura-de-directorios">Estructura de Directorios</h3>
+<p>El proyecto sigue la estructura estándar de Laravel con algunas personalizaciones:</p>
+<pre><code>sistema_productores/
+├── app/                      # Código principal de la aplicación
+│   ├── Http/                 # Controladores, Middlewares, Requests
+│   ├── Models/               # Modelos Eloquent
+│   └── Providers/            # Service Providers
+├── bootstrap/                # Archivos de inicio de Laravel
+├── config/                   # Configuración de la aplicación
+├── database/                 # Migraciones, seeds, factories
+├── documentacion/            # Documentación del proyecto
+├── public/                   # Punto de entrada y assets públicos
+├── resources/                # Assets sin compilar (CSS, JS, vistas)
+│   ├── css/                  # Archivos CSS/SCSS
+│   ├── js/                   # Archivos JavaScript
+│   └── views/                # Plantillas Blade
+├── routes/                   # Definiciones de rutas
+│   ├── api.php               # Rutas API
+│   └── web.php               # Rutas web
+├── storage/                  # Archivos generados por la aplicación
+└── tests/                    # Tests automatizados
+</code></pre><h2 id="modelos-de-datos">Modelos de Datos</h2>
+<h3 id="diagrama-entidad-relaci-n">Diagrama Entidad-Relación</h3>
+<p>El siguiente diagrama muestra las relaciones entre las principales entidades del sistema:</p>
+<pre><code class="lang-mermaid">erDiagram
+    User ||--o{ Propiedad : posee
+    Propiedad ||--o{ Maquinaria : tiene
+    Propiedad ||--o{ Cultivo : tiene
+    Propiedad ||--o{ TecnologiaRiego : tiene
+    Propiedad ||--o{ Archivo : tiene
+    Maquinaria ||--o{ Implemento : tiene
+
+    User {
+        id int PK
+        name string
+        email string
+        password string
+        email_verified_at timestamp
+        remember_token string
+        created_at timestamp
+        updated_at timestamp
+    }
+
+    Propiedad {
+        id int PK
+        usuario_id int FK
+        ubicacion string
+        superficie decimal
+        malla_antigranizo boolean
+        es_propietario boolean
+        derecho_riego boolean
+        created_at timestamp
+        updated_at timestamp
+    }
+
+    Maquinaria {
+        id int PK
+        propiedad_id int FK
+        tipo string
+        modelo string
+        potencia string
+        anio_fabricacion int
+        estado string
+        created_at timestamp
+        updated_at timestamp
+    }
+
+    Implemento {
+        id int PK
+        maquinaria_id int FK
+        tipo string
+        modelo string
+        ancho_trabajo string
+        estado string
+        created_at timestamp
+        updated_at timestamp
+    }
+
+    Cultivo {
+        id int PK
+        propiedad_id int FK
+        tipo string
+        variedad string
+        superficie decimal
+        fecha_siembra date
+        fecha_cosecha_estimada date
+        estado string
+        created_at timestamp
+        updated_at timestamp
+    }
+
+    TecnologiaRiego {
+        id int PK
+        propiedad_id int FK
+        tipo string
+        cobertura decimal
+        estado string
+        fecha_instalacion date
+        eficiencia int
+        created_at timestamp
+        updated_at timestamp
+    }
+
+    Archivo {
+        id int PK
+        propiedad_id int FK
+        nombre string
+        tipo string
+        ruta string
+        tamanio int
+        created_at timestamp
+        updated_at timestamp
+    }
+</code></pre>
+<h3 id="principales-entidades">Principales Entidades</h3>
+<h4 id="user-usuario-">User (Usuario)</h4>
+<pre><code class="lang-php">Schema::create(&#39;users&#39;, function (Blueprint $table) {
+    $table-&gt;id();
+    $table-&gt;string(&#39;name&#39;);
+    $table-&gt;string(&#39;email&#39;)-&gt;unique();
+    $table-&gt;timestamp(&#39;email_verified_at&#39;)-&gt;nullable();
+    $table-&gt;string(&#39;password&#39;);
+    $table-&gt;rememberToken();
+    $table-&gt;timestamps();
+});
+</code></pre>
+<h4 id="propiedad">Propiedad</h4>
+<pre><code class="lang-php">Schema::create(&#39;propiedades&#39;, function (Blueprint $table) {
+    $table-&gt;id();
+    $table-&gt;foreignId(&#39;user_id&#39;)-&gt;constrained()-&gt;onDelete(&#39;cascade&#39;);
+    $table-&gt;string(&#39;nombre&#39;);
+    $table-&gt;string(&#39;ubicacion&#39;);
+    $table-&gt;decimal(&#39;superficie&#39;, 10, 2);
+    $table-&gt;boolean(&#39;malla_antigranizo&#39;)-&gt;default(false);
+    $table-&gt;enum(&#39;estatus&#39;, [&#39;propietario&#39;, &#39;arrendatario&#39;]);
+    $table-&gt;boolean(&#39;derechos_riego&#39;)-&gt;default(false);
+    $table-&gt;timestamps();
+});
+</code></pre>
+<h4 id="maquinaria">Maquinaria</h4>
+<pre><code class="lang-php">Schema::create(&#39;maquinarias&#39;, function (Blueprint $table) {
+    $table-&gt;id();
+    $table-&gt;foreignId(&#39;propiedad_id&#39;)-&gt;nullable()-&gt;constrained()-&gt;onDelete(&#39;set null&#39;);
+    $table-&gt;string(&#39;nombre&#39;);
+    $table-&gt;string(&#39;tipo&#39;);
+    $table-&gt;integer(&#39;anio_fabricacion&#39;);
+    $table-&gt;text(&#39;caracteristicas&#39;)-&gt;nullable();
+    $table-&gt;timestamps();
+});
+</code></pre>
+<h4 id="implemento">Implemento</h4>
+<pre><code class="lang-php">Schema::create(&#39;implementos&#39;, function (Blueprint $table) {
+    $table-&gt;id();
+    $table-&gt;foreignId(&#39;maquinaria_id&#39;)-&gt;nullable()-&gt;constrained()-&gt;onDelete(&#39;set null&#39;);
+    $table-&gt;string(&#39;nombre&#39;);
+    $table-&gt;string(&#39;tipo&#39;);
+    $table-&gt;text(&#39;caracteristicas&#39;)-&gt;nullable();
+    $table-&gt;timestamps();
+});
+</code></pre>
+<h4 id="cultivo">Cultivo</h4>
+<pre><code class="lang-php">Schema::create(&#39;cultivos&#39;, function (Blueprint $table) {
+    $table-&gt;id();
+    $table-&gt;foreignId(&#39;propiedad_id&#39;)-&gt;constrained()-&gt;onDelete(&#39;cascade&#39;);
+    $table-&gt;string(&#39;tipo&#39;);
+    $table-&gt;decimal(&#39;superficie&#39;, 10, 2);
+    $table-&gt;date(&#39;fecha_siembra&#39;);
+    $table-&gt;date(&#39;fecha_cosecha_estimada&#39;)-&gt;nullable();
+    $table-&gt;timestamps();
+});
+</code></pre>
+<h4 id="tecnologiariego">TecnologiaRiego</h4>
+<pre><code class="lang-php">Schema::create(&#39;tecnologia_riegos&#39;, function (Blueprint $table) {
+    $table-&gt;id();
+    $table-&gt;foreignId(&#39;propiedad_id&#39;)-&gt;constrained()-&gt;onDelete(&#39;cascade&#39;);
+    $table-&gt;string(&#39;tipo&#39;);
+    $table-&gt;text(&#39;caracteristicas&#39;)-&gt;nullable();
+    $table-&gt;decimal(&#39;superficie_cubierta&#39;, 10, 2);
+    $table-&gt;timestamps();
+});
+</code></pre>
+<h4 id="archivo">Archivo</h4>
+<pre><code class="lang-php">Schema::create(&#39;archivos&#39;, function (Blueprint $table) {
+    $table-&gt;id();
+    $table-&gt;string(&#39;titulo&#39;);
+    $table-&gt;text(&#39;descripcion&#39;)-&gt;nullable();
+    $table-&gt;string(&#39;categoria&#39;);
+    $table-&gt;string(&#39;ruta&#39;);
+    $table-&gt;string(&#39;tipo_mime&#39;);
+    $table-&gt;string(&#39;extension&#39;);
+    $table-&gt;integer(&#39;tamano&#39;);
+    $table-&gt;morphs(&#39;archivable&#39;); // Relación polimórfica
+    $table-&gt;timestamps();
+});
+</code></pre>
+<h2 id="relaciones-entre-modelos">Relaciones entre Modelos</h2>
+<h3 id="user-usuario-">User (Usuario)</h3>
+<ul>
+<li><strong>hasMany</strong> Propiedad: Un usuario puede tener múltiples propiedades</li>
+</ul>
+<h3 id="propiedad">Propiedad</h3>
+<ul>
+<li><strong>belongsTo</strong> User: Una propiedad pertenece a un usuario</li>
+<li><strong>hasMany</strong> Maquinaria: Una propiedad puede tener múltiples maquinarias</li>
+<li><strong>hasMany</strong> Cultivo: Una propiedad puede tener múltiples cultivos</li>
+<li><strong>hasMany</strong> TecnologiaRiego: Una propiedad puede tener múltiples tecnologías de riego</li>
+<li><strong>morphMany</strong> Archivo: Una propiedad puede tener múltiples archivos asociados</li>
+</ul>
+<h3 id="maquinaria">Maquinaria</h3>
+<ul>
+<li><strong>belongsTo</strong> Propiedad: Una maquinaria puede estar asociada a una propiedad</li>
+<li><strong>hasMany</strong> Implemento: Una maquinaria puede tener múltiples implementos</li>
+<li><strong>morphMany</strong> Archivo: Una maquinaria puede tener múltiples archivos asociados</li>
+</ul>
+<h3 id="implemento">Implemento</h3>
+<ul>
+<li><strong>belongsTo</strong> Maquinaria: Un implemento está asociado a una maquinaria</li>
+<li><strong>morphMany</strong> Archivo: Un implemento puede tener múltiples archivos asociados</li>
+</ul>
+<h3 id="cultivo">Cultivo</h3>
+<ul>
+<li><strong>belongsTo</strong> Propiedad: Un cultivo está asociado a una propiedad</li>
+<li><strong>morphMany</strong> Archivo: Un cultivo puede tener múltiples archivos asociados</li>
+</ul>
+<h3 id="tecnologiariego">TecnologiaRiego</h3>
+<ul>
+<li><strong>belongsTo</strong> Propiedad: Una tecnología de riego está asociada a una propiedad</li>
+<li><strong>morphMany</strong> Archivo: Una tecnología de riego puede tener múltiples archivos asociados</li>
+</ul>
+<h3 id="archivo">Archivo</h3>
+<ul>
+<li><strong>morphTo</strong> archivable: Un archivo puede estar asociado a cualquier modelo (relación polimórfica)</li>
+</ul>
+<h2 id="api-y-endpoints">API y Endpoints</h2>
+<p>El sistema no expone una API pública, pero internamente utiliza los siguientes endpoints principales:</p>
+<h3 id="autenticaci-n">Autenticación</h3>
+<ul>
+<li><code>GET /login</code> - Muestra formulario de inicio de sesión</li>
+<li><code>POST /login</code> - Autentica al usuario</li>
+<li><code>POST /logout</code> - Cierra sesión</li>
+<li><code>GET /register</code> - Muestra formulario de registro</li>
+<li><code>POST /register</code> - Registra un nuevo usuario</li>
+</ul>
+<h3 id="propiedades">Propiedades</h3>
+<ul>
+<li><code>GET /propiedades</code> - Lista todas las propiedades del usuario</li>
+<li><code>GET /propiedades/create</code> - Muestra formulario para crear propiedad</li>
+<li><code>POST /propiedades</code> - Crea una nueva propiedad</li>
+<li><code>GET /propiedades/{id}</code> - Muestra detalles de una propiedad</li>
+<li><code>GET /propiedades/{id}/edit</code> - Muestra formulario para editar propiedad</li>
+<li><code>PUT/PATCH /propiedades/{id}</code> - Actualiza una propiedad</li>
+<li><code>DELETE /propiedades/{id}</code> - Elimina una propiedad</li>
+</ul>
+<h3 id="otros-m-dulos">Otros Módulos</h3>
+<p>Todos los demás módulos (Maquinaria, Implementos, Cultivos, Tecnologías de Riego, Archivos) siguen un patrón de rutas RESTful similar al de Propiedades.</p>
+<h2 id="seguridad">Seguridad</h2>
+<h3 id="autenticaci-n-y-autorizaci-n">Autenticación y Autorización</h3>
+<ul>
+<li><strong>Autenticación</strong>: El sistema utiliza el sistema de autenticación incorporado de Laravel con sesiones.</li>
+<li><strong>Autorización</strong>: Se implementan políticas de autorización para cada modelo utilizando el sistema de Gates y Policies de Laravel.</li>
+<li><strong>Middleware</strong>: Se aplican middleware para proteger rutas, incluyendo:<ul>
+<li><code>auth</code>: Verifica que el usuario esté autenticado</li>
+<li><code>verified</code>: Verifica que el correo electrónico del usuario esté verificado</li>
+<li><code>throttle</code>: Limita el número de intentos de inicio de sesión</li>
+</ul>
+</li>
+</ul>
+<h3 id="validaci-n-de-datos">Validación de Datos</h3>
+<p>Todas las entradas de usuario son validadas utilizando las clases Request de Laravel, aplicando reglas de validación estrictas para prevenir entradas maliciosas.</p>
+<h3 id="protecci-n-csrf">Protección CSRF</h3>
+<p>El sistema implementa protección CSRF (Cross-Site Request Forgery) mediante tokens CSRF en todos los formularios.</p>
+<h2 id="interfaz-de-usuario">Interfaz de Usuario</h2>
+<h3 id="componentes-ui">Componentes UI</h3>
+<p>El sistema utiliza un conjunto personalizado de componentes UI basados en el diseño SAP Fiori:</p>
+<ul>
+<li><strong>Cards</strong>: Contenedores principales para información</li>
+<li><strong>Forms</strong>: Formularios estandarizados con validación visual</li>
+<li><strong>Tables</strong>: Tablas de datos con opciones de ordenamiento y filtrado</li>
+<li><strong>Buttons</strong>: Botones con estados visuales claros (primario, secundario, peligro)</li>
+<li><strong>Alerts</strong>: Sistema de notificaciones con códigos de color según su tipo</li>
+</ul>
+<h3 id="estilos-y-temas">Estilos y Temas</h3>
+<p>Los estilos están implementados utilizando TailwindCSS con una configuración personalizada que define la paleta de colores SAP Fiori.</p>
+<h3 id="interfaz-mdi-multiple-document-interface-">Interfaz MDI (Multiple Document Interface)</h3>
+<p>La interfaz tipo MDI permite trabajar con múltiples formularios simultáneamente, implementada mediante componentes JavaScript que gestionan ventanas virtuales dentro del espacio de trabajo principal.</p>
+<h2 id="pruebas">Pruebas</h2>
+<h3 id="entorno-de-pruebas">Entorno de Pruebas</h3>
+<p>Las pruebas se ejecutan utilizando PHPUnit/Pest para pruebas de PHP y Jest para pruebas de JavaScript.</p>
+<h3 id="tipos-de-pruebas">Tipos de Pruebas</h3>
+<ul>
+<li><strong>Pruebas Unitarias</strong>: Prueban componentes individuales y métodos</li>
+<li><strong>Pruebas de Integración</strong>: Prueban la interacción entre componentes</li>
+<li><strong>Pruebas de Características</strong>: Prueban características completas del sistema</li>
+<li><strong>Pruebas de Navegador</strong>: Prueban la UI utilizando Laravel Dusk</li>
+</ul>
+<h2 id="despliegue">Despliegue</h2>
+<h3 id="requisitos-del-servidor">Requisitos del Servidor</h3>
+<ul>
+<li>PHP 8.1 o superior</li>
+<li>Composer</li>
+<li>Servidor web (Apache/Nginx)</li>
+<li>MySQL 8.0 o superior (recomendado para producción)</li>
+<li>Extensiones PHP: PDO, JSON, Fileinfo, OpenSSL, Tokenizer, Mbstring</li>
+</ul>
+<h3 id="proceso-de-despliegue">Proceso de Despliegue</h3>
+<ol>
+<li>Clonar el repositorio</li>
+<li>Instalar dependencias: <code>composer install --optimize-autoloader --no-dev</code></li>
+<li>Configurar variables de entorno: Copiar <code>.env.example</code> a <code>.env</code> y configurar</li>
+<li>Generar clave de aplicación: <code>php artisan key:generate</code></li>
+<li>Ejecutar migraciones: <code>php artisan migrate --force</code></li>
+<li>Optimizar la aplicación:<pre><code>php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+</code></pre></li>
+<li>Configurar permisos de directorios:<pre><code>chmod -R 775 storage
+chmod -R 775 bootstrap/cache
+</code></pre></li>
+</ol>
+<h2 id="mantenimiento-y-desarrollo-futuro">Mantenimiento y Desarrollo Futuro</h2>
+<h3 id="roadmap">Roadmap</h3>
+<ul>
+<li><strong>Fase 1</strong> (Completada): Implementación de módulos básicos y autenticación</li>
+<li><strong>Fase 2</strong> (En progreso): Mejoras de UI/UX y optimización de rendimiento</li>
+<li><strong>Fase 3</strong> (Planificada): Sistema de analítica y reportes</li>
+<li><strong>Fase 4</strong> (Planificada): Integración con sistemas externos (meteorológicos, contables)</li>
+</ul>
+<h3 id="contribuci-n-al-proyecto">Contribución al Proyecto</h3>
+<p>Para contribuir al proyecto:</p>
+<ol>
+<li>Hacer fork del repositorio</li>
+<li>Crear una rama para su característica: <code>git checkout -b feature/nueva-caracteristica</code></li>
+<li>Realizar cambios y commits: <code>git commit -m &#39;Añadir nueva característica&#39;</code></li>
+<li>Enviar cambios al fork: <code>git push origin feature/nueva-caracteristica</code></li>
+<li>Crear un Pull Request</li>
+</ol>
+<h3 id="convenciones-de-c-digo">Convenciones de Código</h3>
+<p>El proyecto sigue las convenciones PSR-12 para código PHP y el estilo de código de Laravel.</p>
+<h2 id="resoluci-n-de-problemas">Resolución de Problemas</h2>
+<h3 id="problemas-comunes">Problemas Comunes</h3>
+<ul>
+<li><strong>Error de Base de Datos</strong>: Verificar credenciales en <code>.env</code> y permisos de usuario</li>
+<li><strong>Error 500</strong>: Revisar logs en <code>storage/logs/laravel.log</code></li>
+<li><strong>Problemas de Permisos</strong>: Verificar permisos de directorios <code>storage</code> y <code>bootstrap/cache</code></li>
+<li><strong>Caché de Configuración</strong>: Limpiar caché con <code>php artisan config:clear</code></li>
+</ul>
+<h3 id="soporte">Soporte</h3>
+<p>Para soporte técnico, contactar a través de:</p>
+<ul>
+<li>Email: <a href="mailto:soporte@sistemaagricola.com">soporte@sistemaagricola.com</a></li>
+<li>Repositorio de Issues en GitHub</li>
+</ul>
+
+      </body>
+    </html>

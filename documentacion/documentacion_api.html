@@ -1,0 +1,816 @@
+<html>
+      <head>
+        <meta charset="UTF-8">
+        <title>documentacion_api.md</title>
+      </head>
+      <body>
+        <h1 id="documentaci-n-de-api-sistema-de-gesti-n-para-productores-agr-colas">Documentación de API - Sistema de Gestión para Productores Agrícolas</h1>
+<p>Esta documentación describe los endpoints disponibles en la API REST del Sistema de Gestión para Productores Agrícolas. La API sigue los principios RESTful y utiliza JSON como formato de intercambio de datos.</p>
+<h2 id="-ndice">Índice</h2>
+<ol>
+<li><a href="#autenticación">Autenticación</a></li>
+<li><a href="#convenciones-generales">Convenciones generales</a></li>
+<li><a href="#endpoints-por-recurso">Endpoints por recurso</a><ul>
+<li><a href="#propiedades">Propiedades</a></li>
+<li><a href="#maquinaria">Maquinaria</a></li>
+<li><a href="#implementos">Implementos</a></li>
+<li><a href="#cultivos">Cultivos</a></li>
+<li><a href="#tecnologías-de-riego">Tecnologías de Riego</a></li>
+<li><a href="#archivos">Archivos</a></li>
+</ul>
+</li>
+<li><a href="#códigos-de-respuesta">Códigos de respuesta</a></li>
+<li><a href="#ejemplos-de-uso">Ejemplos de uso</a></li>
+<li><a href="#errores-comunes">Errores comunes</a></li>
+</ol>
+<h2 id="autenticaci-n">Autenticación</h2>
+<p>La API utiliza Laravel Sanctum para la autenticación mediante tokens. Para acceder a los endpoints protegidos, es necesario incluir el token de autenticación en la cabecera de las solicitudes.</p>
+<h3 id="obtener-un-token-de-autenticaci-n">Obtener un token de autenticación</h3>
+<pre><code>POST /api/login
+</code></pre><p><strong>Parámetros de solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;email&quot;: &quot;usuario@ejemplo.com&quot;,
+  &quot;password&quot;: &quot;contraseña&quot;
+}
+</code></pre>
+<p><strong>Respuesta exitosa:</strong></p>
+<pre><code class="lang-json">{
+  &quot;user&quot;: {
+    &quot;id&quot;: 1,
+    &quot;name&quot;: &quot;Nombre Usuario&quot;,
+    &quot;email&quot;: &quot;usuario@ejemplo.com&quot;,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;
+  },
+  &quot;token&quot;: &quot;1|abcdefghijklmnopqrstuvwxyz123456789&quot;
+}
+</code></pre>
+<h3 id="uso-del-token-en-solicitudes">Uso del token en solicitudes</h3>
+<p>Para todas las solicitudes a endpoints protegidos, incluir la siguiente cabecera:</p>
+<pre><code>Authorization: Bearer 1|abcdefghijklmnopqrstuvwxyz123456789
+</code></pre><h2 id="convenciones-generales">Convenciones generales</h2>
+<ul>
+<li>Todos los endpoints retornan y aceptan datos en formato JSON.</li>
+<li>Las fechas se representan en formato ISO 8601: <code>YYYY-MM-DDTHH:MM:SS.sssZ</code>.</li>
+<li>Los IDs de recursos se incluyen en la URL para operaciones sobre recursos específicos.</li>
+<li>Las solicitudes de creación (POST) y actualización (PUT/PATCH) deben incluir los datos del recurso en el cuerpo de la solicitud.</li>
+<li>Las respuestas incluyen el código de estado HTTP apropiado.</li>
+</ul>
+<h2 id="endpoints-por-recurso">Endpoints por recurso</h2>
+<h3 id="propiedades">Propiedades</h3>
+<p>Las propiedades representan los terrenos o inmuebles agrícolas de los productores.</p>
+<h4 id="listar-todas-las-propiedades">Listar todas las propiedades</h4>
+<pre><code>GET /api/propiedades
+</code></pre><p><strong>Parámetros de consulta (opcionales):</strong></p>
+<ul>
+<li><code>usuario_id</code>: Filtrar por ID de usuario</li>
+<li><code>with</code>: Relaciones a incluir (comma-separated)</li>
+</ul>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;usuario_id&quot;: 1,
+    &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;,
+    &quot;superficie&quot;: 150.5,
+    &quot;malla_antigranizo&quot;: true,
+    &quot;es_propietario&quot;: false,
+    &quot;derecho_riego&quot;: true,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;usuario&quot;: {
+      &quot;id&quot;: 1,
+      &quot;name&quot;: &quot;Juan Productor&quot;,
+      &quot;email&quot;: &quot;productor@demo.com&quot;
+    },
+    &quot;maquinarias&quot;: [],
+    &quot;cultivos&quot;: [],
+    &quot;tecnologiaRiegos&quot;: [],
+    &quot;archivos&quot;: []
+  }
+]
+</code></pre>
+<h4 id="obtener-una-propiedad-espec-fica">Obtener una propiedad específica</h4>
+<pre><code>GET /api/propiedades/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;usuario_id&quot;: 1,
+  &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;,
+  &quot;superficie&quot;: 150.5,
+  &quot;malla_antigranizo&quot;: true,
+  &quot;es_propietario&quot;: false,
+  &quot;derecho_riego&quot;: true,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;usuario&quot;: {
+    &quot;id&quot;: 1,
+    &quot;name&quot;: &quot;Juan Productor&quot;,
+    &quot;email&quot;: &quot;productor@demo.com&quot;
+  },
+  &quot;maquinarias&quot;: [],
+  &quot;cultivos&quot;: [],
+  &quot;tecnologiaRiegos&quot;: [],
+  &quot;archivos&quot;: []
+}
+</code></pre>
+<h4 id="crear-una-nueva-propiedad">Crear una nueva propiedad</h4>
+<pre><code>POST /api/propiedades
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;usuario_id&quot;: 1,
+  &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;,
+  &quot;superficie&quot;: 150.5,
+  &quot;malla_antigranizo&quot;: true,
+  &quot;es_propietario&quot;: false,
+  &quot;derecho_riego&quot;: true
+}
+</code></pre>
+<p><strong>Respuesta (201 Created):</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;usuario_id&quot;: 1,
+  &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;,
+  &quot;superficie&quot;: 150.5,
+  &quot;malla_antigranizo&quot;: true,
+  &quot;es_propietario&quot;: false,
+  &quot;derecho_riego&quot;: true,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="actualizar-una-propiedad-existente">Actualizar una propiedad existente</h4>
+<pre><code>PUT /api/propiedades/{id}
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;ubicacion&quot;: &quot;Ruta 40 Km 3600, Mendoza&quot;,
+  &quot;superficie&quot;: 200.0
+}
+</code></pre>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;usuario_id&quot;: 1,
+  &quot;ubicacion&quot;: &quot;Ruta 40 Km 3600, Mendoza&quot;,
+  &quot;superficie&quot;: 200.0,
+  &quot;malla_antigranizo&quot;: true,
+  &quot;es_propietario&quot;: false,
+  &quot;derecho_riego&quot;: true,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T10:30:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="eliminar-una-propiedad">Eliminar una propiedad</h4>
+<pre><code>DELETE /api/propiedades/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;message&quot;: &quot;Propiedad eliminada correctamente&quot;
+}
+</code></pre>
+<h3 id="maquinaria">Maquinaria</h3>
+<p>Representa la maquinaria agrícola asociada a las propiedades.</p>
+<h4 id="listar-toda-la-maquinaria">Listar toda la maquinaria</h4>
+<pre><code>GET /api/maquinarias
+</code></pre><p><strong>Parámetros de consulta (opcionales):</strong></p>
+<ul>
+<li><code>propiedad_id</code>: Filtrar por ID de propiedad</li>
+<li><code>tipo</code>: Filtrar por tipo de maquinaria</li>
+</ul>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;propiedad_id&quot;: 1,
+    &quot;tipo&quot;: &quot;Tractor&quot;,
+    &quot;modelo&quot;: &quot;John Deere 5090E&quot;,
+    &quot;potencia&quot;: &quot;90HP&quot;,
+    &quot;anio_fabricacion&quot;: 2020,
+    &quot;estado&quot;: &quot;Activo&quot;,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;propiedad&quot;: {
+      &quot;id&quot;: 1,
+      &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;
+    },
+    &quot;implementos&quot;: []
+  }
+]
+</code></pre>
+<h4 id="obtener-una-maquinaria-espec-fica">Obtener una maquinaria específica</h4>
+<pre><code>GET /api/maquinarias/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Tractor&quot;,
+  &quot;modelo&quot;: &quot;John Deere 5090E&quot;,
+  &quot;potencia&quot;: &quot;90HP&quot;,
+  &quot;anio_fabricacion&quot;: 2020,
+  &quot;estado&quot;: &quot;Activo&quot;,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;propiedad&quot;: {
+    &quot;id&quot;: 1,
+    &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;
+  },
+  &quot;implementos&quot;: []
+}
+</code></pre>
+<h4 id="crear-una-nueva-maquinaria">Crear una nueva maquinaria</h4>
+<pre><code>POST /api/maquinarias
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Tractor&quot;,
+  &quot;modelo&quot;: &quot;John Deere 5090E&quot;,
+  &quot;potencia&quot;: &quot;90HP&quot;,
+  &quot;anio_fabricacion&quot;: 2020,
+  &quot;estado&quot;: &quot;Activo&quot;
+}
+</code></pre>
+<p><strong>Respuesta (201 Created):</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Tractor&quot;,
+  &quot;modelo&quot;: &quot;John Deere 5090E&quot;,
+  &quot;potencia&quot;: &quot;90HP&quot;,
+  &quot;anio_fabricacion&quot;: 2020,
+  &quot;estado&quot;: &quot;Activo&quot;,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="actualizar-una-maquinaria-existente">Actualizar una maquinaria existente</h4>
+<pre><code>PUT /api/maquinarias/{id}
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;estado&quot;: &quot;En mantenimiento&quot;,
+  &quot;potencia&quot;: &quot;95HP&quot;
+}
+</code></pre>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Tractor&quot;,
+  &quot;modelo&quot;: &quot;John Deere 5090E&quot;,
+  &quot;potencia&quot;: &quot;95HP&quot;,
+  &quot;anio_fabricacion&quot;: 2020,
+  &quot;estado&quot;: &quot;En mantenimiento&quot;,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T10:30:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="eliminar-una-maquinaria">Eliminar una maquinaria</h4>
+<pre><code>DELETE /api/maquinarias/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;message&quot;: &quot;Maquinaria eliminada correctamente&quot;
+}
+</code></pre>
+<h3 id="implementos">Implementos</h3>
+<p>Representa los implementos o herramientas asociados a la maquinaria agrícola.</p>
+<h4 id="listar-todos-los-implementos">Listar todos los implementos</h4>
+<pre><code>GET /api/implementos
+</code></pre><p><strong>Parámetros de consulta (opcionales):</strong></p>
+<ul>
+<li><code>maquinaria_id</code>: Filtrar por ID de maquinaria</li>
+<li><code>tipo</code>: Filtrar por tipo de implemento</li>
+</ul>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;maquinaria_id&quot;: 1,
+    &quot;tipo&quot;: &quot;Arado&quot;,
+    &quot;modelo&quot;: &quot;Vogel &amp; Noot XS 950&quot;,
+    &quot;ancho_trabajo&quot;: &quot;3.5m&quot;,
+    &quot;estado&quot;: &quot;Activo&quot;,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;maquinaria&quot;: {
+      &quot;id&quot;: 1,
+      &quot;tipo&quot;: &quot;Tractor&quot;,
+      &quot;modelo&quot;: &quot;John Deere 5090E&quot;
+    }
+  }
+]
+</code></pre>
+<h4 id="obtener-un-implemento-espec-fico">Obtener un implemento específico</h4>
+<pre><code>GET /api/implementos/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;maquinaria_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Arado&quot;,
+  &quot;modelo&quot;: &quot;Vogel &amp; Noot XS 950&quot;,
+  &quot;ancho_trabajo&quot;: &quot;3.5m&quot;,
+  &quot;estado&quot;: &quot;Activo&quot;,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;maquinaria&quot;: {
+    &quot;id&quot;: 1,
+    &quot;tipo&quot;: &quot;Tractor&quot;,
+    &quot;modelo&quot;: &quot;John Deere 5090E&quot;
+  }
+}
+</code></pre>
+<h4 id="crear-un-nuevo-implemento">Crear un nuevo implemento</h4>
+<pre><code>POST /api/implementos
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;maquinaria_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Arado&quot;,
+  &quot;modelo&quot;: &quot;Vogel &amp; Noot XS 950&quot;,
+  &quot;ancho_trabajo&quot;: &quot;3.5m&quot;,
+  &quot;estado&quot;: &quot;Activo&quot;
+}
+</code></pre>
+<p><strong>Respuesta (201 Created):</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;maquinaria_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Arado&quot;,
+  &quot;modelo&quot;: &quot;Vogel &amp; Noot XS 950&quot;,
+  &quot;ancho_trabajo&quot;: &quot;3.5m&quot;,
+  &quot;estado&quot;: &quot;Activo&quot;,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="actualizar-un-implemento-existente">Actualizar un implemento existente</h4>
+<pre><code>PUT /api/implementos/{id}
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;estado&quot;: &quot;En reparación&quot;,
+  &quot;ancho_trabajo&quot;: &quot;4.0m&quot;
+}
+</code></pre>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;maquinaria_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Arado&quot;,
+  &quot;modelo&quot;: &quot;Vogel &amp; Noot XS 950&quot;,
+  &quot;ancho_trabajo&quot;: &quot;4.0m&quot;,
+  &quot;estado&quot;: &quot;En reparación&quot;,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T10:30:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="eliminar-un-implemento">Eliminar un implemento</h4>
+<pre><code>DELETE /api/implementos/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;message&quot;: &quot;Implemento eliminado correctamente&quot;
+}
+</code></pre>
+<h3 id="cultivos">Cultivos</h3>
+<p>Representa los cultivos asociados a las propiedades.</p>
+<h4 id="listar-todos-los-cultivos">Listar todos los cultivos</h4>
+<pre><code>GET /api/cultivos
+</code></pre><p><strong>Parámetros de consulta (opcionales):</strong></p>
+<ul>
+<li><code>propiedad_id</code>: Filtrar por ID de propiedad</li>
+<li><code>tipo</code>: Filtrar por tipo de cultivo</li>
+</ul>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;propiedad_id&quot;: 1,
+    &quot;tipo&quot;: &quot;Viñedo&quot;,
+    &quot;variedad&quot;: &quot;Malbec&quot;,
+    &quot;superficie&quot;: 50.5,
+    &quot;fecha_siembra&quot;: &quot;2024-09-15&quot;,
+    &quot;fecha_cosecha_estimada&quot;: &quot;2025-03-20&quot;,
+    &quot;estado&quot;: &quot;En crecimiento&quot;,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;propiedad&quot;: {
+      &quot;id&quot;: 1,
+      &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;
+    }
+  }
+]
+</code></pre>
+<h4 id="obtener-un-cultivo-espec-fico">Obtener un cultivo específico</h4>
+<pre><code>GET /api/cultivos/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Viñedo&quot;,
+  &quot;variedad&quot;: &quot;Malbec&quot;,
+  &quot;superficie&quot;: 50.5,
+  &quot;fecha_siembra&quot;: &quot;2024-09-15&quot;,
+  &quot;fecha_cosecha_estimada&quot;: &quot;2025-03-20&quot;,
+  &quot;estado&quot;: &quot;En crecimiento&quot;,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;propiedad&quot;: {
+    &quot;id&quot;: 1,
+    &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;
+  }
+}
+</code></pre>
+<h4 id="crear-un-nuevo-cultivo">Crear un nuevo cultivo</h4>
+<pre><code>POST /api/cultivos
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Viñedo&quot;,
+  &quot;variedad&quot;: &quot;Malbec&quot;,
+  &quot;superficie&quot;: 50.5,
+  &quot;fecha_siembra&quot;: &quot;2024-09-15&quot;,
+  &quot;fecha_cosecha_estimada&quot;: &quot;2025-03-20&quot;,
+  &quot;estado&quot;: &quot;En crecimiento&quot;
+}
+</code></pre>
+<p><strong>Respuesta (201 Created):</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Viñedo&quot;,
+  &quot;variedad&quot;: &quot;Malbec&quot;,
+  &quot;superficie&quot;: 50.5,
+  &quot;fecha_siembra&quot;: &quot;2024-09-15&quot;,
+  &quot;fecha_cosecha_estimada&quot;: &quot;2025-03-20&quot;,
+  &quot;estado&quot;: &quot;En crecimiento&quot;,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="actualizar-un-cultivo-existente">Actualizar un cultivo existente</h4>
+<pre><code>PUT /api/cultivos/{id}
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;estado&quot;: &quot;Listo para cosechar&quot;,
+  &quot;fecha_cosecha_estimada&quot;: &quot;2025-03-15&quot;
+}
+</code></pre>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Viñedo&quot;,
+  &quot;variedad&quot;: &quot;Malbec&quot;,
+  &quot;superficie&quot;: 50.5,
+  &quot;fecha_siembra&quot;: &quot;2024-09-15&quot;,
+  &quot;fecha_cosecha_estimada&quot;: &quot;2025-03-15&quot;,
+  &quot;estado&quot;: &quot;Listo para cosechar&quot;,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T10:30:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="eliminar-un-cultivo">Eliminar un cultivo</h4>
+<pre><code>DELETE /api/cultivos/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;message&quot;: &quot;Cultivo eliminado correctamente&quot;
+}
+</code></pre>
+<h3 id="tecnolog-as-de-riego">Tecnologías de Riego</h3>
+<p>Representa las tecnologías de riego aplicadas en las propiedades.</p>
+<h4 id="listar-todas-las-tecnolog-as-de-riego">Listar todas las tecnologías de riego</h4>
+<pre><code>GET /api/tecnologia-riegos
+</code></pre><p><strong>Parámetros de consulta (opcionales):</strong></p>
+<ul>
+<li><code>propiedad_id</code>: Filtrar por ID de propiedad</li>
+<li><code>tipo</code>: Filtrar por tipo de tecnología</li>
+</ul>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;propiedad_id&quot;: 1,
+    &quot;tipo&quot;: &quot;Goteo&quot;,
+    &quot;cobertura&quot;: 35.5,
+    &quot;estado&quot;: &quot;Operativo&quot;,
+    &quot;fecha_instalacion&quot;: &quot;2024-08-10&quot;,
+    &quot;eficiencia&quot;: 95,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;propiedad&quot;: {
+      &quot;id&quot;: 1,
+      &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;
+    }
+  }
+]
+</code></pre>
+<h4 id="obtener-una-tecnolog-a-de-riego-espec-fica">Obtener una tecnología de riego específica</h4>
+<pre><code>GET /api/tecnologia-riegos/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Goteo&quot;,
+  &quot;cobertura&quot;: 35.5,
+  &quot;estado&quot;: &quot;Operativo&quot;,
+  &quot;fecha_instalacion&quot;: &quot;2024-08-10&quot;,
+  &quot;eficiencia&quot;: 95,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;propiedad&quot;: {
+    &quot;id&quot;: 1,
+    &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;
+  }
+}
+</code></pre>
+<h4 id="crear-una-nueva-tecnolog-a-de-riego">Crear una nueva tecnología de riego</h4>
+<pre><code>POST /api/tecnologia-riegos
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Goteo&quot;,
+  &quot;cobertura&quot;: 35.5,
+  &quot;estado&quot;: &quot;Operativo&quot;,
+  &quot;fecha_instalacion&quot;: &quot;2024-08-10&quot;,
+  &quot;eficiencia&quot;: 95
+}
+</code></pre>
+<p><strong>Respuesta (201 Created):</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Goteo&quot;,
+  &quot;cobertura&quot;: 35.5,
+  &quot;estado&quot;: &quot;Operativo&quot;,
+  &quot;fecha_instalacion&quot;: &quot;2024-08-10&quot;,
+  &quot;eficiencia&quot;: 95,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="actualizar-una-tecnolog-a-de-riego-existente">Actualizar una tecnología de riego existente</h4>
+<pre><code>PUT /api/tecnologia-riegos/{id}
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;estado&quot;: &quot;En mantenimiento&quot;,
+  &quot;eficiencia&quot;: 90
+}
+</code></pre>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;tipo&quot;: &quot;Goteo&quot;,
+  &quot;cobertura&quot;: 35.5,
+  &quot;estado&quot;: &quot;En mantenimiento&quot;,
+  &quot;fecha_instalacion&quot;: &quot;2024-08-10&quot;,
+  &quot;eficiencia&quot;: 90,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T10:30:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="eliminar-una-tecnolog-a-de-riego">Eliminar una tecnología de riego</h4>
+<pre><code>DELETE /api/tecnologia-riegos/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;message&quot;: &quot;Tecnología de riego eliminada correctamente&quot;
+}
+</code></pre>
+<h3 id="archivos">Archivos</h3>
+<p>Representa los archivos asociados a las propiedades (documentos, imágenes, etc.).</p>
+<h4 id="listar-todos-los-archivos">Listar todos los archivos</h4>
+<pre><code>GET /api/archivos
+</code></pre><p><strong>Parámetros de consulta (opcionales):</strong></p>
+<ul>
+<li><code>propiedad_id</code>: Filtrar por ID de propiedad</li>
+<li><code>tipo</code>: Filtrar por tipo de archivo</li>
+</ul>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;propiedad_id&quot;: 1,
+    &quot;nombre&quot;: &quot;plano_catastral.pdf&quot;,
+    &quot;tipo&quot;: &quot;documento&quot;,
+    &quot;ruta&quot;: &quot;archivos/propiedades/1/plano_catastral.pdf&quot;,
+    &quot;tamanio&quot;: 1250000,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+    &quot;propiedad&quot;: {
+      &quot;id&quot;: 1,
+      &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;
+    }
+  }
+]
+</code></pre>
+<h4 id="obtener-un-archivo-espec-fico">Obtener un archivo específico</h4>
+<pre><code>GET /api/archivos/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;nombre&quot;: &quot;plano_catastral.pdf&quot;,
+  &quot;tipo&quot;: &quot;documento&quot;,
+  &quot;ruta&quot;: &quot;archivos/propiedades/1/plano_catastral.pdf&quot;,
+  &quot;tamanio&quot;: 1250000,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;propiedad&quot;: {
+    &quot;id&quot;: 1,
+    &quot;ubicacion&quot;: &quot;Ruta 40 Km 3500, Mendoza&quot;
+  }
+}
+</code></pre>
+<h4 id="subir-un-nuevo-archivo">Subir un nuevo archivo</h4>
+<pre><code>POST /api/archivos
+</code></pre><p><strong>Cuerpo de la solicitud (multipart/form-data):</strong></p>
+<pre><code>propiedad_id: 1
+tipo: documento
+archivo: [ARCHIVO_BINARIO]
+</code></pre><p><strong>Respuesta (201 Created):</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;nombre&quot;: &quot;plano_catastral.pdf&quot;,
+  &quot;tipo&quot;: &quot;documento&quot;,
+  &quot;ruta&quot;: &quot;archivos/propiedades/1/plano_catastral.pdf&quot;,
+  &quot;tamanio&quot;: 1250000,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="actualizar-informaci-n-de-un-archivo">Actualizar información de un archivo</h4>
+<pre><code>PUT /api/archivos/{id}
+</code></pre><p><strong>Cuerpo de la solicitud:</strong></p>
+<pre><code class="lang-json">{
+  &quot;nombre&quot;: &quot;plano_catastral_actualizado.pdf&quot;,
+  &quot;tipo&quot;: &quot;documento_legal&quot;
+}
+</code></pre>
+<p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;id&quot;: 1,
+  &quot;propiedad_id&quot;: 1,
+  &quot;nombre&quot;: &quot;plano_catastral_actualizado.pdf&quot;,
+  &quot;tipo&quot;: &quot;documento_legal&quot;,
+  &quot;ruta&quot;: &quot;archivos/propiedades/1/plano_catastral.pdf&quot;,
+  &quot;tamanio&quot;: 1250000,
+  &quot;created_at&quot;: &quot;2025-01-01T00:00:00.000000Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-01-01T10:30:00.000000Z&quot;
+}
+</code></pre>
+<h4 id="eliminar-un-archivo">Eliminar un archivo</h4>
+<pre><code>DELETE /api/archivos/{id}
+</code></pre><p><strong>Respuesta:</strong></p>
+<pre><code class="lang-json">{
+  &quot;message&quot;: &quot;Archivo eliminado correctamente&quot;
+}
+</code></pre>
+<h2 id="c-digos-de-respuesta">Códigos de respuesta</h2>
+<p>La API utiliza los siguientes códigos de estado HTTP:</p>
+<ul>
+<li><code>200 OK</code>: La solicitud se ha completado correctamente</li>
+<li><code>201 Created</code>: El recurso se ha creado correctamente</li>
+<li><code>400 Bad Request</code>: La solicitud contiene datos inválidos o falta información necesaria</li>
+<li><code>401 Unauthorized</code>: Falta el token de autenticación o es inválido</li>
+<li><code>403 Forbidden</code>: El usuario no tiene permisos para acceder al recurso</li>
+<li><code>404 Not Found</code>: El recurso solicitado no existe</li>
+<li><code>422 Unprocessable Entity</code>: Los datos proporcionados no pasaron la validación</li>
+<li><code>500 Internal Server Error</code>: Error interno del servidor</li>
+</ul>
+<h2 id="ejemplos-de-uso">Ejemplos de uso</h2>
+<h3 id="ejemplo-1-autenticaci-n-y-listado-de-propiedades">Ejemplo 1: Autenticación y listado de propiedades</h3>
+<pre><code class="lang-javascript">// Paso 1: Obtener token de autenticación
+fetch(&#39;https://midominio.com/api/login&#39;, {
+  method: &#39;POST&#39;,
+  headers: {
+    &#39;Content-Type&#39;: &#39;application/json&#39;
+  },
+  body: JSON.stringify({
+    email: &#39;productor@demo.com&#39;,
+    password: &#39;productor123&#39;
+  })
+})
+.then(response =&gt; response.json())
+.then(data =&gt; {
+  const token = data.token;
+
+  // Paso 2: Usar el token para obtener propiedades
+  return fetch(&#39;https://midominio.com/api/propiedades&#39;, {
+    headers: {
+      &#39;Authorization&#39;: `Bearer ${token}`
+    }
+  });
+})
+.then(response =&gt; response.json())
+.then(propiedades =&gt; {
+  console.log(&#39;Propiedades:&#39;, propiedades);
+})
+.catch(error =&gt; {
+  console.error(&#39;Error:&#39;, error);
+});
+</code></pre>
+<h3 id="ejemplo-2-crear-una-nueva-propiedad-y-asociarle-un-cultivo">Ejemplo 2: Crear una nueva propiedad y asociarle un cultivo</h3>
+<pre><code class="lang-javascript">// Asumiendo que ya tenemos un token
+const token = &#39;token_obtenido_previamente&#39;;
+
+// Paso 1: Crear una propiedad
+fetch(&#39;https://midominio.com/api/propiedades&#39;, {
+  method: &#39;POST&#39;,
+  headers: {
+    &#39;Content-Type&#39;: &#39;application/json&#39;,
+    &#39;Authorization&#39;: `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    usuario_id: 1,
+    ubicacion: &quot;Ruta 7 Km 1020, San Rafael&quot;,
+    superficie: 75.2,
+    malla_antigranizo: false,
+    es_propietario: true,
+    derecho_riego: true
+  })
+})
+.then(response =&gt; response.json())
+.then(propiedad =&gt; {
+  console.log(&#39;Propiedad creada:&#39;, propiedad);
+
+  // Paso 2: Crear un cultivo asociado a esta propiedad
+  return fetch(&#39;https://midominio.com/api/cultivos&#39;, {
+    method: &#39;POST&#39;,
+    headers: {
+      &#39;Content-Type&#39;: &#39;application/json&#39;,
+      &#39;Authorization&#39;: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      propiedad_id: propiedad.id,
+      tipo: &quot;Olivar&quot;,
+      variedad: &quot;Arauco&quot;,
+      superficie: 30.0,
+      fecha_siembra: &quot;2024-10-01&quot;,
+      fecha_cosecha_estimada: &quot;2025-04-15&quot;,
+      estado: &quot;Plantación reciente&quot;
+    })
+  });
+})
+.then(response =&gt; response.json())
+.then(cultivo =&gt; {
+  console.log(&#39;Cultivo creado:&#39;, cultivo);
+})
+.catch(error =&gt; {
+  console.error(&#39;Error:&#39;, error);
+});
+</code></pre>
+<h3 id="ejemplo-3-subir-un-archivo-asociado-a-una-propiedad">Ejemplo 3: Subir un archivo asociado a una propiedad</h3>
+<pre><code class="lang-javascript">// Asumiendo que ya tenemos un token y un input de tipo file en el HTML
+const token = &#39;token_obtenido_previamente&#39;;
+const fileInput = document.querySelector(&#39;input[type=&quot;file&quot;]&#39;);
+
+const formData = new FormData();
+formData.append(&#39;propiedad_id&#39;, 1);
+formData.append(&#39;tipo&#39;, &#39;imagen&#39;);
+formData.append(&#39;archivo&#39;, fileInput.files[0]);
+
+fetch(&#39;https://midominio.com/api/archivos&#39;, {
+  method: &#39;POST&#39;,
+  headers: {
+    &#39;Authorization&#39;: `Bearer ${token}`
+  },
+  body: formData
+})
+.then(response =&gt; response.json())
+.then(archivo =&gt; {
+  console.log(&#39;Archivo subido:&#39;, archivo);
+})
+.catch(error =&gt; {
+  console.error(&#39;Error:&#39;, error);
+});
+</code></pre>
+<h2 id="errores-comunes">Errores comunes</h2>
+<h3 id="error-de-validaci-n">Error de validación</h3>
+<pre><code class="lang-json">{
+  &quot;message&quot;: &quot;The given data was invalid.&quot;,
+  &quot;errors&quot;: {
+    &quot;superficie&quot;: [
+      &quot;El campo superficie debe ser un número positivo.&quot;
+    ],
+    &quot;ubicacion&quot;: [
+      &quot;El campo ubicación es obligatorio.&quot;
+    ]
+  }
+}
+</code></pre>
+<h3 id="error-de-autenticaci-n">Error de autenticación</h3>
+<pre><code class="lang-json">{
+  &quot;message&quot;: &quot;Unauthenticated.&quot;
+}
+</code></pre>
+<h3 id="error-de-recurso-no-encontrado">Error de recurso no encontrado</h3>
+<pre><code class="lang-json">{
+  &quot;message&quot;: &quot;No query results for model [App\\Models\\Propiedad] 999&quot;
+}
+</code></pre>
+<hr>
+<h2 id="notas-adicionales">Notas adicionales</h2>
+<ul>
+<li>Para la documentación interactiva de la API, visite <code>/api/documentation</code></li>
+<li>Los endpoints pueden estar sujetos a cambios. Esta documentación se actualizó por última vez el 26 de mayo de 2025.</li>
+<li>Para cualquier consulta relacionada con la API, contacte al equipo de desarrollo.</li>
+</ul>
+
+      </body>
+    </html>
