@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Propiedad extends Model
 {
+
+
+    protected $table = "propiedades";
+
     /**
      * Relación: Una propiedad pertenece a un usuario
      */
