@@ -26,14 +26,27 @@
             <div class="hidden md:flex md:items-center md:space-x-6">
                 @auth
                     <div class="flex items-center space-x-4">
-                        <a href="{{ route('profile') }}" class="text-gray-700 hover:text-green-700 font-semibold flex items-center">
-                            <span class="material-icons align-middle mr-1">person</span> Perfil
-                        </a>
-                        <span class="text-gray-600">{{ Auth::user()->name }}</span>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Salir</button>
-                        </form>
+
+                        <!-- Dropdown menu for user (desktop) -->
+                        <div class="relative group">
+                            <button class="flex items-center text-gray-700 font-semibold focus:outline-none" aria-haspopup="true" aria-expanded="false">
+                                <span class="material-icons align-middle mr-1">person</span>
+                                {{ Auth::user()->name }}
+                                <span class="material-icons ml-1">expand_more</span>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity z-50">
+                                <a href="{{ route('profile') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center">
+                                    <span class="material-icons mr-2">person</span> Perfil
+                                </a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 flex items-center">
+                                        <span class="material-icons mr-2">logout</span> Salir
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                       
                     </div>
                 @else
                     <div class="flex items-center space-x-4">
