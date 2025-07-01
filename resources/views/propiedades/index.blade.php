@@ -4,7 +4,7 @@
 <div class="container mx-auto py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-green-700">Propiedades</h1>
-        <a href="#" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold">Nueva Propiedad</a>
+        <a href="{{ route('propiedades.create') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold">Nueva Propiedad</a>
     </div>
     <div class="bg-white rounded shadow p-6">
         <table class="min-w-full">
@@ -13,7 +13,9 @@
                     <th class="px-4 py-2">ID</th>
                     <th class="px-4 py-2">Nombre</th>
                     <th class="px-4 py-2">Ubicación</th>
-                    <th class="px-4 py-2">Acciones</th>
+                    <th class="px-4 py-2">Hect&aacute;reas</th>
+                    <th class="px-4 py-2">Es propietario?</th>
+                    <th class="px-4 py-2">Tiene derecho de riego?</th>
                 </tr>
             </thead>
             <tbody>

@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Propiedad extends Model
 {
-
-
     protected $table = "propiedades";
 
     /**
@@ -45,10 +43,10 @@ class Propiedad extends Model
     /**
      * Relación: Una propiedad tiene muchas tecnologías de riego
      */
-    public function tecnologiaRiegos()
-    {
-        return $this->hasMany(TecnologiaRiego::class, 'propiedad_id');
-    }
+    // public function tecnologiaRiegos()
+    // {
+    //     return $this->hasMany(TecnologiaRiego::class, 'propiedad_id');
+    // }
 
     //
 }

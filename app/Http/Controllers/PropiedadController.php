@@ -25,7 +25,7 @@ class PropiedadController extends Controller
     public function index()
     {
         // Listar todas las propiedades con relaciones
-        $propiedades = Propiedad::with(['usuario', 'archivos', 'maquinarias', 'cultivos', 'tecnologiaRiegos'])->get();
+        $propiedades = Propiedad::with(['usuario', 'archivos', 'maquinarias', 'cultivos'])->get();
         return response()->json($propiedades);
     }
 
@@ -37,8 +37,8 @@ class PropiedadController extends Controller
         $validated = $request->validate([
             'usuario_id' => 'required|exists:users,id',
             'ubicacion' => 'required|string|max:255',
-            'superficie' => 'required|numeric|min:0',
-            'malla_antigranizo' => 'boolean',
+            'direccion' => 'sometimes|string|max:255',
+            'hectareas' => 'required|numeric|min:0',
             'es_propietario' => 'boolean',
             'derecho_riego' => 'boolean',
         ]);
@@ -51,7 +51,7 @@ class PropiedadController extends Controller
      */
     public function show(string $id)
     {
-        $propiedad = Propiedad::with(['usuario', 'archivos', 'maquinarias', 'cultivos', 'tecnologiaRiegos'])->findOrFail($id);
+        $propiedad = Propiedad::with(['usuario', 'archivos', 'maquinarias', 'cultivos'])->findOrFail($id);
         return response()->json($propiedad);
     }
 
@@ -64,8 +64,8 @@ class PropiedadController extends Controller
         $validated = $request->validate([
             'usuario_id' => 'sometimes|exists:users,id',
             'ubicacion' => 'sometimes|string|max:255',
-            'superficie' => 'sometimes|numeric|min:0',
-            'malla_antigranizo' => 'sometimes|boolean',
+            'direccion' => 'sometimes|string|max:255',
+            'hectareas' => 'sometimes|numeric|min:0',
             'es_propietario' => 'sometimes|boolean',
             'derecho_riego' => 'sometimes|boolean',
         ]);
