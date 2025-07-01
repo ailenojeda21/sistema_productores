@@ -9,7 +9,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             {{-- Botón Perfil --}}
-            <a href="{{ route('archivos.index') }}" class="block px-6 py-4 bg-naranja-oscuro text-white rounded-lg text-center font-semibold shadow hover:bg-opacity-90 transition duration-300 ease-in-out">Perfil</a>
+            <a href="{{ route('profile') }}" class="block px-6 py-4 bg-naranja-oscuro text-white rounded-lg text-center font-semibold shadow hover:bg-opacity-90 transition duration-300 ease-in-out">Perfil</a>
             
             {{-- Botón Propiedades --}}
             <a href="{{ route('propiedades.index') }}" class="block px-6 py-4 bg-naranja-oscuro text-white rounded-lg text-center font-semibold shadow hover:bg-opacity-90 transition duration-300 ease-in-out">Propiedades</a>
