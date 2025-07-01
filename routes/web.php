@@ -24,7 +24,12 @@ Route::get('/dashboard', function () {
 
 
 
-Route::get('/login', function () {
+Route::get('/login', function (Request $request) {
+    if (Auth::check()) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    }
     return view('auth.login');
 })->name('login');
 
