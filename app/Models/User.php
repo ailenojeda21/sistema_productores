@@ -18,7 +18,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Propiedad::class, 'usuario_id');
     }
-
+  public function comercializacion()
+    {
+        return $this->hasMany(Comercio::class, 'usuario_id');
+    }
     /**
      * Relación: Un usuario tiene muchos archivos
      */

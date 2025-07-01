@@ -12,7 +12,7 @@ class MaquinariaController extends Controller
      */
     public function index()
     {
-        $maquinarias = Maquinaria::with(['propiedad', 'implementos'])->get();
+        $maquinarias = Maquinaria::with(['propiedad'])->get();
         return response()->json($maquinarias);
     }
 

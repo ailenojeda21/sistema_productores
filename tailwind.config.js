@@ -15,6 +15,12 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+        // Aquí defines tus colores personalizados
+        'naranja-oscuro': '#F39200',
+        'amarillo-claro': '#F5B410',
+        'azul-marino': '#223362',
+      },
         },
     },
 

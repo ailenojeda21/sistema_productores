@@ -4,7 +4,7 @@
 <div class="container mx-auto py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-purple-700">Cultivos</h1>
-        <a href="#" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 font-semibold">Nuevo Cultivo</a>
+        <a href="{{ route('cultivos.create') }}" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 font-semibold">Nuevo Cultivo</a>
     </div>
     <div class="bg-white rounded shadow p-6">
         <table class="min-w-full">
@@ -13,11 +13,29 @@
                     <th class="px-4 py-2">ID</th>
                     <th class="px-4 py-2">Nombre</th>
                     <th class="px-4 py-2">Tipo</th>
-                    <th class="px-4 py-2">Acciones</th>
+                    <th class="px-4 py-2">Estaci&oacute;n</th>
+                    <th class="px-4 py-2">Hect&aacute;reas Totales</th>
+                    <th class="px-4 py-2">Tiene malla antigranizo?</th>
+                    <th class="px-4 py-2">Hect&aacute;reas con malla antigranizo</th>
+                    <th class="px-4 py-2">T&ecaron;cnologia de riego</th>
                 </tr>
             </thead>
             <tbody>
-                {{-- Aquí irán las filas de cultivos --}}
+                 @foreach($cultivos as $cultivo)
+                <tr>
+                    <td class="px-4 py-2">{{ $cultivo->id }}</td>
+                    <td class="px-4 py-2">{{ $cultivo->nombre }}</td>
+                    <td class="px-4 py-2">{{ $cultivo->ubicacion }}</td>
+                    <td class="px-4 py-2 flex space-x-2">
+                        <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Editar</a>
+                        <form action="{{ route('propiedades.destroy', $propiedad) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta propiedad?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
             </tbody>
         </table>
     </div>

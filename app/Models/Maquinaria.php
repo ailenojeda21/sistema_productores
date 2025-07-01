@@ -17,10 +17,6 @@ class Maquinaria extends Model
     /**
      * Relación: Una maquinaria tiene muchos implementos
      */
-    public function implementos()
-    {
-        return $this->hasMany(Implemento::class, 'maquinaria_id');
-    }
-
+   
     //
 }
