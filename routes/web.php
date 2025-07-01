@@ -85,6 +85,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->middleware('auth')->name('profile');
+
+    Route::get('/profile/edit', [\App\Http\Controllers\ProfileController::class, 'editProfile'])->middleware('auth')->name('profile.edit');
+    Route::put('/profile/update', [\App\Http\Controllers\ProfileController::class, 'updateProfile'])->middleware('auth')->name('profile.update');
     
     //mostrar el index de propieades
     Route::get('/propiedades', function(){
