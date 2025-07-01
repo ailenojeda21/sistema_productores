@@ -26,6 +26,9 @@
             <div class="hidden md:flex md:items-center md:space-x-6">
                 @auth
                     <div class="flex items-center space-x-4">
+                        <a href="{{ route('profile') }}" class="text-gray-700 hover:text-green-700 font-semibold flex items-center">
+                            <span class="material-icons align-middle mr-1">person</span> Perfil
+                        </a>
                         <span class="text-gray-600">{{ Auth::user()->name }}</span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -45,7 +48,7 @@
         <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
             <div class="container mx-auto px-4 py-2">
                 @auth
-                    <a href="#" class="block py-2 text-gray-700 hover:text-green-700">
+                    <a href="{{ route('profile') }}" class="block py-2 text-gray-700 hover:text-green-700">
                         <span class="material-icons align-middle mr-2">person</span> Perfil
                     </a>
                     <a href="#" class="block py-2 text-gray-700 hover:text-green-700">

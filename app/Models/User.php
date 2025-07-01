@@ -19,9 +19,9 @@ class User extends Authenticatable
         return $this->hasMany(Propiedad::class, 'usuario_id');
     }
   public function comercializacion()
-    {
-        return $this->hasMany(Comercio::class, 'usuario_id');
-    }
+  {
+      return $this->hasMany(Comercio::class, 'usuario_id');
+  }
     /**
      * Relación: Un usuario tiene muchos archivos
      */
@@ -42,6 +42,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'es_propietario',
+        'dni',
     ];
 
     /**
