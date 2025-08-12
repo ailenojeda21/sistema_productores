@@ -15,8 +15,7 @@
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estación</th>
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hectáreas Totales</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Malla antigranizo?</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hectáreas con malla</th>
+                    <!-- Eliminado malla antigranizo -->
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tecnología de riego</th>
                     <th class="px-4 py-2"></th>
                 </tr>
@@ -29,8 +28,7 @@
                     <td class="px-4 py-2">{{ $cultivo->tipo }}</td>
                     <td class="px-4 py-2">{{ $cultivo->estacion }}</td>
                     <td class="px-4 py-2">{{ $cultivo->hectareas_totales }}</td>
-                    <td class="px-4 py-2">{{ $cultivo->tiene_malla_antigranizo ? 'Sí' : 'No' }}</td>
-                    <td class="px-4 py-2">{{ $cultivo->hectareas_malla_antigranizo }}</td>
+                    <!-- Eliminado malla antigranizo -->
                     <td class="px-4 py-2">{{ $cultivo->tecnologia_riego }}</td>
                     <td class="px-4 py-2 flex space-x-2">
                         <a href="{{ route('cultivos.edit', $cultivo) }}" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Editar</a>
