@@ -13,7 +13,7 @@ class CultivoController extends Controller
     public function index()
     {
         $cultivos = Cultivo::with(['propiedad'])->get();
-        return response()->json($cultivos);
+        return view('cultivos.index', compact('cultivos'));
     }
 
     /**
@@ -26,9 +26,11 @@ class CultivoController extends Controller
             'estacion' => 'required|string|max:255',
             'tipo' => 'required|string|max:255',
             'hectareas' => 'required|numeric|min:0',
+            'riego_tecnificado' => 'nullable',
         ]);
+        $validated['riego_tecnificado'] = $request->has('riego_tecnificado') ? 1 : 0;
         $cultivo = Cultivo::create($validated);
-        return response()->json($cultivo, 201);
+        return redirect()->route('cultivos.show', $cultivo->id)->with('success', 'Cultivo creado correctamente');
     }
 
     /**
@@ -37,7 +39,7 @@ class CultivoController extends Controller
     public function show(string $id)
     {
         $cultivo = Cultivo::with(['propiedad'])->findOrFail($id);
-        return response()->json($cultivo);
+        return view('cultivos.show', compact('cultivo'));
     }
 
     /**
@@ -51,9 +53,11 @@ class CultivoController extends Controller
             'estacion' => 'sometimes|string|max:255',
             'tipo' => 'sometimes|string|max:255',
             'hectareas' => 'sometimes|numeric|min:0',
+            'riego_tecnificado' => 'nullable',
         ]);
+        $validated['riego_tecnificado'] = $request->has('riego_tecnificado') ? 1 : 0;
         $cultivo->update($validated);
-        return response()->json($cultivo);
+        return redirect()->route('cultivos.show', $cultivo->id)->with('success', 'Cultivo actualizado correctamente');
     }
 
     /**
@@ -63,6 +67,6 @@ class CultivoController extends Controller
     {
         $cultivo = Cultivo::findOrFail($id);
         $cultivo->delete();
-        return response()->json(['message' => 'Cultivo eliminado correctamente']);
+        return redirect()->route('cultivos.index')->with('success', 'Cultivo eliminado correctamente');
     }
 }

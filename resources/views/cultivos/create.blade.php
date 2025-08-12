@@ -1,64 +1,75 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 
 
-@section('content')
-    <div class="container mx-auto py-8">
-        <div class="max-w-lg mx-auto bg-white p-8 rounded shadow">
-            <h2 class="text-2xl font-bold text-purple-700 mb-6">Nuevo Cultivo</h2>
-            <form cass=max-w-sm mx-auto method="POST" action="{{ route('cultivos.store') }}">
-                @csrf
-                <div class="field">
-                    <label>Nombre</label>
-                    <input type="text" id="nombre" placeholder="nombre">
+@section('dashboard-content')
+<div class="w-full max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow p-8">
+        <h2 class="text-2xl font-bold text-azul-marino mb-6">Nuevo Cultivo</h2>
+        <form method="POST" action="{{ route('cultivos.store') }}">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1" for="nombre">Nombre</label>
+                    <input id="nombre" name="nombre" type="text" class="w-full p-2 border border-gray-300 rounded" required>
                 </div>
-                <div class="field">
-                    <label>Tipo</label>
-                    <input type="text" name="tipo" id="tipo" placeholder="Tipo">
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1" for="tipo">Tipo</label>
+                    <select id="tipo" name="tipo" class="w-full p-2 border border-gray-300 rounded" required>
+                        <option value="">Seleccione tipo</option>
+                        <option value="Frutícola">Frutícola</option>
+                        <option value="Hortícola">Hortícola</option>
+                        <option value="Vitícola">Vitícola</option>
+                        <option value="Olivícola">Olivícola</option>
+                    </select>
                 </div>
-                <div class="field">
-                    <label for="">Estaci&oacute;n </label>
-                    <input type="text" name="estacion" id="estacion">
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1" for="estacion">Estación</label>
+                    <select id="estacion" name="estacion" class="w-full p-2 border border-gray-300 rounded" required>
+                        <option value="">Seleccione estación</option>
+                        <option value="Verano">Verano</option>
+                        <option value="Invierno">Invierno</option>
+                        <option value="Otoño">Otoño</option>
+                        <option value="Primavera">Primavera</option>
+                    </select>
                 </div>
-                <div class="field">
-                    <label>Hect&aacute;reas Totales</label>
-                    <input type="number" id="hectareas">
-
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas Totales</label>
+                    <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded">
                 </div>
-                <div class="field">
-                    <label>Tiene malla antigranizo?</label>
-                    <input type="checkbox" name="malla_antigranizo" id="malla_antigranizo">
+                <!-- Eliminado malla antigranizo -->
+                <div class="md:col-span-2">
+                    <label class="block text-gray-700 font-semibold mb-1" for="tecnologia_riego">Tecnología de riego</label>
+                    <select id="tecnologia_riego" name="tecnologia_riego[]" class="w-full p-2 border border-gray-300 rounded" multiple required>
+                        <option value="Aspersión">Aspersión</option>
+                        <option value="Goteo">Goteo</option>
+                        <option value="Turno">Turno</option>
+                    </select>
+                    <small class="text-gray-500">Mantenga presionada la tecla Ctrl (Windows) o Cmd (Mac) para seleccionar varias opciones.</small>
                 </div>
-                <div class="field">
-                    <label>Hect&aacute;reas con malla antigranizo</label>
-                    <input type="number" name="hectareas_malla" id="hectareas_malla">
-                </div>
-                <div class="field">
-                    <label>T&ecaron;cnologia de riego</label>
-                    <div class="flex flex-row gap-5">
-                        <select name="lista" id="lista" multiple class="flex-1">
-
-                        </select>
-                        <div class="flex flex-col flex-auto gap-3">
-                            <button  >>></button>
-                            <button class="border-gray-300 p-4"> -> </button>
-                            <button class="border-gray-300 p-4"> <- </button>
-                                    <button class="border-gray-300 p-4">
-                                        << 
-                                    </button>
-                        </div>
-                        <select name="disponibles" id="disponibles" multiple class="flex-1">
-                            @foreach ($lista_tecnologias as $item)
-                                <option value="{{ $item }}">{{$item}}</option>
-                            @endforeach
-                        </select>
-
-                    </div>
-
-                </div>
-                <button type="submit"
-                    class="w-full bt-3 py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded">Guardar</button>
-            </form>
-        </div>
+            </div>
+            <button type="submit" class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar</button>
+        </form>
     </div>
+</div>
+<style>
+    .custom-checkbox {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 9999px;
+        border: 2px solid #cbd5e1;
+        background: #fff;
+        appearance: none;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-shadow: 0 0 0 0 #2563eb;
+        cursor: pointer;
+    }
+    .custom-checkbox:checked {
+        background-color: #2563eb;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px #93c5fd;
+    }
+</style>
+<!-- Eliminado script malla antigranizo -->
 @endsection

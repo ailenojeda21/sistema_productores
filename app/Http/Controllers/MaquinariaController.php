@@ -12,53 +12,69 @@ class MaquinariaController extends Controller
      */
     public function index()
     {
-        $maquinarias = Maquinaria::with(['propiedad'])->get();
-        return response()->json($maquinarias);
+        $maquinarias = Maquinaria::with('propiedad')->get();
+        return view('maquinaria.index', compact('maquinarias'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
+    public function create()
+    {
+        // Puedes pasar propiedades si es necesario para un select
+        return view('maquinaria.create');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'propiedad_id' => 'required|exists:propiedades,id',
+            'nombre' => 'required|string|max:255',
             'tipo' => 'required|string|max:255',
+            'funciona' => 'nullable',
         ]);
+        $validated['funciona'] = $request->has('funciona') ? 1 : 0;
         $maquinaria = Maquinaria::create($validated);
-        return response()->json($maquinaria, 201);
+        return redirect()->route('maquinaria.show', $maquinaria->id)->with('success', 'Maquinaria creada correctamente');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        $maquinaria = Maquinaria::with(['propiedad', 'implementos'])->findOrFail($id);
-        return response()->json($maquinaria);
+        $maquinaria = Maquinaria::findOrFail($id);
+        return view('maquinaria.show', compact('maquinaria'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function edit($id)
+    {
+        $maquinaria = Maquinaria::findOrFail($id);
+        return view('maquinaria.edit', compact('maquinaria'));
+    }
+
+    public function update(Request $request, $id)
     {
         $maquinaria = Maquinaria::findOrFail($id);
         $validated = $request->validate([
-            'propiedad_id' => 'sometimes|exists:propiedades,id',
-            'tipo' => 'sometimes|string|max:255',
+            'nombre' => 'required|string|max:255',
+            'tipo' => 'required|string|max:255',
+            'funciona' => 'nullable',
         ]);
+        $validated['funciona'] = $request->has('funciona') ? 1 : 0;
         $maquinaria->update($validated);
-        return response()->json($maquinaria);
+        return redirect()->route('maquinaria.show', $maquinaria->id)->with('success', 'Maquinaria actualizada correctamente');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $maquinaria = Maquinaria::findOrFail($id);
         $maquinaria->delete();
-        return response()->json(['message' => 'Maquinaria eliminada correctamente']);
+        return redirect()->route('maquinaria.index')->with('success', 'Maquinaria eliminada correctamente');
     }
 }

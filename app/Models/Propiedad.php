@@ -8,6 +8,22 @@ class Propiedad extends Model
 {
     protected $table = "propiedades";
 
+    // Permitir asignación masiva de todos los campos de la tabla
+    protected $fillable = [
+        'usuario_id',
+        'ubicacion',
+        'direccion',
+        'hectareas',
+        'es_propietario',
+        'derecho_riego',
+        'rut',
+        'rut_valor',
+        'rut_archivo',
+        'hectareas_malla',
+        'cierre_perimetral',
+        'malla',
+    ];
+
     /**
      * Relación: Una propiedad pertenece a un usuario
      */
@@ -39,14 +55,4 @@ class Propiedad extends Model
     {
         return $this->hasMany(Cultivo::class, 'propiedad_id');
     }
-
-    /**
-     * Relación: Una propiedad tiene muchas tecnologías de riego
-     */
-    // public function tecnologiaRiegos()
-    // {
-    //     return $this->hasMany(TecnologiaRiego::class, 'propiedad_id');
-    // }
-
-    //
 }

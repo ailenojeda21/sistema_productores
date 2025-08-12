@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Comercio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ComercioController extends Controller
 {
@@ -13,62 +15,95 @@ class ComercioController extends Controller
     public function index()
     {
         $comercios = Comercio::with('usuario')->get();
-        return response()->json($comercios);
+        return view('comercios.index', compact('comercios'));
     }
 
     /**
-     * Crear un nuevo comercio.
+     * Mostrar el formulario para crear un nuevo comercio.
+     */
+    public function create()
+    {
+        return view('comercios.create');
+    }
+
+    /**
+     * Almacenar un nuevo comercio.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'usuario_id' => 'required|exists:users,id',
-            'infraestructura_empaque' => 'required|boolean',
-            'comercio_feria' => 'required|boolean',
+            'infraestructura_empaque' => 'nullable',
+            'comercio_feria' => 'nullable',
             'nombre_feria' => 'nullable|string|max:255',
         ]);
 
-        $comercio = Comercio::create($validated);
+        // Forzar booleanos
+        $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
+        $validated['comercio_feria'] = $request->has('comercio_feria') ? 1 : 0;
 
-        return response()->json($comercio, 201);
+        // Si no vende en feria, nombre_feria debe ser null
+        if (!$validated['comercio_feria']) {
+            $validated['nombre_feria'] = null;
+        }
+
+        // Asignar el usuario autenticado
+        $validated['usuario_id'] = Auth::id();
+
+        Comercio::create($validated);
+        return redirect()->route('comercios.index')->with('success', 'Comercio creado correctamente');
     }
 
     /**
      * Mostrar un comercio específico con sus relaciones.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        $comercio = Comercio::with(['usuario', 'archivos', 'maquinarias', 'cultivos'])->findOrFail($id);
-        return response()->json($comercio);
+        $comercio = Comercio::with('usuario')->findOrFail($id);
+        return view('comercios.show', compact('comercio'));
+    }
+
+    /**
+     * Mostrar el formulario para editar un comercio existente.
+     */
+    public function edit($id)
+    {
+        $comercio = Comercio::findOrFail($id);
+        return view('comercios.edit', compact('comercio'));
     }
 
     /**
      * Actualizar un comercio existente.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $comercio = Comercio::findOrFail($id);
 
         $validated = $request->validate([
-            'usuario_id' => 'sometimes|exists:users,id',
-            'infraestructura_empaque' => 'sometimes|boolean',
-            'comercio_feria' => 'sometimes|boolean',
+            'infraestructura_empaque' => 'nullable',
+            'comercio_feria' => 'nullable',
             'nombre_feria' => 'nullable|string|max:255',
         ]);
 
-        $comercio->update($validated);
+        // Forzar booleanos
+        $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
+        $validated['comercio_feria'] = $request->has('comercio_feria') ? 1 : 0;
 
-        return response()->json($comercio);
+        // Si no vende en feria, nombre_feria debe ser null
+        if (!$validated['comercio_feria']) {
+            $validated['nombre_feria'] = null;
+        }
+
+        $comercio->update($validated);
+        return redirect()->route('comercios.index')->with('success', 'Comercio actualizado correctamente');
     }
 
     /**
      * Eliminar un comercio.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $comercio = Comercio::findOrFail($id);
         $comercio->delete();
-
-        return response()->json(['message' => 'Comercialización eliminada correctamente']);
+        return redirect()->route('comercios.index')->with('success', 'Comercio eliminado correctamente');
     }
 }

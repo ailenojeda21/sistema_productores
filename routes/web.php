@@ -13,17 +13,17 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
-
+// Página de inicio
 Route::get('/', function () {
     return view('home');
 });
 
+// Dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-
-
+// Login
 Route::get('/login', function (Request $request) {
     if (Auth::check()) {
         Auth::logout();
@@ -49,6 +49,7 @@ Route::post('/login', function (Request $request) {
     ])->withInput();
 });
 
+// Logout
 Route::post('/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
@@ -56,6 +57,7 @@ Route::post('/logout', function (Request $request) {
     return redirect('/login');
 })->name('logout');
 
+// Registro
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
@@ -78,86 +80,47 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
     return redirect('/dashboard');
 });
 
+// Rutas protegidas
 Route::middleware('auth')->group(function () {
+
+    // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.edit');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->middleware('auth')->name('profile');
+    Route::get('/profile', [ProfileController::class, 'show'])->middleware('auth')->name('profile');
+    Route::get('/profile/edit', [ProfileController::class, 'editProfile'])->middleware('auth')->name('profile.edit');
+    Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->middleware('auth')->name('profile.update');
 
-    Route::get('/profile/edit', [\App\Http\Controllers\ProfileController::class, 'editProfile'])->middleware('auth')->name('profile.edit');
-    Route::put('/profile/update', [\App\Http\Controllers\ProfileController::class, 'updateProfile'])->middleware('auth')->name('profile.update');
-    
-    //mostrar el index de propieades
-    Route::get('/propiedades', function(){
-        return view('propiedades.index', ['propiedades'=>Propiedad::all()] );
-    })->name('propiedades.index');
-
-    //mostrar el formulario de la nueva propiead
-    Route::get('/propiedades/create', function(){
-        return view('propiedades.create' );
-    })->name('propiedades.create');
-
-    Route::post('/propiedades/store', function(Request $request){
-        
-        $validated = $request->validate([
-
-            'direccion'=>'required|string|max:100',
-            'ubicacion'=>'string',
-            'es_propietario'=>'boolean',
-            'hectareas'=>'float',
-            'derecho_riego'=>'boolean'
-        ]);
-
-            dd($request);
-
-        $np = Propiedad::create([
-
-            'usuario_id'=>1,
-            'direccion'=>$validated['direccion'],
-            'ubicacion'=>$validated['ubicacion'],
-            'es_propietario'=>$validated['es_propietario'],
-            'hectareas'=>$validated['hectareas'],
-            'derecho_riego'=>$validated['derecho_riego'],
-        ]);
-
-        dd($np);
-
-        return redirect()->route('propiedades.index')->with('success','Propiedad creada');
-
-    })->name('propiedades.store');
-
-
+    // Archivos
     Route::get('/archivos', function () {
         return view('archivos.index');
     })->name('archivos.index');
 
-    Route::get('/maquinaria', function () {
-        return view('maquinaria.index');
-    })->name('maquinaria.index');
+    // Maquinaria (todas las rutas CRUD)
+    Route::resource('maquinaria', \App\Http\Controllers\MaquinariaController::class);
 
+    // Propiedades (todas las rutas CRUD con nombres correctos)
+    Route::resource('propiedades', PropiedadController::class);
 
-  //mostrar el index de cultivos
-    Route::get('/cultivos', function(){
-        return view('cultivos.index', ['cultivos'=>Cultivo::all()] );
+    // Cultivos
+    Route::get('/cultivos', function () {
+        return view('cultivos.index', ['cultivos' => Cultivo::all()]);
     })->name('cultivos.index');
 
-    Route::get('/cultivos/create', function(){
-
-        $lista_tecnologias = ["Aspersion","Tradicional"];
-
-
-        return view('cultivos.create', ['lista_tecnologias' => $lista_tecnologias] );
+    Route::get('/cultivos/create', function () {
+        $lista_tecnologias = ["Aspersion", "Tradicional"];
+        return view('cultivos.create', ['lista_tecnologias' => $lista_tecnologias]);
     })->name('cultivos.create');
 
-    Route::post('/cultivos/store', function(Request $request){
-
-
-
+    Route::post('/cultivos/store', function (Request $request) {
+        // lógica para guardar cultivo
     })->name('cultivos.store');
 
+    // Comercios (todas las rutas CRUD)
+    Route::resource('comercios', \App\Http\Controllers\ComercioController::class);
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

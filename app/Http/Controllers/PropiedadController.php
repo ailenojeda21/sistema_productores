@@ -8,9 +8,15 @@ use Illuminate\Http\Request;
 class PropiedadController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Show the form for creating a new resource.
      */
+    public function create()
+    {
+        return view('propiedades.create');
+    }
+
     /**
+     * Display a listing of the resource.
      * @OA\Get(
      *     path="/api/propiedades",
      *     summary="Listar propiedades",
@@ -26,7 +32,7 @@ class PropiedadController extends Controller
     {
         // Listar todas las propiedades con relaciones
         $propiedades = Propiedad::with(['usuario', 'archivos', 'maquinarias', 'cultivos'])->get();
-        return response()->json($propiedades);
+        return view('propiedades.index', compact('propiedades'));
     }
 
     /**
@@ -39,11 +45,22 @@ class PropiedadController extends Controller
             'ubicacion' => 'required|string|max:255',
             'direccion' => 'sometimes|string|max:255',
             'hectareas' => 'required|numeric|min:0',
-            'es_propietario' => 'boolean',
-            'derecho_riego' => 'boolean',
+            'es_propietario' => 'nullable',
+            'malla' => 'nullable',
+            'derecho_riego' => 'nullable',
+            'rut' => 'nullable',
+            'rut_valor' => 'nullable|numeric',
+            'rut_archivo' => 'nullable|string|max:255',
+            'hectareas_malla' => 'nullable|numeric',
+            'cierre_perimetral' => 'nullable',
         ]);
+        $validated['es_propietario'] = $request->has('es_propietario') ? 1 : 0;
+        $validated['malla'] = $request->has('malla') ? 1 : 0;
+        $validated['derecho_riego'] = $request->has('derecho_riego') ? 1 : 0;
+        $validated['rut'] = $request->has('rut') ? 1 : 0;
+        $validated['cierre_perimetral'] = $request->has('cierre_perimetral') ? 1 : 0;
         $propiedad = Propiedad::create($validated);
-        return response()->json($propiedad, 201);
+        return redirect()->route('propiedades.show', $propiedad->id)->with('success', 'Propiedad creada correctamente');
     }
 
     /**
@@ -52,7 +69,7 @@ class PropiedadController extends Controller
     public function show(string $id)
     {
         $propiedad = Propiedad::with(['usuario', 'archivos', 'maquinarias', 'cultivos'])->findOrFail($id);
-        return response()->json($propiedad);
+        return view('propiedades.show', compact('propiedad'));
     }
 
     /**
@@ -66,11 +83,22 @@ class PropiedadController extends Controller
             'ubicacion' => 'sometimes|string|max:255',
             'direccion' => 'sometimes|string|max:255',
             'hectareas' => 'sometimes|numeric|min:0',
-            'es_propietario' => 'sometimes|boolean',
-            'derecho_riego' => 'sometimes|boolean',
+            'es_propietario' => 'nullable',
+            'malla' => 'nullable',
+            'derecho_riego' => 'nullable',
+            'rut' => 'nullable',
+            'rut_valor' => 'nullable|numeric',
+            'rut_archivo' => 'nullable|string|max:255',
+            'hectareas_malla' => 'nullable|numeric',
+            'cierre_perimetral' => 'nullable',
         ]);
+        $validated['es_propietario'] = $request->has('es_propietario') ? 1 : 0;
+        $validated['malla'] = $request->has('malla') ? 1 : 0;
+        $validated['derecho_riego'] = $request->has('derecho_riego') ? 1 : 0;
+        $validated['rut'] = $request->has('rut') ? 1 : 0;
+        $validated['cierre_perimetral'] = $request->has('cierre_perimetral') ? 1 : 0;
         $propiedad->update($validated);
-        return response()->json($propiedad);
+        return redirect()->route('propiedades.show', $propiedad->id)->with('success', 'Propiedad actualizada correctamente');
     }
 
     /**
@@ -80,6 +108,6 @@ class PropiedadController extends Controller
     {
         $propiedad = Propiedad::findOrFail($id);
         $propiedad->delete();
-        return response()->json(['message' => 'Propiedad eliminada correctamente']);
+        return redirect()->route('propiedades.index')->with('success', 'Propiedad eliminada correctamente');
     }
 }

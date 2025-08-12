@@ -28,7 +28,8 @@
                 </tr>
             </tbody>
         </table>
-        <a href="{{ route('profile.edit') }}" class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Editar perfil</a>
+<a href="{{ route('profile.edit') }}" class="inline-block mt-4 px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Editar perfil</a>
+
     </div>
 </div>
 @endsection
