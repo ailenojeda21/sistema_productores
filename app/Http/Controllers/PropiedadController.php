@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Propiedad;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PropiedadController extends Controller
 {
     /**
-     * Show the form for creating a new resource.
+     * Mostrar formulario de creación
      */
     public function create()
     {
@@ -16,32 +17,20 @@ class PropiedadController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     * @OA\Get(
-     *     path="/api/propiedades",
-     *     summary="Listar propiedades",
-     *     tags={"Propiedades"},
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Listado de propiedades"
-     *     )
-     * )
+     * Listar propiedades
      */
     public function index()
     {
-        // Listar todas las propiedades con relaciones
-        $propiedades = Propiedad::with(['usuario', 'archivos', 'maquinarias', 'cultivos'])->get();
+        $propiedades = Propiedad::with(['usuario', 'maquinarias', 'cultivos'])->get();
         return view('propiedades.index', compact('propiedades'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guardar nueva propiedad
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'usuario_id' => 'required|exists:users,id',
             'ubicacion' => 'required|string|max:255',
             'direccion' => 'sometimes|string|max:255',
             'hectareas' => 'required|numeric|min:0',
@@ -54,30 +43,36 @@ class PropiedadController extends Controller
             'hectareas_malla' => 'nullable|numeric',
             'cierre_perimetral' => 'nullable',
         ]);
+
         $validated['es_propietario'] = $request->has('es_propietario') ? 1 : 0;
         $validated['malla'] = $request->has('malla') ? 1 : 0;
         $validated['derecho_riego'] = $request->has('derecho_riego') ? 1 : 0;
         $validated['rut'] = $request->has('rut') ? 1 : 0;
         $validated['cierre_perimetral'] = $request->has('cierre_perimetral') ? 1 : 0;
-        $propiedad = Propiedad::create($validated);
-        return redirect()->route('propiedades.show', $propiedad->id)->with('success', 'Propiedad creada correctamente');
+        $validated['usuario_id'] = Auth::id();
+
+        Propiedad::create($validated);
+
+        return redirect()->route('propiedades.index')
+                         ->with('success', 'Propiedad creada correctamente');
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar formulario de edición
      */
-    public function show(string $id)
+    public function edit(string $id)
     {
-        $propiedad = Propiedad::with(['usuario', 'archivos', 'maquinarias', 'cultivos'])->findOrFail($id);
-        return view('propiedades.show', compact('propiedad'));
+        $propiedad = Propiedad::findOrFail($id);
+        return view('propiedades.edit', compact('propiedad'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar propiedad
      */
     public function update(Request $request, string $id)
     {
         $propiedad = Propiedad::findOrFail($id);
+
         $validated = $request->validate([
             'usuario_id' => 'sometimes|exists:users,id',
             'ubicacion' => 'sometimes|string|max:255',
@@ -92,22 +87,28 @@ class PropiedadController extends Controller
             'hectareas_malla' => 'nullable|numeric',
             'cierre_perimetral' => 'nullable',
         ]);
+
         $validated['es_propietario'] = $request->has('es_propietario') ? 1 : 0;
         $validated['malla'] = $request->has('malla') ? 1 : 0;
         $validated['derecho_riego'] = $request->has('derecho_riego') ? 1 : 0;
         $validated['rut'] = $request->has('rut') ? 1 : 0;
         $validated['cierre_perimetral'] = $request->has('cierre_perimetral') ? 1 : 0;
+
         $propiedad->update($validated);
-        return redirect()->route('propiedades.show', $propiedad->id)->with('success', 'Propiedad actualizada correctamente');
+
+        return redirect()->route('propiedades.index')
+                         ->with('success', 'Propiedad actualizada correctamente');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar propiedad
      */
     public function destroy(string $id)
     {
         $propiedad = Propiedad::findOrFail($id);
         $propiedad->delete();
-        return redirect()->route('propiedades.index')->with('success', 'Propiedad eliminada correctamente');
+
+        return redirect()->route('propiedades.index')
+                         ->with('success', 'Propiedad eliminada correctamente');
     }
 }

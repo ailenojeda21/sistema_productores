@@ -10,6 +10,7 @@ class Comercio extends Model
         'usuario_id',
         'infraestructura_empaque',
         'comercio_feria',
+        'vende_en_finca',
         'nombre_feria',
     ];
 

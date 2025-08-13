@@ -8,6 +8,10 @@
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="flex items-center mt-6">
+                    <input type="checkbox" name="vende_en_finca" id="vende_en_finca" class="mr-2 rounded-full custom-checkbox">
+                    <label for="vende_en_finca">¿Vende en finca?</label>
+                </div>
+                <div class="flex items-center mt-6">
                     <input type="checkbox" name="infraestructura_empaque" id="infraestructura_empaque" class="mr-2 rounded-full custom-checkbox">
                     <label for="infraestructura_empaque">¿Tiene infraestructura de empaque?</label>
                 </div>

@@ -24,8 +24,6 @@ return new class extends Migration
             $table->decimal('rut_valor', 8, 2)->nullable();
             $table->string('rut_archivo')->nullable();
             $table->decimal('hectareas_malla', 8, 2)->nullable();
-            $table->string('tecnologia_riego')->nullable();
-            $table->string('condicion_acceso')->nullable();
             $table->boolean('cierre_perimetral')->default(false);
             $table->timestamps();
             $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');

@@ -21,3 +21,36 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+# ===========================
+# Archivos pesados o binarios
+# ===========================
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.bak
+*.tmp
+*.swp
+*.swo
+*.old
+*.orig
+
+# Imágenes y multimedia grandes
+*.psd
+*.ai
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.mp3
+*.wav
+
+# Otros binarios
+*.exe
+*.dll
+*.so
+*.bin
+*.dat
+*.class
+*.jar
