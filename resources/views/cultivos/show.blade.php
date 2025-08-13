@@ -8,6 +8,9 @@
             <strong>Propiedad:</strong> {{ $cultivo->propiedad_id }}
         </div>
         <div class="mb-4">
+            <strong>Manejo de Cultivos:</strong> {{ $cultivo->manejo_cultivo }}
+        </div>
+        <div class="mb-4">
             <strong>Estación:</strong> {{ $cultivo->estacion }}
         </div>
         <div class="mb-4">

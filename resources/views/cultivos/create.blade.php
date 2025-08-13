@@ -23,6 +23,15 @@
                         <option value="Olivícola">Olivícola</option>
                     </select>
                 </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-1" for="manejo_cultivo">Manejo de Cultivos</label>
+                        <select id="manejo_cultivo" name="manejo_cultivo" class="w-full p-2 border border-gray-300 rounded" required>
+                            <option value="">Seleccione manejo</option>
+                            <option value="Convencional">Convencional</option>
+                            <option value="Agroecologico">Agroecológico</option>
+                            <option value="Organico">Orgánico</option>
+                        </select>
+                    </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="estacion">Estación</label>
                     <select id="estacion" name="estacion" class="w-full p-2 border border-gray-300 rounded" required>

@@ -14,6 +14,7 @@
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Infraestructura Empaque</th>
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comercio Feria</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vende en finca</th>
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre Feria</th>
                     <th class="px-4 py-2"></th>
                 </tr>
@@ -25,6 +26,7 @@
                     <td class="px-4 py-2">{{ $comercio->usuario_id }}</td>
                     <td class="px-4 py-2">{{ $comercio->infraestructura_empaque ? 'Sí' : 'No' }}</td>
                     <td class="px-4 py-2">{{ $comercio->comercio_feria ? 'Sí' : 'No' }}</td>
+                    <td class="px-4 py-2">{{ $comercio->vende_en_finca ? 'Sí' : 'No' }}</td>
                     <td class="px-4 py-2">{{ $comercio->nombre_feria }}</td>
                     <td class="px-4 py-2 flex space-x-2">
                         <a href="{{ route('comercios.edit', $comercio) }}" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Editar</a>

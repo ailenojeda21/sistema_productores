@@ -8,16 +8,24 @@ use App\Models\Cultivo;
 class CultivoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listado de cultivos.
      */
     public function index()
     {
-        $cultivos = Cultivo::with(['propiedad'])->get();
+        $cultivos = Cultivo::with('propiedad')->get();
         return view('cultivos.index', compact('cultivos'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Mostrar formulario de creación.
+     */
+    public function create()
+    {
+        return view('cultivos.create');
+    }
+
+    /**
+     * Guardar un cultivo nuevo.
      */
     public function store(Request $request)
     {
@@ -26,47 +34,54 @@ class CultivoController extends Controller
             'estacion' => 'required|string|max:255',
             'tipo' => 'required|string|max:255',
             'hectareas' => 'required|numeric|min:0',
-            'riego_tecnificado' => 'nullable',
+            'manejo_cultivo' => 'required|in:Convencional,Agroecologico,Organico',
         ]);
-        $validated['riego_tecnificado'] = $request->has('riego_tecnificado') ? 1 : 0;
-        $cultivo = Cultivo::create($validated);
-        return redirect()->route('cultivos.show', $cultivo->id)->with('success', 'Cultivo creado correctamente');
+
+        Cultivo::create($validated);
+
+        return redirect()->route('cultivos.index')
+            ->with('success', 'Cultivo creado correctamente');
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar formulario de edición.
      */
-    public function show(string $id)
+    public function edit(string $id)
     {
-        $cultivo = Cultivo::with(['propiedad'])->findOrFail($id);
-        return view('cultivos.show', compact('cultivo'));
+        $cultivo = Cultivo::findOrFail($id);
+        return view('cultivos.edit', compact('cultivo'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar un cultivo.
      */
     public function update(Request $request, string $id)
     {
         $cultivo = Cultivo::findOrFail($id);
+
         $validated = $request->validate([
             'propiedad_id' => 'sometimes|exists:propiedades,id',
             'estacion' => 'sometimes|string|max:255',
             'tipo' => 'sometimes|string|max:255',
             'hectareas' => 'sometimes|numeric|min:0',
-            'riego_tecnificado' => 'nullable',
+            'manejo_cultivo' => 'sometimes|in:Convencional,Agroecologico,Organico',
         ]);
-        $validated['riego_tecnificado'] = $request->has('riego_tecnificado') ? 1 : 0;
+
         $cultivo->update($validated);
-        return redirect()->route('cultivos.show', $cultivo->id)->with('success', 'Cultivo actualizado correctamente');
+
+        return redirect()->route('cultivos.index')
+            ->with('success', 'Cultivo actualizado correctamente');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar un cultivo.
      */
     public function destroy(string $id)
     {
         $cultivo = Cultivo::findOrFail($id);
         $cultivo->delete();
-        return redirect()->route('cultivos.index')->with('success', 'Cultivo eliminado correctamente');
+
+        return redirect()->route('cultivos.index')
+            ->with('success', 'Cultivo eliminado correctamente');
     }
 }

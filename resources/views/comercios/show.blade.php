@@ -14,6 +14,9 @@
             <strong>Infraestructura de Empaque:</strong> {{ $comercio->infraestructura_empaque ? 'Sí' : 'No' }}
         </div>
         <div class="mb-4">
+            <strong>¿Vende en finca?:</strong> {{ $comercio->vende_en_finca ? 'Sí' : 'No' }}
+        </div>
+        <div class="mb-4">
             <strong>¿Vende en feria?:</strong> {{ $comercio->comercio_feria ? 'Sí' : 'No' }}
         </div>
         @if($comercio->comercio_feria)

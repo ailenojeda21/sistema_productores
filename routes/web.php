@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\CultivoController;
+use App\Http\Controllers\MaquinariaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropiedadController;
+use App\Http\Controllers\ComercioController;
 use App\Models\Propiedad;
 use App\Models\Cultivo;
 use Illuminate\Foundation\Application;
@@ -62,7 +64,7 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
-Route::post('/register', function (Illuminate\Http\Request $request) {
+Route::post('/register', function (Request $request) {
     $data = $request->validate([
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -82,45 +84,25 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
 
 // Rutas protegidas
 Route::middleware('auth')->group(function () {
-
     // Perfil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.edit');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/profile', [ProfileController::class, 'show'])->middleware('auth')->name('profile');
-    Route::get('/profile/edit', [ProfileController::class, 'editProfile'])->middleware('auth')->name('profile.edit');
-    Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->middleware('auth')->name('profile.update');
+    // Cultivos
+    Route::resource('cultivos', CultivoController::class);
 
-    // Archivos
-    Route::get('/archivos', function () {
-        return view('archivos.index');
-    })->name('archivos.index');
-
-    // Maquinaria (todas las rutas CRUD)
-    Route::resource('maquinaria', \App\Http\Controllers\MaquinariaController::class);
-
-    // Propiedades (todas las rutas CRUD con nombres correctos)
+    // Propiedades (todas las rutas CRUD)
     Route::resource('propiedades', PropiedadController::class);
 
-    // Cultivos
-    Route::get('/cultivos', function () {
-        return view('cultivos.index', ['cultivos' => Cultivo::all()]);
-    })->name('cultivos.index');
-
-    Route::get('/cultivos/create', function () {
-        $lista_tecnologias = ["Aspersion", "Tradicional"];
-        return view('cultivos.create', ['lista_tecnologias' => $lista_tecnologias]);
-    })->name('cultivos.create');
-
-    Route::post('/cultivos/store', function (Request $request) {
-        // lógica para guardar cultivo
-    })->name('cultivos.store');
-
     // Comercios (todas las rutas CRUD)
-    Route::resource('comercios', \App\Http\Controllers\ComercioController::class);
+    Route::resource('comercios', ComercioController::class);
+
+     // Maquinaria (todas las rutas CRUD)
+   
+    Route::resource('maquinaria', MaquinariaController::class);
+
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

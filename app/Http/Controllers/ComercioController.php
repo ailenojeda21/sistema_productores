@@ -40,6 +40,7 @@ class ComercioController extends Controller
         // Forzar booleanos
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
         $validated['comercio_feria'] = $request->has('comercio_feria') ? 1 : 0;
+        $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
 
         // Si no vende en feria, nombre_feria debe ser null
         if (!$validated['comercio_feria']) {
@@ -87,6 +88,7 @@ class ComercioController extends Controller
         // Forzar booleanos
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
         $validated['comercio_feria'] = $request->has('comercio_feria') ? 1 : 0;
+        $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
 
         // Si no vende en feria, nombre_feria debe ser null
         if (!$validated['comercio_feria']) {

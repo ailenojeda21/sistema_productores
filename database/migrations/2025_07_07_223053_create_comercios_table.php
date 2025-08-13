@@ -15,9 +15,10 @@ return new class extends Migration
         $table->id(); // ID (clave primaria)
         $table->unsignedBigInteger('usuario_id'); // Usuario_ID (clave foránea)
 
-        $table->boolean('infraestructura_empaque')->default(false);
-        $table->boolean('comercio_feria')->default(false);
-        $table->string('nombre_feria')->nullable();
+    $table->boolean('infraestructura_empaque')->default(false);
+    $table->boolean('comercio_feria')->default(false);
+    $table->boolean('vende_en_finca')->default(false);
+    $table->string('nombre_feria')->nullable();
 
         $table->timestamps();
 

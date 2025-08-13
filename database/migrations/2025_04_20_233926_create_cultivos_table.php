@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('estacion');
             $table->string('tipo');
             $table->decimal('hectareas', 8, 2);
+            $table->enum('manejo_cultivo', ['Convencional', 'Agroecologico', 'Organico'])->default('Convencional');
             $table->timestamps();
 
             $table->foreign('propiedad_id')->references('id')->on('propiedades')->onDelete('cascade');

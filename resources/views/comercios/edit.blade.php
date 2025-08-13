@@ -10,6 +10,14 @@
             @method('PUT')
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-center mt-6">
+                    <input type="checkbox"
+                           name="vende_en_finca"
+                           id="vende_en_finca"
+                           class="mr-2 custom-checkbox"
+                           {{ old('vende_en_finca', $comercio->vende_en_finca) ? 'checked' : '' }}>
+                    <label for="vende_en_finca">¿Vende en finca?</label>
+                </div>
                 <!-- Checkbox infraestructura -->
                 <div class="flex items-center mt-6">
                     <input type="checkbox"
