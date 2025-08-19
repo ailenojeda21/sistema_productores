@@ -17,10 +17,10 @@
             <strong>Tipo:</strong> {{ $cultivo->tipo }}
         </div>
         <div class="mb-4">
-            <strong>Hectáreas:</strong> {{ $cultivo->hectareas }}
+            <strong>Hectáreas:</strong> {{ number_format($cultivo->hectareas, 0, '', '') }}
         </div>
         <div class="mb-4">
-            <strong>Riego tecnificado:</strong> {{ $cultivo->riego_tecnificado ? 'Sí' : 'No' }}
+            <strong>Tecnología de riego:</strong> {{ $cultivo->tecnologia_riego ?? '-' }}
         </div>
         <a href="{{ route('cultivos.index') }}" class="px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro font-semibold shadow">Volver</a>
     </div>

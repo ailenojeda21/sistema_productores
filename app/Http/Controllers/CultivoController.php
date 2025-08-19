@@ -21,7 +21,8 @@ class CultivoController extends Controller
      */
     public function create()
     {
-        return view('cultivos.create');
+    $propiedades = \App\Models\Propiedad::all();
+    return view('cultivos.create', compact('propiedades'));
     }
 
     /**
@@ -31,10 +32,12 @@ class CultivoController extends Controller
     {
         $validated = $request->validate([
             'propiedad_id' => 'required|exists:propiedades,id',
+            'nombre' => 'required|string|max:255',
             'estacion' => 'required|string|max:255',
             'tipo' => 'required|string|max:255',
             'hectareas' => 'required|numeric|min:0',
             'manejo_cultivo' => 'required|in:Convencional,Agroecologico,Organico',
+            'tecnologia_riego' => 'required|in:Surco,Inundación,Cimalco,Manga,Goteo,Aspersión',
         ]);
 
         Cultivo::create($validated);
@@ -61,10 +64,12 @@ class CultivoController extends Controller
 
         $validated = $request->validate([
             'propiedad_id' => 'sometimes|exists:propiedades,id',
+            'nombre' => 'sometimes|string|max:255',
             'estacion' => 'sometimes|string|max:255',
             'tipo' => 'sometimes|string|max:255',
             'hectareas' => 'sometimes|numeric|min:0',
             'manejo_cultivo' => 'sometimes|in:Convencional,Agroecologico,Organico',
+            'tecnologia_riego' => 'sometimes|in:Surco,Inundación,Cimalco,Manga,Goteo,Aspersión',
         ]);
 
         $cultivo->update($validated);

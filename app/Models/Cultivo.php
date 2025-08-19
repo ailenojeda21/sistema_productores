@@ -8,10 +8,12 @@ class Cultivo extends Model
 {
     protected $fillable = [
         'propiedad_id',
+        'nombre',
         'estacion',
         'tipo',
         'hectareas',
         'manejo_cultivo',
+        'tecnologia_riego',
     ];
 
     /**
