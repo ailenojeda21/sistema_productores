@@ -14,7 +14,9 @@ class ComercioController extends Controller
      */
     public function index()
     {
-        $comercios = Comercio::with('usuario')->get();
+        $comercios = Comercio::with('usuario')
+            ->where('usuario_id', Auth::id())
+            ->get();
         return view('comercios.index', compact('comercios'));
     }
 

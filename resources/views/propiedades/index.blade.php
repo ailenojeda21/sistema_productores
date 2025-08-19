@@ -16,7 +16,7 @@
     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hectáreas</th>
     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Es propietario?</th>
     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiene derecho de riego?</th>
-            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo derecho de riego</th>
+    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo derecho de riego</th>
     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RUT</th>
     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nº RUT</th>
     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adjunto RUT</th>
