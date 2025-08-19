@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('es_propietario')->default(false);
             $table->boolean('malla')->default(false);
             $table->boolean('derecho_riego')->default(false);
+            $table->string('tipo_derecho_riego')->nullable();
             $table->boolean('rut')->default(false);
             $table->decimal('rut_valor', 8, 2)->nullable();
             $table->string('rut_archivo')->nullable();

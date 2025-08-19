@@ -44,17 +44,29 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas Totales</label>
-                    <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded">
+                    <input id="hectareas" name="hectareas" type="number" step="1" class="w-full p-2 border border-gray-300 rounded">
                 </div>
                 <!-- Eliminado malla antigranizo -->
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 font-semibold mb-1" for="tecnologia_riego">Tecnología de riego</label>
-                    <select id="tecnologia_riego" name="tecnologia_riego[]" class="w-full p-2 border border-gray-300 rounded" multiple required>
-                        <option value="Aspersión">Aspersión</option>
+                    <select id="tecnologia_riego" name="tecnologia_riego" class="w-full p-2 border border-gray-300 rounded" required>
+                        <option value="">Seleccione tecnología</option>
+                        <option value="Surco">Por Surco</option>
+                        <option value="Inundación">Por Inundación</option>
+                        <option value="Cimalco">Cimalco</option>
+                        <option value="Manga">Manga</option>
                         <option value="Goteo">Goteo</option>
-                        <option value="Turno">Turno</option>
+                        <option value="Aspersión">Aspersión</option>
                     </select>
-                    <small class="text-gray-500">Mantenga presionada la tecla Ctrl (Windows) o Cmd (Mac) para seleccionar varias opciones.</small>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1" for="propiedad_id">Propiedad</label>
+                    <select id="propiedad_id" name="propiedad_id" class="w-full p-2 border border-gray-300 rounded" required>
+                        <option value="">Seleccione propiedad</option>
+                        @foreach($propiedades as $propiedad)
+                            <option value="{{ $propiedad->id }}">{{ $propiedad->direccion }} (ID: {{ $propiedad->id }})</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <button type="submit" class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar</button>

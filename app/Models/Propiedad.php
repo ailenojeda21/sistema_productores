@@ -17,6 +17,7 @@ class Propiedad extends Model
         'hectareas',
         'es_propietario',
         'derecho_riego',
+        'tipo_derecho_riego',
         'rut',
         'rut_valor',
         'rut_archivo',
