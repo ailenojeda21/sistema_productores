@@ -12,7 +12,11 @@ class MaquinariaController extends Controller
      */
     public function index()
     {
-        $maquinarias = Maquinaria::with('propiedad')->get();
+        $maquinarias = Maquinaria::with('propiedad')
+            ->whereHas('propiedad', function($query) {
+                $query->where('usuario_id', auth()->id());
+            })
+            ->get();
         return view('maquinaria.index', compact('maquinarias'));
     }
 

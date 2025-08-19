@@ -5,12 +5,8 @@ use App\Http\Controllers\MaquinariaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropiedadController;
 use App\Http\Controllers\ComercioController;
-use App\Models\Propiedad;
-use App\Models\Cultivo;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Models\User;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -26,12 +22,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Login
-Route::get('/login', function (Request $request) {
-    if (Auth::check()) {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-    }
+Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
@@ -93,16 +84,14 @@ Route::middleware('auth')->group(function () {
     // Cultivos
     Route::resource('cultivos', CultivoController::class);
 
-    // Propiedades (todas las rutas CRUD)
+    // Propiedades
     Route::resource('propiedades', PropiedadController::class);
 
-    // Comercios (todas las rutas CRUD)
+    // Comercios
     Route::resource('comercios', ComercioController::class);
 
-     // Maquinaria (todas las rutas CRUD)
-   
+    // Maquinaria
     Route::resource('maquinaria', MaquinariaController::class);
-
 });
 
 require __DIR__.'/auth.php';

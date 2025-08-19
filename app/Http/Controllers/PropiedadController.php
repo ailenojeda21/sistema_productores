@@ -21,7 +21,9 @@ class PropiedadController extends Controller
      */
     public function index()
     {
-        $propiedades = Propiedad::with(['usuario', 'maquinarias', 'cultivos'])->get();
+        $propiedades = Propiedad::with(['usuario', 'maquinarias', 'cultivos'])
+            ->where('usuario_id', Auth::id())
+            ->get();
         return view('propiedades.index', compact('propiedades'));
     }
 

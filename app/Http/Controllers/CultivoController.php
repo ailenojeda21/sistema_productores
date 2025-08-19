@@ -12,7 +12,11 @@ class CultivoController extends Controller
      */
     public function index()
     {
-        $cultivos = Cultivo::with('propiedad')->get();
+        $cultivos = Cultivo::with('propiedad')
+            ->whereHas('propiedad', function($query) {
+                $query->where('usuario_id', auth()->id());
+            })
+            ->get();
         return view('cultivos.index', compact('cultivos'));
     }
 
@@ -21,7 +25,7 @@ class CultivoController extends Controller
      */
     public function create()
     {
-    $propiedades = \App\Models\Propiedad::all();
+    $propiedades = \App\Models\Propiedad::where('usuario_id', auth()->id())->get();
     return view('cultivos.create', compact('propiedades'));
     }
 
