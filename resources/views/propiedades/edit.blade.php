@@ -21,7 +21,7 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
-                <input id="hectareas" name="hectareas" type="number" step="1" class="w-full p-2 border border-gray-300 rounded" value="{{ old('hectareas', isset($propiedad) ? $propiedad->hectareas : '') }}">
+                <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" value="{{ old('hectareas', isset($propiedad) ? $propiedad->hectareas : '') }}">
             </div>
             <div class="mb-4 flex items-center">
                 <input type="checkbox" name="es_propietario" id="es_propietario" class="mr-2  custom-checkbox" {{ old('es_propietario', $propiedad->es_propietario) ? 'checked' : '' }}>
@@ -36,9 +36,9 @@
                 <select name="tipo_derecho_riego" id="tipo_derecho_riego" class="w-full p-2 border border-gray-300 rounded">
                     
                     <option value="">Seleccione...</option>
-                    <option value="subterráneo" {{ old('tipo_derecho_riego', $propiedad->tipo_derecho_riego) == 'subterráneo' ? 'selected' : '' }}>Subterráneo</option>
-                    <option value="superficial" {{ old('tipo_derecho_riego', $propiedad->tipo_derecho_riego) == 'superficial' ? 'selected' : '' }}>Superficial</option>
-                    <option value="ambos" {{ old('tipo_derecho_riego', $propiedad->tipo_derecho_riego) == 'ambos' ? 'selected' : '' }}>Ambos</option>
+                    <option value="Subterráneo" {{ old('tipo_derecho_riego', $propiedad->tipo_derecho_riego) == 'subterráneo' ? 'selected' : '' }}>Subterráneo</option>
+                    <option value="Superficial" {{ old('tipo_derecho_riego', $propiedad->tipo_derecho_riego) == 'superficial' ? 'selected' : '' }}>Superficial</option>
+                    <option value="Ambos" {{ old('tipo_derecho_riego', $propiedad->tipo_derecho_riego) == 'ambos' ? 'selected' : '' }}>Ambos</option>
                 </select>
             </div>
             <script>
@@ -67,7 +67,7 @@
             <div id="mallaFields" style="display:none;">
                 <div class="mb-4">
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas_malla">Hectáreas con malla</label>
-                    <input id="hectareas_malla" name="hectareas_malla" type="number" step="1" class="w-full p-2 border border-gray-300 rounded" value="{{ old('hectareas_malla', isset($propiedad) ? $propiedad->hectareas_malla : '') }}">
+                    <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" value="{{ old('hectareas_malla', isset($propiedad) ? $propiedad->hectareas_malla : '') }}">
                 </div>
             </div>
             <script>

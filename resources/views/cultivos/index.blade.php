@@ -10,7 +10,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estación</th>
@@ -23,11 +23,11 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @foreach($cultivos as $cultivo)
                 <tr>
-                    <td class="px-4 py-2">{{ $cultivo->id }}</td>
+                 
                     <td class="px-4 py-2">{{ $cultivo->nombre }}</td>
                     <td class="px-4 py-2">{{ $cultivo->tipo }}</td>
                     <td class="px-4 py-2">{{ $cultivo->estacion }}</td>
-                    <td class="px-4 py-2">{{ number_format($cultivo->hectareas, 0, '', '') }}</td>
+                    <td class="px-4 py-2">{{ number_format($cultivo->hectareas, 2, '.', ',') }}</td>
                     <td class="px-4 py-2">{{ $cultivo->manejo_cultivo }}</td>
                     <td class="px-4 py-2">{{ $cultivo->tecnologia_riego ?? '-' }}</td>
                     <td class="px-4 py-2 flex space-x-2">

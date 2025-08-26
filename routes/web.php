@@ -62,6 +62,7 @@ Route::post('/register', function (Request $request) {
         'password' => ['required', 'string', 'min:6', 'confirmed'],
     ]);
 
+    $data['email'] = strtolower($data['email']);
     $user = User::create([
         'name' => $data['name'],
         'email' => $data['email'],
