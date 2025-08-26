@@ -3,46 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Inertia\Inertia;
-use Inertia\Response;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Mostrar el formulario de edición de perfil.
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request)
     {
         $user = Auth::user();
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
-        ]);
+        return view('profile.edit', compact('user'));
     }
 
     /**
-     * Update the user's profile information.
+     * Actualizar información del perfil.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $data = $request->validated();
+        if (isset($data['email'])) {
+            $data['email'] = strtolower($data['email']);
+        }
+        // Si el checkbox no está presente, se guarda como 0
+        $data['es_propietario'] = $request->has('es_propietario') ? 1 : 0;
+        $user->fill($data);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return Redirect::route('profile.edit');
+    return Redirect::route('profile')->with('status', 'Perfil actualizado correctamente.');
     }
 
     /**
-     * Delete the user's account.
+     * Eliminar la cuenta del usuario.
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -63,40 +65,11 @@ class ProfileController extends Controller
     }
 
     /**
-     * Show the user's profile (simple view).
+     * Ver perfil (solo vista simple).
      */
     public function show()
     {
         $user = Auth::user();
         return view('profile.show', compact('user'));
-    }
-
-    /**
-     * Show the form for editing the user's profile (blade).
-     */
-    public function editProfile()
-    {
-        $user = Auth::user();
-        return view('profile.edit', compact('user'));
-    }
-
-    /**
-     * Update the user's profile from blade form.
-     */
-    public function updateProfile(Request $request)
-    {
-        $user = Auth::user();
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'dni' => 'nullable|string|max:20',
-            'es_propietario' => 'nullable|boolean',
-        ]);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->dni = $request->dni;
-        $user->es_propietario = $request->has('es_propietario');
-        $user->save();
-        return redirect()->route('profile')->with('status', 'Perfil actualizado correctamente.');
     }
 }

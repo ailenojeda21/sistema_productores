@@ -17,7 +17,7 @@
             <strong>Tipo:</strong> {{ $cultivo->tipo }}
         </div>
         <div class="mb-4">
-            <strong>Hectáreas:</strong> {{ number_format($cultivo->hectareas, 0, '', '') }}
+            <strong>Hectáreas:</strong> {{ number_format($cultivo->hectareas, 2, '.', ',') }}
         </div>
         <div class="mb-4">
             <strong>Tecnología de riego:</strong> {{ $cultivo->tecnologia_riego ?? '-' }}

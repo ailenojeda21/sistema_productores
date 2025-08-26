@@ -44,7 +44,7 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas Totales</label>
-                    <input id="hectareas" name="hectareas" type="number" step="1" class="w-full p-2 border border-gray-300 rounded">
+                    <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded">
                 </div>
                 <!-- Eliminado malla antigranizo -->
                 <div class="md:col-span-2">
@@ -64,7 +64,7 @@
                     <select id="propiedad_id" name="propiedad_id" class="w-full p-2 border border-gray-300 rounded" required>
                         <option value="">Seleccione propiedad</option>
                         @foreach($propiedades as $propiedad)
-                            <option value="{{ $propiedad->id }}">{{ $propiedad->direccion }} (ID: {{ $propiedad->id }})</option>
+      <option value="{{ $propiedad->id }}">{{ $propiedad->direccion }}</option>
                         @endforeach
                     </select>
                 </div>

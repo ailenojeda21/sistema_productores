@@ -21,7 +21,7 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
-                    <input id="hectareas" name="hectareas" type="number" step="1" class="w-full p-2 border border-gray-300 rounded" required>
+                    <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" required>
                 </div>
                 <div class="flex items-center mt-6">
                     <input type="checkbox" name="es_propietario" id="es_propietario" class="mr-2 rounded-full custom-checkbox">
@@ -35,9 +35,9 @@
                     <label for="tipo_derecho_riego" class="block text-gray-700 font-semibold mb-1">Tipo de derecho de riego:</label>
                     <select name="tipo_derecho_riego" id="tipo_derecho_riego" class="w-full p-2 border border-gray-300 rounded">
                         <option value="">Seleccione...</option>
-                        <option value="subterráneo">Subterráneo</option>
-                        <option value="superficial">Superficial</option>
-                        <option value="ambos">Ambos</option>
+                        <option value="Subterráneo">Subterráneo</option>
+                        <option value="Superficial">Superficial</option>
+                        <option value="Ambos">Ambos</option>
                     </select>
                 </div>
                 <script>
@@ -66,7 +66,7 @@
                 <div id="malla-fields" class="hidden md:col-span-2">
                     <div class="mt-2">
                         <label class="block text-gray-700 font-semibold mb-1" for="hectareas_malla">Hectáreas con malla</label>
-                        <input id="hectareas_malla" name="hectareas_malla" type="number" step="1" class="w-full p-2 border border-gray-300 rounded">
+                        <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded">
                     </div>
                 </div>
                 <div class="flex items-center mt-6">

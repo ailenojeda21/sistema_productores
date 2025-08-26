@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen flex bg-gray-100">
+<div class="min-h-screen flex bg-gray-100 " >
     <!-- Sidebar -->
-    <aside class="w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg">
+    <aside class=" w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg">
         <div class="flex flex-col items-center mb-10">
             <!-- Ícono de usuario dentro de un círculo -->
             <div class="bg-blue-50 rounded-full p-4 shadow-md">
@@ -91,7 +91,7 @@
         </nav>
     </aside>
     <!-- Main Panel -->
-    <main class="flex-1 p-8 flex flex-col justify-start items-center">
+    <main class="flex-1 p-8 flex flex-col justify-start items-center overflow-y-auto">
         @yield('dashboard-content')
     </main>
 </div>

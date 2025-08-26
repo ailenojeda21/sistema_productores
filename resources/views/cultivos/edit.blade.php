@@ -52,7 +52,7 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas Totales</label>
-                    <input id="hectareas" name="hectareas" type="number" step="1" class="w-full p-2 border border-gray-300 rounded" value="{{ old('hectareas', $cultivo->hectareas) }}">
+                    <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" value="{{ old('hectareas', $cultivo->hectareas) }}">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 font-semibold mb-1" for="tecnologia_riego">Tecnología de riego</label>
