@@ -10,9 +10,20 @@ class Maquinaria extends Model
      * Campos asignables masivamente
      */
     protected $fillable = [
-        'propiedad_id',  // Requerido (FK)
-        'tipo',          // Campo principal según tu tabla
-        // Nota: NO incluyas id, created_at, updated_at
+        'propiedad_id',
+        'tractor',
+        'modelo_tractor',
+        'arado',
+        'rastra',
+        'niveleta_comun',
+        'niveleta_laser',
+        'cincel_cultivadora',
+        'desmalezadora',
+        'pulverizadora_tractor',
+        'mochila_pulverizadora',
+        'cosechadora',
+        'enfardadora',
+        'retroexcavadora',
     ];
 
     /**
