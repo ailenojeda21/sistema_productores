@@ -12,6 +12,11 @@ class Comercio extends Model
         'comercio_feria',
         'vende_en_finca',
         'nombre_feria',
+        'ferias',
+    ];
+
+    protected $casts = [
+        'ferias' => 'array',
     ];
 
     public function usuario()

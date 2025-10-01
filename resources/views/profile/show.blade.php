@@ -1,35 +1,36 @@
 @extends('layouts.dashboard')
 
 @section('dashboard-content')
-<div class="w-full max-w-2xl mx-auto">
-    <h1 class="text-2xl font-bold text-azul-marino mb-4">Perfil de Usuario</h1>
-    <div class="bg-white shadow rounded-lg p-6">
-        <table class="min-w-full">
-            <tbody>
+<div class="w-full max-w-5xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-azul-marino">Perfil de Usuario</h1>
+        <a href="{{ route('profile.edit') }}" class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Editar perfil</a>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6 overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-gray-200">
                 <tr>
-                    <td class="py-2 font-semibold text-gray-600">Nombre:</td>
-                    <td class="py-2">{{ $user->name }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700 font-semibold">Nombre:</td>
+                    <td class="px-4 py-2 text-base text-gray-700">{{ $user->name }}</td>
                 </tr>
                 <tr>
-                    <td class="py-2 font-semibold text-gray-600">Email:</td>
-                    <td class="py-2">{{ $user->email }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700 font-semibold">Email:</td>
+                    <td class="px-4 py-2 text-base text-gray-700">{{ $user->email }}</td>
                 </tr>
                 <tr>
-                    <td class="py-2 font-semibold text-gray-600">Creado:</td>
-                    <td class="py-2">{{ $user->created_at->format('d/m/Y H:i') }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700 font-semibold">Creado:</td>
+                    <td class="px-4 py-2 text-base text-gray-700">{{ $user->created_at->format('d/m/Y H:i') }}</td>
                 </tr>
                 <tr>
-                    <td class="py-2 font-semibold text-gray-600">DNI:</td>
-                    <td class="py-2">{{ $user->dni ?? '-' }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700 font-semibold">DNI:</td>
+                    <td class="px-4 py-2 text-base text-gray-700">{{ $user->dni ?? '-' }}</td>
                 </tr>
                 <tr>
-                    <td class="py-2 font-semibold text-gray-600">Es propietario:</td>
-                    <td class="py-2">{{ $user->es_propietario ? 'Sí' : 'No' }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700 font-semibold">Es propietario:</td>
+                    <td class="px-4 py-2 text-base text-gray-700">{{ $user->es_propietario ? 'Sí' : 'No' }}</td>
                 </tr>
             </tbody>
         </table>
-<a href="{{ route('profile.edit') }}" class="inline-block mt-4 px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Editar perfil</a>
-
     </div>
 </div>
 @endsection

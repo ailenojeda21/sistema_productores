@@ -38,18 +38,27 @@
                     <label for="comercio_feria">¿Vende en feria?</label>
                 </div>
 
-                <div id="feria-fields" class="hidden md:col-span-2">
-                    <div class="mt-2">
-                        <label class="block text-gray-700 font-semibold mb-1" for="nombre_feria">Seleccione la feria</label>
-                        <select id="nombre_feria" name="nombre_feria" class="w-full p-2 border border-gray-300 rounded">
-                            <option value="">Seleccione una feria...</option>
-                            <option value="Mercado Cooperativo Guaymallen" {{ old('nombre_feria', $comercio->nombre_feria ?? '') == 'Mercado Cooperativo Guaymallen' ? 'selected' : '' }}>Mercado Cooperativo Guaymallen</option>
-                            <option value="Mercado Cooperativo Acceso Este" {{ old('nombre_feria', $comercio->nombre_feria ?? '') == 'Mercado Cooperativo Acceso Este' ? 'selected' : '' }}>Mercado Cooperativo Acceso Este</option>
-                            <option value="Mercado Cooperativo Las Heras" {{ old('nombre_feria', $comercio->nombre_feria ?? '') == 'Mercado Cooperativo Las Heras' ? 'selected' : '' }}>Mercado Cooperativo Las Heras</option>
-                            <option value="Mercado Concentrador de Godoy Cruz" {{ old('nombre_feria', $comercio->nombre_feria ?? '') == 'Mercado Concentrador de Godoy Cruz' ? 'selected' : '' }}>Mercado Concentrador de Godoy Cruz</option>
-                            <option value="Mercado Cooperativo Colonia Bombal" {{ old('nombre_feria', $comercio->nombre_feria ?? '') == 'Mercado Cooperativo Colonia Bombal' ? 'selected' : '' }}>Mercado Cooperativo Colonia Bombal</option>
-                            <option value="Mercados Nacionales o Internacionales" {{ old('nombre_feria', $comercio->nombre_feria ?? '') == 'Mercados Nacionales o Internacionales' ? 'selected' : '' }}>Mercados Nacionales o Internacionales</option>
-                        </select>
+                <div id="feria-fields" class="hidden md:col-span-2 mt-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Seleccione la feria</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        @php
+                            $ferias = [
+                                'mercado_guaymallen' => 'Mercado Cooperativo Guaymallen',
+                                'mercado_acceso_este' => 'Mercado Cooperativo Acceso Este',
+                                'mercado_las_heras' => 'Mercado Cooperativo Las Heras',
+                                'mercado_godoy_cruz' => 'Mercado Concentrador de Godoy Cruz',
+                                'mercado_colonia_bombal' => 'Mercado Cooperativo Colonia Bombal',
+                                'mercados_nacionales_internacionales' => 'Mercados Nacionales o Internacionales',
+                            ];
+                            $selectedFerias = old('ferias', isset($comercio->ferias) ? (is_array($comercio->ferias) ? $comercio->ferias : json_decode($comercio->ferias, true)) : []);
+                        @endphp
+                        @foreach($ferias as $field => $label)
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="ferias[]" id="{{ $field }}" value="{{ $label }}" class="custom-checkbox"
+                                    {{ is_array($selectedFerias) && in_array($label, $selectedFerias) ? 'checked' : '' }}>
+                                <span>{{ $label }}</span>
+                            </label>
+                        @endforeach
                     </div>
                 </div>
 
@@ -62,23 +71,21 @@
 </div>
 
 <style>
-    .custom-checkbox {
+   .custom-checkbox {
         width: 1.25rem;
         height: 1.25rem;
-        border-radius: 9999px;
+        border-radius: 0.25rem; /* cuadrado */
         border: 2px solid #cbd5e1;
         background: #fff;
         appearance: none;
         outline: none;
         transition: border-color 0.2s, box-shadow 0.2s;
-        box-shadow: 0 0 0 0 #2563eb;
         cursor: pointer;
     }
-
     .custom-checkbox:checked {
-        background-color: #ea580c;
-        border-color: #ea580c;
-        box-shadow: 0 0 0 2px #fdba74;
+        background-color: #2563eb;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px #93c5fd;
     }
 </style>
 

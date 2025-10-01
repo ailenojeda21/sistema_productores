@@ -22,7 +22,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">ID</th>
+ 
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Máquina</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Modelo (Año)</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Implementos</th>
@@ -32,7 +32,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($maquinarias as $maquinaria)
                     <tr>
-                        <td class="px-4 py-2 text-base text-gray-700">{{ $maquinaria->id }}</td>
+           
                         <td class="px-4 py-2 text-base text-gray-700">{{ $maquinaria->tractor ? 'Tractor' : '-' }}</td>
                         <td class="px-4 py-2 text-base text-gray-700">{{ $maquinaria->modelo_tractor ?? '-' }}</td>
                         <td class="px-4 py-2 text-base text-gray-700">
