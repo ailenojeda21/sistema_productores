@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             <!-- Implementos -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <h3 class="text-lg font-semibold text-gray-800 mb-2">Implementos / Accesorios</h3>
                 @php
                     $implements = [
                         'arado' => 'Arado',

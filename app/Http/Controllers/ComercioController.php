@@ -25,6 +25,12 @@ class ComercioController extends Controller
      */
     public function create()
     {
+        // Si ya existe un comercio asociado al usuario, redirigir a editar
+        $existing = Comercio::where('usuario_id', Auth::id())->first();
+        if ($existing) {
+            return redirect()->route('comercios.edit', $existing->id)
+                ->with('info', 'Ya existe un comercio. Puedes editarlo.');
+        }
         return view('comercios.create');
     }
 
@@ -37,6 +43,7 @@ class ComercioController extends Controller
             'infraestructura_empaque' => 'nullable',
             'comercio_feria' => 'nullable',
             'nombre_feria' => 'nullable|string|max:255',
+            'ferias' => 'nullable|array',
         ]);
 
         // Forzar booleanos
@@ -44,9 +51,12 @@ class ComercioController extends Controller
         $validated['comercio_feria'] = $request->has('comercio_feria') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
 
-        // Si no vende en feria, nombre_feria debe ser null
+        // Si no vende en feria, nombre_feria y ferias deben ser null
         if (!$validated['comercio_feria']) {
             $validated['nombre_feria'] = null;
+            $validated['ferias'] = null;
+        } else {
+            $validated['ferias'] = $request->input('ferias', []);
         }
 
         // Asignar el usuario autenticado
@@ -85,6 +95,7 @@ class ComercioController extends Controller
             'infraestructura_empaque' => 'nullable',
             'comercio_feria' => 'nullable',
             'nombre_feria' => 'nullable|string|max:255',
+            'ferias' => 'nullable|array',
         ]);
 
         // Forzar booleanos
@@ -92,9 +103,12 @@ class ComercioController extends Controller
         $validated['comercio_feria'] = $request->has('comercio_feria') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
 
-        // Si no vende en feria, nombre_feria debe ser null
+        // Si no vende en feria, nombre_feria y ferias deben ser null
         if (!$validated['comercio_feria']) {
             $validated['nombre_feria'] = null;
+            $validated['ferias'] = null;
+        } else {
+            $validated['ferias'] = $request->input('ferias', []);
         }
 
         $comercio->update($validated);

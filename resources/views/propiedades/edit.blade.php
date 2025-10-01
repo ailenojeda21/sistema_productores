@@ -83,23 +83,22 @@
             </div>
             <button type="submit" class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar Cambios</button>
         <style>
-            .custom-checkbox {
-                width: 1.25rem;
-                height: 1.25rem;
-                border-radius: 9999px;
-                border: 2px solid #cbd5e1;
-                background: #fff;
-                appearance: none;
-                outline: none;
-                transition: border-color 0.2s, box-shadow 0.2s;
-                box-shadow: 0 0 0 0 #2563eb;
-                cursor: pointer;
-            }
-            .custom-checkbox:checked {
-                background-color: #ea580c;
-                border-color: #ea580c;
-                box-shadow: 0 0 0 2px #fdba74;
-            }
+           .custom-checkbox {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 0.25rem; /* cuadrado */
+        border: 2px solid #cbd5e1;
+        background: #fff;
+        appearance: none;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+    }
+    .custom-checkbox:checked {
+        background-color: #2563eb;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px #93c5fd;
+    }
         </style>
         </form>
     </div>
