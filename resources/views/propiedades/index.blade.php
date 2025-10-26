@@ -37,7 +37,13 @@
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->tipo_derecho_riego ? $propiedad->tipo_derecho_riego : '-' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut ? 'Sí' : 'No' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut_valor ? number_format($propiedad->rut_valor, 0, '', '') : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut_archivo }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700">
+                        @if($propiedad->rut_archivo)
+                            <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Archivo RUT</a>
+                        @else
+                            -
+                        @endif
+                    </td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->malla ? 'Sí' : 'No' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->hectareas_malla ? number_format($propiedad->hectareas_malla, 2, ',', '.') : '-' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</td>

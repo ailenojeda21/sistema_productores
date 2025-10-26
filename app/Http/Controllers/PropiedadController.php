@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Propiedad;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PropiedadController extends Controller
 {
+
     /**
      * Mostrar formulario de creación
      */
@@ -42,7 +44,7 @@ class PropiedadController extends Controller
             'tipo_derecho_riego' => 'nullable|string|in:Subterráneo,Superficial,Ambos',
             'rut' => 'nullable',
             'rut_valor' => 'nullable|numeric',
-            'rut_archivo' => 'nullable|string|max:255',
+            'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240', // máximo 10MB
             'hectareas_malla' => 'nullable|numeric',
             'cierre_perimetral' => 'nullable',
         ]);
@@ -53,6 +55,12 @@ class PropiedadController extends Controller
         $validated['rut'] = $request->has('rut') ? 1 : 0;
         $validated['cierre_perimetral'] = $request->has('cierre_perimetral') ? 1 : 0;
         $validated['usuario_id'] = Auth::id();
+
+        // Manejar el archivo PDF si se subió uno
+        if ($request->hasFile('rut_archivo_file')) {
+            $path = $request->file('rut_archivo_file')->store('rut_files', 'public');
+            $validated['rut_archivo'] = $path;
+        }
 
         Propiedad::create($validated);
 
@@ -87,7 +95,7 @@ class PropiedadController extends Controller
             'tipo_derecho_riego' => 'nullable|string|in:Subterráneo,Superficial,Ambos',
             'rut' => 'nullable',
             'rut_valor' => 'nullable|numeric',
-            'rut_archivo' => 'nullable|string|max:255',
+            'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240', // máximo 10MB
             'hectareas_malla' => 'nullable|numeric',
             'cierre_perimetral' => 'nullable',
         ]);
@@ -97,6 +105,18 @@ class PropiedadController extends Controller
         $validated['derecho_riego'] = $request->has('derecho_riego') ? 1 : 0;
         $validated['rut'] = $request->has('rut') ? 1 : 0;
         $validated['cierre_perimetral'] = $request->has('cierre_perimetral') ? 1 : 0;
+
+        // Manejar el archivo PDF si se subió uno nuevo
+        if ($request->hasFile('rut_archivo_file')) {
+            // Eliminar el archivo anterior si existe
+            if ($propiedad->rut_archivo) {
+                Storage::disk('public')->delete($propiedad->rut_archivo);
+            }
+            
+            // Guardar el nuevo archivo
+            $path = $request->file('rut_archivo_file')->store('rut_files', 'public');
+            $validated['rut_archivo'] = $path;
+        }
 
         $propiedad->update($validated);
 
