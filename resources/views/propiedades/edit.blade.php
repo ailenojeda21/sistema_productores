@@ -7,7 +7,7 @@
         @if (session('success'))
             <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
         @endif
-        <form method="POST" action="{{ route('propiedades.update', $propiedad) }}">
+        <form method="POST" action="{{ route('propiedades.update', $propiedad) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
            
@@ -56,8 +56,16 @@
                     <input id="rut_valor" name="rut_valor" type="number" step="1" class="w-full p-2 border border-gray-300 rounded" value="{{ old('rut_valor', isset($propiedad) ? $propiedad->rut_valor : '') }}">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-semibold mb-1" for="rut_archivo">Adjuntar RUT(Opcional)</label>
-                    <input id="rut_archivo" name="rut_archivo" type="text" class="w-full p-2 border border-gray-300 rounded" value="{{ old('rut_archivo', $propiedad->rut_archivo) }}">
+                    <label class="block text-gray-700 font-semibold mb-1" for="rut_archivo_file">Adjuntar RUT (PDF, opcional)</label>
+                    <input id="rut_archivo_file" name="rut_archivo_file" type="file" accept="application/pdf" class="w-full p-2 border border-gray-300 rounded">
+                    @error('rut_archivo_file')
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                    @enderror
+                    @if($propiedad->rut_archivo)
+                        <div class="mt-2">
+                            <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Ver RUT actual</a>
+                        </div>
+                    @endif
                 </div>
             </div>
             <div class="mb-4 flex items-center">

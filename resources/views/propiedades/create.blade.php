@@ -1,14 +1,11 @@
 @extends('layouts.dashboard')
 
 
-
-
-
 @section('dashboard-content')
 <div class="w-full max-w-2xl mx-auto">
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Nueva Propiedad</h2>
-        <form method="POST" action="{{ route('propiedades.store') }}">
+        <form method="POST" action="{{ route('propiedades.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -55,8 +52,11 @@
                         <input id="rut_valor" name="rut_valor" type="number" step="1" class="w-full p-2 border border-gray-300 rounded">
                     </div>
                     <div class="mt-2">
-                        <label class="block text-gray-700 font-semibold mb-1" for="rut_archivo">Adjuntar RUT(Opcional)</label>
-                        <input id="rut_archivo" name="rut_archivo" type="text" class="w-full p-2 border border-gray-300 rounded">
+                        <label class="block text-gray-700 font-semibold mb-1" for="rut_archivo_file">Adjuntar RUT (PDF, opcional)</label>
+                        <input id="rut_archivo_file" name="rut_archivo_file" type="file" accept="application/pdf" class="w-full p-2 border border-gray-300 rounded">
+                        @error('rut_archivo_file')
+                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
                 <div class="flex items-center mt-6">
