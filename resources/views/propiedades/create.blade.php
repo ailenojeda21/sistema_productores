@@ -13,8 +13,24 @@
                     <input id="direccion" name="direccion" type="text" class="w-full p-2 border border-gray-300 rounded">
                 </div>
                 <div>
-                    <label class="block text-gray-700 font-semibold mb-1" for="ubicacion">Ubicación</label>
-                    <input id="ubicacion" name="ubicacion" type="text" class="w-full p-2 border border-gray-300 rounded" required>
+                    <label class="block text-gray-700 font-semibold mb-1">Ubicación</label>
+                    <input type="hidden" name="lat" id="lat" value="{{ old('lat', '') }}">
+                    <input type="hidden" name="lng" id="lng" value="{{ old('lng', '') }}">
+                    
+                    <!-- Botón para mostrar/ocultar mapa -->
+                    <button type="button" id="toggleMap" class="px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro hover:text-azul-marino font-semibold shadow transition">
+                        Ver Mapa
+                    </button>
+                    
+                    <!-- Contenedor del mapa (inicialmente oculto) -->
+                    <div id="mapContainer" class="hidden mt-4">
+                        <div id="map" class="w-full h-64 rounded border"></div>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Coordenadas seleccionadas:
+                            <span id="coordenadas" class="font-semibold">No seleccionadas</span>
+                        </p>
+                        <p class="text-sm text-gray-500">Haz click en el mapa para ubicar la propiedad. También puedes arrastrar el pin.</p>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
@@ -116,6 +132,77 @@
         toggleMallaFields();
     });
 </script>
+    <!-- Leaflet CSS/JS y script para el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let map, marker;
+        let mapInitialized = false;
+
+        // Toggle map visibility
+        document.getElementById('toggleMap').addEventListener('click', function() {
+            const mapContainer = document.getElementById('mapContainer');
+            mapContainer.classList.toggle('hidden');
+            
+            if (!mapInitialized) {
+                // Initialize map on first show
+                const latInput = document.getElementById('lat');
+                const lngInput = document.getElementById('lng');
+                const initialLat = parseFloat(latInput.value) || -31.5;
+                const initialLng = parseFloat(lngInput.value) || -68.5;
+
+                map = L.map('map').setView([initialLat, initialLng], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                // If we have coordinates, show marker
+                if (latInput.value && lngInput.value) {
+                    updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
+                }
+
+                // Try to get user location if no coordinates set
+                if (!latInput.value && navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(pos) {
+                        map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+                    });
+                }
+
+                // Click on map to set marker
+                map.on('click', function(e) {
+                    updateMarker(e.latlng);
+                });
+
+                mapInitialized = true;
+            }
+            
+            // Force map resize when showing
+            if (!mapContainer.classList.contains('hidden')) {
+                map.invalidateSize();
+            }
+        });
+
+        // Function to update marker and coordinates
+        function updateMarker(latlng) {
+            if (marker) {
+                marker.setLatLng(latlng);
+            } else {
+                marker = L.marker(latlng, {draggable: true}).addTo(map);
+                // Event for marker drag
+                marker.on('dragend', function(e) {
+                    updateMarker(e.target.getLatLng());
+                });
+            }
+            
+            // Update hidden fields and show coordinates
+            document.getElementById('lat').value = latlng.lat.toFixed(7);
+            document.getElementById('lng').value = latlng.lng.toFixed(7);
+            document.getElementById('coordenadas').textContent = 
+                latlng.lat.toFixed(7) + ', ' + latlng.lng.toFixed(7);
+        }
+    });
+    </script>
         </form>
     </div>
 </div>
