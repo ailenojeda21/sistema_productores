@@ -12,7 +12,6 @@ class Propiedad extends Model
     // Permitir asignación masiva de todos los campos de la tabla
     protected $fillable = [
         'usuario_id',
-        'ubicacion',
         'direccion',
         'hectareas',
         'es_propietario',
@@ -21,9 +20,19 @@ class Propiedad extends Model
         'rut',
         'rut_valor',
         'rut_archivo',
+        'lat',
+        'lng',
         'hectareas_malla',
         'cierre_perimetral',
         'malla',
+    ];
+
+    /**
+     * Casts
+     */
+    protected $casts = [
+        'lat' => 'decimal:7',
+        'lng' => 'decimal:7',
     ];
 
     /**

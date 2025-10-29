@@ -35,8 +35,7 @@ class PropiedadController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'ubicacion' => 'required|string|max:255',
-            'direccion' => 'sometimes|string|max:255',
+            'direccion' => 'required|string|max:255',
             'hectareas' => 'required|numeric|min:0',
             'es_propietario' => 'nullable',
             'malla' => 'nullable',
@@ -45,6 +44,8 @@ class PropiedadController extends Controller
             'rut' => 'nullable',
             'rut_valor' => 'nullable|numeric',
             'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240', // máximo 10MB
+            'lat' => 'nullable|numeric|between:-90,90',
+            'lng' => 'nullable|numeric|between:-180,180',
             'hectareas_malla' => 'nullable|numeric',
             'cierre_perimetral' => 'nullable',
         ]);
@@ -86,8 +87,7 @@ class PropiedadController extends Controller
 
         $validated = $request->validate([
             'usuario_id' => 'sometimes|exists:users,id',
-            'ubicacion' => 'sometimes|string|max:255',
-            'direccion' => 'sometimes|string|max:255',
+            'direccion' => 'required|string|max:255',
             'hectareas' => 'sometimes|numeric|min:0',
             'es_propietario' => 'nullable',
             'malla' => 'nullable',
@@ -96,6 +96,8 @@ class PropiedadController extends Controller
             'rut' => 'nullable',
             'rut_valor' => 'nullable|numeric',
             'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240', // máximo 10MB
+            'lat' => 'nullable|numeric|between:-90,90',
+            'lng' => 'nullable|numeric|between:-180,180',
             'hectareas_malla' => 'nullable|numeric',
             'cierre_perimetral' => 'nullable',
         ]);
