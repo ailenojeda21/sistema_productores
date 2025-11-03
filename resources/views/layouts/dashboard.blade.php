@@ -72,7 +72,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5 mr-2">
                     <path d="M4 4h16v2H4zm0 4h16v2H4zm0 4h16v10H4zm2 2v6h12v-6z"/>
                 </svg>
-                Comercios
+                Comercialización
             </a>
         <!-- Cerrar sesión -->
         <form method="POST" action="{{ route('logout') }}" class="mt-auto">

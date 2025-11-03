@@ -1,5 +1,5 @@
 
-PRUEBA COPILOT CREATE
+
 @extends('layouts.dashboard')
 
 @section('dashboard-content')

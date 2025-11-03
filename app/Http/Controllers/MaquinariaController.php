@@ -52,7 +52,7 @@ class MaquinariaController extends Controller
         foreach ([
             'tractor', 'arado', 'rastra', 'niveleta_comun', 'niveleta_laser', 
             'cincel_cultivadora', 'desmalezadora', 'pulverizadora_tractor', 
-            'mochila_pulverizadora', 'cosechadora', 'enfardadora', 'retroexcavadora'
+            'mochila_pulverizadora', 'cosechadora', 'enfardadora', 'retroexcavadora', 'carro_carreton'
         ] as $campo) {
             $validated[$campo] = $request->has($campo) ? 1 : 0;
         }
@@ -101,7 +101,7 @@ class MaquinariaController extends Controller
         foreach ([
             'tractor', 'arado', 'rastra', 'niveleta_comun', 'niveleta_laser', 
             'cincel_cultivadora', 'desmalezadora', 'pulverizadora_tractor', 
-            'mochila_pulverizadora', 'cosechadora', 'enfardadora', 'retroexcavadora'
+            'mochila_pulverizadora', 'cosechadora', 'enfardadora', 'retroexcavadora', 'carro_carreton'
         ] as $campo) {
             $validated[$campo] = $request->has($campo) ? 1 : 0;
         }
