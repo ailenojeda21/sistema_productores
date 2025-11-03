@@ -1,11 +1,11 @@
-<!-- Recordatorio: Si no ves los cambios, ejecuta 'php artisan view:clear' y recarga con Ctrl+F5 -->
+
 
 @extends('layouts.dashboard')
 
 @section('dashboard-content')
 <div class="w-full max-w-5xl mx-auto">
     <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-azul-marino">Comercios</h1>
+    <h1 class="text-3xl font-bold text-azul-marino">Comercialización</h1>
     @if($comercios->isEmpty())
         <a href="{{ route('comercios.create') }}" class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Nuevo Comercio</a>
     @else

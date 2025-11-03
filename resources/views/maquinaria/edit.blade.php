@@ -53,31 +53,36 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
 
             <!-- Implementos -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <h3 class="text-lg font-semibold text-gray-800 mb-2">Implementos / Accesorios</h3>
-                @php
-                    $implements = [
-                        'arado' => 'Arado',
-                        'rastra' => 'Rastra',
-                        'niveleta_comun' => 'Niveleta común',
-                        'niveleta_laser' => 'Niveleta láser',
-                        'cincel_cultivadora' => 'Cincel o cultivadora',
-                        'desmalezadora' => 'Desmalezadora',
-                        'pulverizadora_tractor' => 'Pulverizadora de tractor',
-                        'mochila_pulverizadora' => 'Mochila pulverizadora',
-                        'cosechadora' => 'Cosechadora',
-                        'enfardadora' => 'Enfardadora',
-                        'retroexcavadora' => 'Retroexcavadora',
-                    ];
-                @endphp
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Implementos / Accesorios</h3>
+                <div class="grid grid-cols-2 gap-x-8 gap-y-3">
+                    @php
+                        $implements = [
+                            'arado' => 'Arado',
+                            'rastra' => 'Rastra',
+                            'niveleta_comun' => 'Niveleta común',
+                            'niveleta_laser' => 'Niveleta láser',
+                            'cincel_cultivadora' => 'Cincel o cultivadora',
+                            'desmalezadora' => 'Desmalezadora',
+                            'pulverizadora_tractor' => 'Pulverizadora de tractor',
+                            'mochila_pulverizadora' => 'Mochila pulverizadora',
+                            'cosechadora' => 'Cosechadora',
+                            'enfardadora' => 'Enfardadora',
+                            'retroexcavadora' => 'Retroexcavadora',
+                            'carro_carreton' => 'Carro o carreton',
+                        ];
+                    @endphp
 
-                @foreach($implements as $field => $label)
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" name="{{ $field }}" id="{{ $field }}" class="custom-checkbox"
-                            {{ old($field, $maquinaria->$field) ? 'checked' : '' }}>
-                        <span>{{ $label }}</span>
-                    </label>
-                @endforeach
+                    @foreach($implements as $field => $label)
+                        <div class="flex items-center">
+                            <input type="checkbox" name="{{ $field }}" id="{{ $field }}" class="custom-checkbox"
+                                {{ old($field, $maquinaria->$field) ? 'checked' : '' }}>
+                            <label for="{{ $field }}" class="ml-2 text-sm sm:text-base">
+                                {{ $label }}
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
             </div>
 
             <!-- Botón -->

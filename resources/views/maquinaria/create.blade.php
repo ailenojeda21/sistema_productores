@@ -69,6 +69,7 @@
                             'cosechadora' => 'Cosechadora',
                             'enfardadora' => 'Enfardadora',
                             'retroexcavadora' => 'Retroexcavadora',
+                            'carro_carreton' => 'Carro o carreton',
                         ];
                     @endphp
 

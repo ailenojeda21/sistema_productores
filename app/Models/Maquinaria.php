@@ -24,6 +24,7 @@ class Maquinaria extends Model
         'cosechadora',
         'enfardadora',
         'retroexcavadora',
+        'carro_carreton',
     ];
 
     /**

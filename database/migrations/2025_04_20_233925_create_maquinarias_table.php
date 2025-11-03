@@ -27,6 +27,7 @@ return new class extends Migration
         $table->boolean('cosechadora')->default(0);
         $table->boolean('enfardadora')->default(0);
         $table->boolean('retroexcavadora')->default(0);
+        $table->boolean('carro_carreton')->default(0);
         $table->timestamps();
 
         $table->foreign('propiedad_id')
