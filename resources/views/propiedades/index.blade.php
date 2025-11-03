@@ -14,8 +14,8 @@
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Direccion</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Ubicación</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Es propietario?</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tiene derecho de riego?</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Propietario</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Derecho de riego</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo derecho de riego</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">RUT</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nº RUT</th>
@@ -26,7 +26,7 @@
                     <th class="px-4 py-2"></th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody id="propiedades-tbody" class="bg-white divide-y divide-gray-200">
                 @foreach($propiedades as $propiedad)
                 <tr>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->direccion }}</td>
@@ -57,18 +57,27 @@
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->hectareas_malla ? number_format($propiedad->hectareas_malla, 2, ',', '.') : '-' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</td>
                     <td class="px-4 py-2 flex space-x-2">
-                        <a href="{{ route('propiedades.edit', $propiedad) }}" class="min-w-[100px] px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">Editar</a>
+                        <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">Editar</a>
                         <form action="{{ route('propiedades.destroy', $propiedad) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta propiedad?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="min-w-[100px] px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">Eliminar</button>
+                            <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">Eliminar</button>
                         </form>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+
     </div>
+    
+    <!-- Controles de paginación (cliente) -->
+    <div class="px-4 py-3 flex items-center justify-center space-x-4" role="navigation" aria-label="Paginación tabla">
+        <button id="prop-prev" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Página anterior">◀</button>
+        <span id="prop-page-info" class="text-sm text-gray-700">Página 1</span>
+        <button id="prop-next" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Siguiente página">▶</button>
+    </div>
+
 </div>
 
 <!-- Modal para mostrar el mapa -->
@@ -149,6 +158,38 @@ document.getElementById('mapModal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeLocationModal();
     }
+});
+</script>
+
+<!-- Script: paginación cliente para propiedades (5 filas por página) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = Array.from(document.querySelectorAll('#propiedades-tbody tr'));
+    const perPage = 4;
+    let currentPage = 1;
+    const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+
+    const prevBtn = document.getElementById('prop-prev');
+    const nextBtn = document.getElementById('prop-next');
+    const info = document.getElementById('prop-page-info');
+
+    function renderPage(page) {
+        currentPage = Math.min(Math.max(1, page), totalPages);
+        const start = (currentPage - 1) * perPage;
+        const end = start + perPage;
+        rows.forEach((r, i) => {
+            r.style.display = (i >= start && i < end) ? '' : 'none';
+        });
+        info.textContent = `Página ${currentPage} de ${totalPages}`;
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+    }
+
+    prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
+    nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
+
+    // Inicializar
+    renderPage(1);
 });
 </script>
 @endsection

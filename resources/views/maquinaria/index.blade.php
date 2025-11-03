@@ -48,7 +48,6 @@
                                 @if($maquinaria->cosechadora) <li>Cosechadora</li> @endif
                                 @if($maquinaria->enfardadora) <li>Enfardadora</li> @endif
                                 @if($maquinaria->retroexcavadora) <li>Retroexcavadora</li> @endif
-                                @if($maquinaria->carro_carreton) <li>Carro o carreton</li> @endif
                             </ul>
                             @if(!($maquinaria->arado || $maquinaria->rastra || $maquinaria->niveleta_comun || $maquinaria->niveleta_laser || $maquinaria->cincel_cultivadora || $maquinaria->desmalezadora || $maquinaria->pulverizadora_tractor || $maquinaria->mochila_pulverizadora || $maquinaria->cosechadora || $maquinaria->enfardadora || $maquinaria->retroexcavadora))
                                 <span class="text-gray-400 italic">Sin implementos</span>
