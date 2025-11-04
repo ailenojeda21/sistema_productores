@@ -19,7 +19,7 @@
 
         <nav class="flex flex-col space-y-2">
             <!-- Dashboard -->
-            <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base">
+            <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
                 <!-- Velocímetro -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -29,7 +29,7 @@
             </a>
 
             <!-- Perfil -->
-            <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base">
+            <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
                 <!-- Persona -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -39,7 +39,7 @@
             </a>
 
             <!-- Propiedades -->
-            <a href="{{ route('propiedades.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base">
+            <a href="{{ route('propiedades.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
                 <!-- Casa -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -49,7 +49,7 @@
             </a>
 
             <!-- Cultivos -->
-            <a href="{{ route('cultivos.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base">
+            <a href="{{ route('cultivos.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
                 <!-- Planta con raíz -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="h-5 w-5 mr-2">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -59,7 +59,7 @@
             </a>
 
             <!-- Maquinarias -->
-            <a href="{{ route('maquinaria.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base">
+            <a href="{{ route('maquinaria.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
                 <!-- Tractor -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 640 512" class="h-5 w-5 mr-2">
                     <path d="M624 352h-16V243.3c0-21.2-10.6-41.1-28.4-53.3L504 144V96c0-17.7-14.3-32-32-32h-32V32c0-17.7-14.3-32-32-32H368c-17.7 0-32 14.3-32 32v32h-16C302.3 64 288 78.3 288 96v96H64c-35.3 0-64 28.7-64 64v128c0 17.7 14.3 32 32 32h49.3C96.5 441.2 123.4 480 160 480s63.5-38.8 78.7-96H352v32c0 53 43 96 96 96s96-43 96-96v-32h80c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zM160 432c-17.7 0-32-28.7-32-64s14.3-64 32-64 32 28.7 32 64-14.3 64-32 64zm288-64c0-35.3 28.7-64 64-64s64 28.7 64 64-28.7 64-64 64-64-28.7-64-64z"/>
@@ -67,7 +67,7 @@
                 Maquinarias
             </a>
             <!-- Comercios -->
-            <a href="{{ route('comercios.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base">
+            <a href="{{ route('comercios.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
                 <!-- Tienda -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5 mr-2">
                     <path d="M4 4h16v2H4zm0 4h16v2H4zm0 4h16v10H4zm2 2v6h12v-6z"/>
@@ -96,3 +96,22 @@
     </main>
 </div>
 @endsection
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden !important; /* Elimina scroll vertical y horizontal */
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+</style>

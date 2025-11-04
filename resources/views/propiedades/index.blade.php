@@ -12,14 +12,14 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Direccion</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Ubicación</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[100px]">Ubicación</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Propietario</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Derecho de riego</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo derecho de riego</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">RUT</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nº RUT</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Adjunto RUT</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[120px]">Adjunto RUT</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Malla antigranizo</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas con malla</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Cierre perimetral</th>
@@ -30,12 +30,10 @@
                 @foreach($propiedades as $propiedad)
                 <tr>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->direccion }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">
+                    <td class="px-4 py-2 text-base text-gray-700 whitespace-nowrap">
                         @if($propiedad->lat && $propiedad->lng)
                             <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})" 
-                                    class="text-blue-600 hover:text-blue-800 underline">
-                                Ver Mapa
-                            </button>
+                                    class="text-blue-600 hover:text-blue-800 underline">Ver Mapa</button>
                         @else
                             Sin ubicación
                         @endif
@@ -46,7 +44,7 @@
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->tipo_derecho_riego ? $propiedad->tipo_derecho_riego : '-' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut ? 'Sí' : 'No' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut_valor ? number_format($propiedad->rut_valor, 0, '', '') : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">
+                    <td class="px-4 py-2 text-base text-gray-700 whitespace-nowrap">
                         @if($propiedad->rut_archivo)
                             <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Archivo RUT</a>
                         @else
@@ -56,13 +54,16 @@
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->malla ? 'Sí' : 'No' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->hectareas_malla ? number_format($propiedad->hectareas_malla, 2, ',', '.') : '-' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</td>
-                    <td class="px-4 py-2 flex space-x-2">
-                        <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">Editar</a>
-                        <form action="{{ route('propiedades.destroy', $propiedad) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta propiedad?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">Eliminar</button>
-                        </form>
+                    <td class="px-4 py-2">
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">Editar</a>
+
+                            <form action="{{ route('propiedades.destroy', $propiedad) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta propiedad?');" class="m-0 p-0">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">Eliminar</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
