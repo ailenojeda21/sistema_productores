@@ -28,21 +28,21 @@
                     <label for="infraestructura_empaque">¿Tiene infraestructura de empaque?</label>
                 </div>
 
-                <!-- Checkbox comercio feria -->
+                <!-- Checkbox comercio mercados -->
                 <div class="flex items-center mt-6">
                     <input type="checkbox"
-                           name="comercio_feria"
-                           id="comercio_feria"
+                           name="comercio_mercado"
+                           id="comercio_mercado"
                            class="mr-2 custom-checkbox"
-                           {{ old('comercio_feria', $comercio->comercio_feria) ? 'checked' : '' }}>
-                    <label for="comercio_feria">¿Vende en feria?</label>
+                           {{ old('comercio_mercado', $comercio->comercio_mercado) ? 'checked' : '' }}>
+                    <label for="comercio_mercado">¿Vende en mercados?¿Cuál?</label>
                 </div>
 
-                <div id="feria-fields" class="hidden md:col-span-2 mt-8">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Seleccione la feria</h3>
+                <div id="mercado-fields" class="hidden md:col-span-2 mt-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Seleccione el mercado</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                         @php
-                            $ferias = [
+                            $mercados = [
                                 'mercado_guaymallen' => 'Mercado Cooperativo Guaymallen',
                                 'mercado_acceso_este' => 'Mercado Cooperativo Acceso Este',
                                 'mercado_las_heras' => 'Mercado Cooperativo Las Heras',
@@ -50,12 +50,12 @@
                                 'mercado_colonia_bombal' => 'Mercado Cooperativo Colonia Bombal',
                                 'mercados_nacionales_internacionales' => 'Mercados Nacionales o Internacionales',
                             ];
-                            $selectedFerias = old('ferias', isset($comercio->ferias) ? (is_array($comercio->ferias) ? $comercio->ferias : json_decode($comercio->ferias, true)) : []);
+                            $selectedMercados = old('mercados', isset($comercio->mercados) ? (is_array($comercio->mercados) ? $comercio->mercados : json_decode($comercio->mercados, true)) : []);
                         @endphp
-                        @foreach($ferias as $field => $label)
+                        @foreach($mercados as $field => $label)
                             <label class="flex items-center space-x-2">
-                                <input type="checkbox" name="ferias[]" id="{{ $field }}" value="{{ $label }}" class="custom-checkbox"
-                                    {{ is_array($selectedFerias) && in_array($label, $selectedFerias) ? 'checked' : '' }}>
+                                <input type="checkbox" name="mercados[]" id="{{ $field }}" value="{{ $label }}" class="custom-checkbox"
+                                    {{ is_array($selectedMercados) && in_array($label, $selectedMercados) ? 'checked' : '' }}>
                                 <span>{{ $label }}</span>
                             </label>
                         @endforeach
@@ -91,13 +91,13 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const feriaCheckbox = document.getElementById('comercio_feria');
-        const feriaFields = document.getElementById('feria-fields');
-        function toggleFeriaFields() {
-            feriaFields.classList.toggle('hidden', !feriaCheckbox.checked);
+        const mercadoCheckbox = document.getElementById('comercio_mercado');
+        const mercadoFields = document.getElementById('mercado-fields');
+        function toggleMercadoFields() {
+            mercadoFields.classList.toggle('hidden', !mercadoCheckbox.checked);
         }
-        feriaCheckbox.addEventListener('change', toggleFeriaFields);
-        toggleFeriaFields();
+        mercadoCheckbox.addEventListener('change', toggleMercadoFields);
+        toggleMercadoFields();
     });
 </script>
 @endsection

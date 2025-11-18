@@ -10,7 +10,7 @@
     @yield('styles')
     @yield('scripts')
 </head>
-<body class="font-sans antialiased bg-gray-100">
+<body class="font-sans antialiased bg-gray-100 w-full h-full min-h-screen overflow-hidden">
     <main class="">
         @yield('content')
     </main>

@@ -101,7 +101,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden !important; /* Elimina scroll vertical y horizontal */
+ 
 }
 
 table {

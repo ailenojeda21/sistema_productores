@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('propiedades', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('usuario_id');
-            $table->string('ubicacion');
+            $table->decimal('lat', 10, 7)->nullable()->after('direccion');
+            $table->decimal('lng', 10, 7)->nullable()->after('lat');
             $table->string('direccion')->nullable();
             $table->decimal('hectareas', 8, 2);
             $table->boolean('es_propietario')->default(false);

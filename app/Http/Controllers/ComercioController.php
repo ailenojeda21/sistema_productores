@@ -41,22 +41,22 @@ class ComercioController extends Controller
     {
         $validated = $request->validate([
             'infraestructura_empaque' => 'nullable',
-            'comercio_feria' => 'nullable',
-            'nombre_feria' => 'nullable|string|max:255',
-            'ferias' => 'nullable|array',
+            'comercio_mercado' => 'nullable',
+            'nombre_mercado' => 'nullable|string|max:255',
+            'mercados' => 'nullable|array',
         ]);
 
         // Forzar booleanos
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
-        $validated['comercio_feria'] = $request->has('comercio_feria') ? 1 : 0;
+        $validated['comercio_mercado'] = $request->has('comercio_mercado') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
 
-        // Si no vende en feria, nombre_feria y ferias deben ser null
-        if (!$validated['comercio_feria']) {
-            $validated['nombre_feria'] = null;
-            $validated['ferias'] = null;
+        // Si no vende en mercado, nombre_mercado y mercados deben ser null
+        if (!$validated['comercio_mercado']) {
+            $validated['nombre_mercado'] = null;
+            $validated['mercados'] = null;
         } else {
-            $validated['ferias'] = $request->input('ferias', []);
+            $validated['mercados'] = $request->input('mercados', []);
         }
 
         // Asignar el usuario autenticado
@@ -93,22 +93,22 @@ class ComercioController extends Controller
 
         $validated = $request->validate([
             'infraestructura_empaque' => 'nullable',
-            'comercio_feria' => 'nullable',
-            'nombre_feria' => 'nullable|string|max:255',
-            'ferias' => 'nullable|array',
+            'comercio_mercado' => 'nullable',
+            'nombre_mercado' => 'nullable|string|max:255',
+            'mercados' => 'nullable|array',
         ]);
 
         // Forzar booleanos
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
-        $validated['comercio_feria'] = $request->has('comercio_feria') ? 1 : 0;
+        $validated['comercio_mercado'] = $request->has('comercio_mercado') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
 
-        // Si no vende en feria, nombre_feria y ferias deben ser null
-        if (!$validated['comercio_feria']) {
-            $validated['nombre_feria'] = null;
-            $validated['ferias'] = null;
+        // Si no vende en mercado, nombre_mercado y mercados deben ser null
+        if (!$validated['comercio_mercado']) {
+            $validated['nombre_mercado'] = null;
+            $validated['mercados'] = null;
         } else {
-            $validated['ferias'] = $request->input('ferias', []);
+            $validated['mercados'] = $request->input('mercados', []);
         }
 
         $comercio->update($validated);
