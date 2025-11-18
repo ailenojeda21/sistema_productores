@@ -17,11 +17,11 @@
             <strong>¿Vende en finca?:</strong> {{ $comercio->vende_en_finca ? 'Sí' : 'No' }}
         </div>
         <div class="mb-4">
-            <strong>¿Vende en feria?:</strong> {{ $comercio->comercio_feria ? 'Sí' : 'No' }}
+            <strong>¿Vende en mercado?:</strong> {{ $comercio->comercio_mercado ? 'Sí' : 'No' }}
         </div>
-        @if($comercio->comercio_feria)
+        @if($comercio->comercio_mercado)
         <div class="mb-4">
-            <strong>Nombre de la feria:</strong> {{ $comercio->nombre_feria }}
+            <strong>Nombre del mercado:</strong> {{ $comercio->nombre_mercado }}
         </div>
         @endif
         <a href="{{ route('comercios.index') }}" class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 font-semibold">Volver al listado</a>
