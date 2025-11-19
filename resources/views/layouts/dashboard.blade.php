@@ -4,19 +4,16 @@
 <div class="min-h-screen flex bg-gray-100 " >
     <!-- Sidebar -->
     <aside class=" w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg">
-        <div class="flex flex-col items-center mb-10">
-            <!-- Ícono de usuario dentro de un círculo -->
-            <div class="bg-blue-50 rounded-full p-4 shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                     class="h-16 w-16 text-amarillo-claro">
-                    <path fill-rule="evenodd"
-                          d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"
-                          clip-rule="evenodd" />
-                </svg>
-            </div>
-            <span class="font-bold text-lg">Panel</span>
-        </div>
+      <div class="flex flex-col items-center mb-10"> 
+    <!-- Contenedor circular -->
+    <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-24 w-24">
+        <img src="{{ asset('images/melon2.png') }}" 
+             alt="Avatar" 
+             class="h-full w-full object-cover">
+    </div>
 
+    <span class="font-bold text-lg">Panel</span>
+</div>
         <nav class="flex flex-col space-y-2">
             <!-- Dashboard -->
             <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
