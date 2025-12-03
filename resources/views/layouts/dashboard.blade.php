@@ -11,6 +11,7 @@
     </div>
 
     <!-- Drawer Overlay (Mobile) -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
 
     <!-- Sidebar/Drawer -->
     <aside id="drawer" class="fixed md:static top-0 left-0 h-screen md:h-auto w-64 bg-azul-marino text-white flex flex-col py-4 md:py-8 px-4 shadow-lg md:min-h-screen transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 md:z-auto">
@@ -92,15 +93,21 @@ document.addEventListener('DOMContentLoaded', function() {
     function openDrawer() {
         drawer.classList.remove('-translate-x-full');
         drawer.classList.add('translate-x-0');
-        overlay.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+        const overlay = document.getElementById('drawer-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+        }
+        document.body.classList.add('drawer-open');
     }
 
     function closeDrawer() {
         drawer.classList.add('-translate-x-full');
         drawer.classList.remove('translate-x-0');
-        overlay.classList.add('hidden');
-        document.body.style.overflow = 'auto';
+        const overlay = document.getElementById('drawer-overlay');
+        if (overlay) {
+            overlay.classList.add('hidden');
+        }
+        document.body.classList.remove('drawer-open');
     }
 
     // Toggle button click
