@@ -3,75 +3,136 @@
 
 @section('dashboard-content')
 <div class="w-full max-w-5xl mx-auto">
+    <x-breadcrumb :items="[['label' => 'Propiedades']]" />
+    
     <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-azul-marino">Propiedades</h1>
-    <a href="{{ route('propiedades.create') }}" class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Nueva Propiedad</a>
+        <h1 class="text-3xl font-bold text-azul-marino">Propiedades</h1>
+        <a href="{{ route('propiedades.create') }}" class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Nueva Propiedad</a>
     </div>
-    <div class="bg-white rounded-lg shadow p-6 overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Direccion</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[100px]">Ubicación</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Propietario</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Derecho de riego</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo derecho de riego</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">RUT</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nº RUT</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[120px]">Adjunto RUT</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Malla antigranizo</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas con malla</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Cierre perimetral</th>
-                    <th class="px-4 py-2"></th>
-                </tr>
-            </thead>
-            <tbody id="propiedades-tbody" class="bg-white divide-y divide-gray-200">
-                @foreach($propiedades as $propiedad)
-                <tr>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->direccion }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700 whitespace-nowrap">
+    <div class="bg-white rounded-lg shadow p-6">
+        <!-- Desktop Table (hidden on mobile) -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Dirección</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Ubicación</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($propiedades as $propiedad)
+                    <tr>
+                        <td class="px-4 py-3 text-base text-gray-700">{{ $propiedad->direccion }}</td>
+                        <td class="px-4 py-3 text-base text-gray-700">
+                            @if($propiedad->lat && $propiedad->lng)
+                                <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})"
+                                        class="text-blue-600 hover:text-blue-800 underline">Ver Mapa</button>
+                            @else
+                                Sin ubicación
+                            @endif
+                        </td>
+                        <td class="px-4 py-3 text-base text-gray-700">{{ number_format($propiedad->hectareas, 2, ',', '.') }}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center text-sm">Editar</a>
+                                <button onclick="showDetails({{ $loop->index }})" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 font-semibold shadow text-sm">Ver más</button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Cards (shown on mobile) -->
+        <div class="md:hidden space-y-4">
+            @foreach($propiedades as $index => $propiedad)
+            <div class="border rounded-lg p-4 shadow-sm">
+                <div class="space-y-2">
+                    <div>
+                        <span class="font-medium">Dirección:</span>
+                        <span class="text-gray-700">{{ $propiedad->direccion }}</span>
+                    </div>
+                    <div>
+                        <span class="font-medium">Ubicación:</span>
                         @if($propiedad->lat && $propiedad->lng)
-                            <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})" 
+                            <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})"
                                     class="text-blue-600 hover:text-blue-800 underline">Ver Mapa</button>
                         @else
-                            Sin ubicación
+                            <span class="text-gray-700">Sin ubicación</span>
                         @endif
-                    </td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ number_format($propiedad->hectareas, 2, ',', '.') }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->es_propietario ? 'Sí' : 'No' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->derecho_riego ? 'Sí' : 'No' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->tipo_derecho_riego ? $propiedad->tipo_derecho_riego : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut ? 'Sí' : 'No' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut_valor ? number_format($propiedad->rut_valor, 0, '', '') : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700 whitespace-nowrap">
-                        @if($propiedad->rut_archivo)
-                            <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Archivo RUT</a>
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->malla ? 'Sí' : 'No' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->hectareas_malla ? number_format($propiedad->hectareas_malla, 2, ',', '.') : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</td>
-                    <td class="px-4 py-2">
-                        <div class="flex items-center gap-2">
-                            <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">Editar</a>
+                    </div>
+                    <div>
+                        <span class="font-medium">Hectáreas:</span>
+                        <span class="text-gray-700">{{ number_format($propiedad->hectareas, 2, ',', '.') }}</span>
+                    </div>
+                    <div class="pt-2 flex space-x-2">
+                        <a href="{{ route('propiedades.edit', $propiedad) }}" class="flex-1 text-center px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-sm">Editar</a>
+                        <button onclick="showDetails({{ $index }})" class="flex-1 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 font-semibold shadow text-sm">Ver más</button>
+                    </div>
+                </div>
 
-                            <form action="{{ route('propiedades.destroy', $propiedad) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta propiedad?');" class="m-0 p-0">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">Eliminar</button>
-                            </form>
+                <!-- Hidden details section -->
+                <div id="details-{{ $index }}" class="mt-3 pt-3 border-t border-gray-200 hidden">
+                    <div class="space-y-2">
+                        <div>
+                            <span class="font-medium">Propietario:</span>
+                            <span class="text-gray-700">{{ $propiedad->es_propietario ? 'Sí' : 'No' }}</span>
                         </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-
+                        <div>
+                            <span class="font-medium">Derecho de riego:</span>
+                            <span class="text-gray-700">{{ $propiedad->derecho_riego ? 'Sí' : 'No' }}</span>
+                        </div>
+                        <div>
+                            <span class="font-medium">Tipo derecho de riego:</span>
+                            <span class="text-gray-700">{{ $propiedad->tipo_derecho_riego ?: '-' }}</span>
+                        </div>
+                        <div>
+                            <span class="font-medium">RUT:</span>
+                            <span class="text-gray-700">{{ $propiedad->rut ? 'Sí' : 'No' }}</span>
+                        </div>
+                        @if($propiedad->rut_valor)
+                        <div>
+                            <span class="font-medium">Nº RUT:</span>
+                            <span class="text-gray-700">{{ number_format($propiedad->rut_valor, 0, '', '') }}</span>
+                        </div>
+                        @endif
+                        @if($propiedad->rut_archivo)
+                        <div>
+                            <span class="font-medium">Adjunto RUT:</span>
+                            <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Ver archivo</a>
+                        </div>
+                        @endif
+                        <div>
+                            <span class="font-medium">Malla antigranizo:</span>
+                            <span class="text-gray-700">{{ $propiedad->malla ? 'Sí' : 'No' }}</span>
+                        </div>
+                        @if($propiedad->hectareas_malla)
+                        <div>
+                            <span class="font-medium">Hectáreas con malla:</span>
+                            <span class="text-gray-700">{{ number_format($propiedad->hectareas_malla, 2, ',', '.') }}</span>
+                        </div>
+                        @endif
+                        <div>
+                            <span class="font-medium">Cierre perimetral:</span>
+                            <span class="text-gray-700">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-200">
+                        <form action="{{ route('propiedades.destroy', $propiedad) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta propiedad?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="w-full px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-sm">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
     </div>
-    
+
     <!-- Controles de paginación (cliente) -->
     <div class="px-4 py-3 flex items-center justify-center space-x-4" role="navigation" aria-label="Paginación tabla">
         <button id="prop-prev" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Página anterior">◀</button>
@@ -132,7 +193,7 @@ function showLocationModal(lat, lng) {
     }
 
     // Actualizar el texto de las coordenadas
-    document.getElementById('modalCoordinates').textContent = 
+    document.getElementById('modalCoordinates').textContent =
         lat.toFixed(7) + ', ' + lng.toFixed(7);
 
     // Forzar actualización del mapa
@@ -142,24 +203,76 @@ function showLocationModal(lat, lng) {
 }
 
 function closeLocationModal() {
-    const modal = document.getElementById('mapModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+    document.getElementById('mapModal').classList.add('hidden');
+    document.getElementById('mapModal').classList.remove('flex');
 }
 
-// Cerrar el modal con la tecla Escape
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeLocationModal();
+// Toggle property details
+function showDetails(index) {
+    const details = document.getElementById(`details-${index}`);
+    const button = document.querySelector(`button[onclick="showDetails(${index})"]`);
+    
+    if (details && button) {
+        // Toggle the visibility of the details
+        details.classList.toggle('hidden');
+        
+        // Update button text based on current state
+        if (details.classList.contains('hidden')) {
+            button.textContent = 'Ver más';
+            button.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+            button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+        } else {
+            button.textContent = 'Ver menos';
+            button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+            button.classList.add('bg-gray-500', 'hover:bg-gray-600');
+        }
+    }
+}
+
+// Close all other details when one is opened
+document.addEventListener('click', function(e) {
+    if (e.target.matches('button[onclick^="showDetails("]')) {
+        const index = e.target.getAttribute('onclick').match(/\d+/)[0];
+        const allDetails = document.querySelectorAll('[id^="details-"]');
+        const allButtons = document.querySelectorAll('button[onclick^="showDetails("]');
+        
+        allDetails.forEach((detail, i) => {
+            if (detail.id !== `details-${index}`) {
+                detail.classList.add('hidden');
+                allButtons[i].textContent = 'Ver más';
+                allButtons[i].classList.remove('bg-gray-500', 'hover:bg-gray-600');
+                allButtons[i].classList.add('bg-blue-500', 'hover:bg-blue-600');
+            }
+        });
     }
 });
 
-// Cerrar el modal al hacer clic fuera del contenido
-document.getElementById('mapModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeLocationModal();
+// Close all details when pressing Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const allDetails = document.querySelectorAll('[id^="details-"]');
+        const allButtons = document.querySelectorAll('button[onclick^="showDetails("]');
+        
+        allDetails.forEach((detail, i) => {
+            detail.classList.add('hidden');
+            if (allButtons[i]) {
+                allButtons[i].textContent = 'Ver más';
+                allButtons[i].classList.remove('bg-gray-500', 'hover:bg-gray-600');
+                allButtons[i].classList.add('bg-blue-500', 'hover:bg-blue-600');
+            }
+        });
     }
 });
+
+// Close modal when clicking outside
+const mapModal = document.getElementById('mapModal');
+if (mapModal) {
+    mapModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLocationModal();
+        }
+    });
+}
 </script>
 
 <!-- Script: paginación cliente para propiedades (5 filas por página) -->

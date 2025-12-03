@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen flex flex-col md:flex-row bg-gray-100" id="dashboard-container">
+<div class="min-h-screen min-w-screen flex flex-col md:flex-row bg-gray-100" id="dashboard-container">
     <!-- Mobile Header with Hamburger Menu -->
     <div class="md:hidden fixed top-0 left-0 right-0 bg-azul-marino text-white flex items-center justify-between px-4 py-3 shadow-lg z-40">
         <span class="font-bold text-lg">Panel</span>
@@ -27,10 +27,10 @@
             <span class="font-bold text-base md:text-lg mt-2">Panel</span>
         </div>
         <nav class="flex flex-col space-y-1 md:space-y-2 overflow-y-auto">
-            <!-- Dashboard -->
+            <!-- Inicio -->
             <a href="{{ route('dashboard') }}" class="flex items-center px-3 md:px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base md:text-lg text-white">
-                <i class="nf nf-fa-line_chart mr-2"></i>
-                Dashboard
+                <i class="nf nf-fa-home mr-2"></i>
+                Inicio
             </a>
 
             <!-- Perfil -->

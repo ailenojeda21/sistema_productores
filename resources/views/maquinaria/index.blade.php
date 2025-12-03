@@ -2,6 +2,8 @@
 
 @section('dashboard-content')
 <div class="w-full max-w-5xl mx-auto">
+    <x-breadcrumb :items="[['label' => 'Maquinaria']]" />
+    
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-azul-marino">Maquinaria</h1>
         @if(!isset($hasMaquinaria) || !$hasMaquinaria)
@@ -18,8 +20,10 @@
         @endif
     </div>
 
-    <div class="bg-white rounded-lg shadow p-6 overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="overflow-x-auto">
+            <div class="min-w-max w-full">
+                <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
  
@@ -64,8 +68,10 @@
                         </td>
                     </tr>
                 @endforelse
-            </tbody>
-        </table>
+                </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
