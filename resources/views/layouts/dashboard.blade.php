@@ -7,10 +7,13 @@
       <div class="flex flex-col items-center mb-10"> 
     <!-- Contenedor circular -->
     <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-24 w-24">
-        <img src="{{ asset('images/melon2.png') }}" 
-             alt="Avatar" 
-             class="h-full w-full object-cover">
-    </div>
+    <img 
+        src="{{ Auth::user()->avatar ? asset('images/avatars/' . Auth::user()->avatar) : asset('images/avatars/uno.png') }}" 
+        alt="Avatar" 
+        class="h-full w-full object-cover"
+    >
+</div>
+
 
     <span class="font-bold text-lg">Panel</span>
 </div>
