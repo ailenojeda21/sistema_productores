@@ -1,107 +1,153 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen flex bg-gray-100 " >
-    <!-- Sidebar -->
-    <aside class=" w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg">
-      <div class="flex flex-col items-center mb-10"> 
-    <!-- Contenedor circular -->
-    <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-24 w-24">
-    <img 
-        src="{{ Auth::user()->avatar ? asset('images/avatars/' . Auth::user()->avatar) : asset('images/avatars/uno.png') }}" 
-        alt="Avatar" 
-        class="h-full w-full object-cover"
-    >
-</div>
+<div class="min-h-screen flex flex-col md:flex-row bg-gray-100" id="dashboard-container">
+    <!-- Mobile Header with Hamburger Menu -->
+    <div class="md:hidden fixed top-0 left-0 right-0 bg-azul-marino text-white flex items-center justify-between px-4 py-3 shadow-lg z-40">
+        <span class="font-bold text-lg">Panel</span>
+        <button id="drawer-toggle" class="p-2 hover:bg-opacity-80 rounded transition" aria-label="Toggle menu">
+            <i class="nf nf-fa-bars text-xl"></i>
+        </button>
+    </div>
 
+    <!-- Drawer Overlay (Mobile) -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black bg-opacity-50 md:hidden hidden z-30 transition-opacity duration-300"></div>
 
-    <span class="font-bold text-lg">Panel</span>
-</div>
-        <nav class="flex flex-col space-y-2">
+    <!-- Sidebar/Drawer -->
+    <aside id="drawer" class="fixed md:static top-0 left-0 h-screen md:h-auto w-64 bg-azul-marino text-white flex flex-col py-4 md:py-8 px-4 shadow-lg md:min-h-screen transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 md:z-auto">
+        <div class="flex flex-col items-center mb-6 md:mb-10">
+            <!-- Contenedor circular -->
+            <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-20 w-20 md:h-24 md:w-24">
+                <img
+                    src="{{ Auth::user()->avatar ? asset('images/avatars/' . Auth::user()->avatar) : asset('images/avatars/uno.png') }}"
+                    alt="Avatar"
+                    class="h-full w-full object-cover"
+                >
+            </div>
+            <span class="font-bold text-base md:text-lg mt-2">Panel</span>
+        </div>
+        <nav class="flex flex-col space-y-1 md:space-y-2 overflow-y-auto">
             <!-- Dashboard -->
-            <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <!-- Velocímetro -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 3C7.03 3 3 7.03 3 12c0 3.87 3.13 7 7 7h4c3.87 0 7-3.13 7-7 0-4.97-4.03-9-9-9zm0 13a2 2 0 110-4 2 2 0 010 4zm6.93-5.36a.75.75 0 00-1.06-1.06l-1.42 1.42a.75.75 0 001.06 1.06l1.42-1.42z"/>
-                </svg>
+            <a href="{{ route('dashboard') }}" class="flex items-center px-3 md:px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base md:text-lg text-white">
+                <i class="nf nf-fa-line_chart mr-2"></i>
                 Dashboard
             </a>
 
             <!-- Perfil -->
-            <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <!-- Persona -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM4 20v-1a4 4 0 014-4h8a4 4 0 014 4v1" />
-                </svg>
-                Perfil
+            <a href="{{ route('profile') }}" class="flex items-center px-3 md:px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base md:text-lg text-white">
+                <i class="nf nf-fa-user mr-2"></i>
+                <span class="text-white sm:inline">Perfil</span>
             </a>
 
             <!-- Propiedades -->
-            <a href="{{ route('propiedades.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <!-- Casa -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M3 12l9-9 9 9v9a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4H9v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-9z" />
-                </svg>
-                Propiedades
+            <a href="{{ route('propiedades.index') }}" class="flex items-center px-3 md:px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base md:text-lg text-white">
+                <i class="nf nf-fa-home mr-2"></i>
+                <span class="text-white sm:inline">Propiedades</span>
             </a>
 
             <!-- Cultivos -->
-            <a href="{{ route('cultivos.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <!-- Planta con raíz -->
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="h-5 w-5 mr-2">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 22V12m0 0s4-2 4-6a4 4 0 00-4-4 4 4 0 00-4 4c0 4 4 6 4 6zm0 0s-2 4-6 4a6 6 0 01-6-6 6 6 0 016 6h0" />
-                </svg>
-                Cultivos
+            <a href="{{ route('cultivos.index') }}" class="flex items-center px-3 md:px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base md:text-lg text-white">
+                <i class="nf nf-fa-leaf mr-2"></i>
+                <span class="text-white sm:inline">Cultivos</span>
             </a>
 
             <!-- Maquinarias -->
-            <a href="{{ route('maquinaria.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <!-- Tractor -->
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 640 512" class="h-5 w-5 mr-2">
-                    <path d="M624 352h-16V243.3c0-21.2-10.6-41.1-28.4-53.3L504 144V96c0-17.7-14.3-32-32-32h-32V32c0-17.7-14.3-32-32-32H368c-17.7 0-32 14.3-32 32v32h-16C302.3 64 288 78.3 288 96v96H64c-35.3 0-64 28.7-64 64v128c0 17.7 14.3 32 32 32h49.3C96.5 441.2 123.4 480 160 480s63.5-38.8 78.7-96H352v32c0 53 43 96 96 96s96-43 96-96v-32h80c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zM160 432c-17.7 0-32-28.7-32-64s14.3-64 32-64 32 28.7 32 64-14.3 64-32 64zm288-64c0-35.3 28.7-64 64-64s64 28.7 64 64-28.7 64-64 64-64-28.7-64-64z"/>
-                </svg>
-                Maquinarias
+            <a href="{{ route('maquinaria.index') }}" class="flex items-center px-3 md:px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base md:text-lg text-white">
+                <i class="nf nf-fa-wrench mr-2"></i>
+                <span class="text-white sm:inline">Maquinarias</span>
             </a>
             <!-- Comercios -->
-            <a href="{{ route('comercios.index') }}" class="flex items-center px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <!-- Tienda -->
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5 mr-2">
-                    <path d="M4 4h16v2H4zm0 4h16v2H4zm0 4h16v10H4zm2 2v6h12v-6z"/>
-                </svg>
-                Comercialización
+            <a href="{{ route('comercios.index') }}" class="flex items-center px-3 md:px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base md:text-lg text-white">
+                <i class="nf nf-fa-shopping_cart mr-2"></i>
+                <span class="text-white sm:inline">Comercialización</span>
             </a>
-        <!-- Cerrar sesión -->
-        <form method="POST" action="{{ route('logout') }}" class="mt-auto">
-            @csrf
-            <button type="submit" 
-                class="w-full flex items-center px-4 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-400">
-                <!-- Ícono logout -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 
-                        2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
-                </svg>
-                Cerrar sesión
-            </button>
-        </form>
+            <!-- Cerrar sesión -->
+            <form method="POST" action="{{ route('logout') }}" class="mt-auto pt-4 border-t border-white border-opacity-20">
+                @csrf
+                <button type="submit"
+                    class="w-full flex items-center px-3 md:px-4 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-50 text-base md:text-lg">
+                    <i class="nf nf-fa-sign_out mr-2"></i>
+                    <span class="text-red-400 sm:inline">Cerrar sesión</span>
+                </button>
+            </form>
         </nav>
     </aside>
     <!-- Main Panel -->
-    <main class="flex-1 p-8 flex flex-col justify-start items-center overflow-y-auto text-base">
+    <main class="flex-1 p-4 md:p-8 flex flex-col justify-start items-center overflow-y-auto text-base w-full mt-16 md:mt-0">
         @yield('dashboard-content')
     </main>
 </div>
+
+<!-- Drawer Toggle Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const drawerToggle = document.getElementById('drawer-toggle');
+    const drawer = document.getElementById('drawer');
+    const overlay = document.getElementById('drawer-overlay');
+    const dashboardContainer = document.getElementById('dashboard-container');
+
+    function toggleDrawer() {
+        const isOpen = drawer.classList.contains('translate-x-0');
+
+        if (isOpen) {
+            closeDrawer();
+        } else {
+            openDrawer();
+        }
+    }
+
+    function openDrawer() {
+        drawer.classList.remove('-translate-x-full');
+        drawer.classList.add('translate-x-0');
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+        drawer.classList.add('-translate-x-full');
+        drawer.classList.remove('translate-x-0');
+        overlay.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Toggle button click
+    drawerToggle.addEventListener('click', toggleDrawer);
+
+    // Overlay click to close
+    overlay.addEventListener('click', closeDrawer);
+
+    // Close drawer when a link is clicked
+    const drawerLinks = drawer.querySelectorAll('a, button');
+    drawerLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Don't close if it's a form submit button
+            if (this.tagName === 'BUTTON' && this.closest('form')) {
+                // Allow form submission, don't close drawer
+                return;
+            }
+            // Close drawer for regular links
+            if (this.tagName === 'A') {
+                closeDrawer();
+            }
+        });
+    });
+
+    // Close drawer on window resize to desktop
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+            closeDrawer();
+        }
+    });
+});
+</script>
+
 @endsection
+
 <style>
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
- 
 }
 
 table {
@@ -112,6 +158,26 @@ table {
 td, th {
   word-wrap: break-word;
   white-space: normal;
+}
+
+/* Drawer animations */
+@media (max-width: 767px) {
+    #drawer {
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #drawer.translate-x-0 {
+        transform: translateX(0);
+    }
+
+    #drawer.-translate-x-full {
+        transform: translateX(-100%);
+    }
+}
+
+/* Prevent body scroll when drawer is open */
+body.drawer-open {
+    overflow: hidden;
 }
 
 </style>
