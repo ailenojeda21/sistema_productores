@@ -8,9 +8,7 @@
     <link rel="shortcut icon" href="/public/favicon.png" type="image/png">
     <link rel="icon" href="/public/favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="/public/favicon.png">
-
-{{--    <title>Sistema Agr&iacute;cola Lavalle</title>--}}
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Sistema Agr&iacute;cola Municipal de Lavalle</title>
     <script>
         tailwind.config = {
             theme: {

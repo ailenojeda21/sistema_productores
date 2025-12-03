@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 // Página de inicio
 Route::get('/', function () {
     return view('home');
-});
+})->name('home');
 
 // Dashboard
 Route::get('/dashboard', function () {

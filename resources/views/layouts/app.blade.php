@@ -3,7 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Sistema Agr&iacute;cola Municipal de Lavalle</title>
+    <link rel="shortcut icon" href="/favicon.png" type="image/png">
+    <link rel="icon " href="/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/public/favicon.png">
     <!-- Nerd Fonts -->
     <link rel="stylesheet" href="https://www.nerdfonts.com/assets/css/webfont.css">
     <style>
