@@ -11,25 +11,17 @@
     </div>
 
     <!-- Drawer Overlay (Mobile) -->
-    <div id="drawer-overlay" class="fixed inset-0 bg-black bg-opacity-50 md:hidden hidden z-30 transition-opacity duration-300"></div>
 
     <!-- Sidebar/Drawer -->
     <aside id="drawer" class="fixed md:static top-0 left-0 h-screen md:h-auto w-64 bg-azul-marino text-white flex flex-col py-4 md:py-8 px-4 shadow-lg md:min-h-screen transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40 md:z-auto">
         <div class="flex flex-col items-center mb-6 md:mb-10">
-            <!-- Contenedor circular -->
-            <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-20 w-20 md:h-24 md:w-24">
-                <img
-                    src="{{ Auth::user()->avatar ? asset('images/avatars/' . Auth::user()->avatar) : asset('images/avatars/uno.png') }}"
-                    alt="Avatar"
-                    class="h-full w-full object-cover"
-                >
-            </div>
+            <!-- Contenedor circular con borde y sombra -->
+            <x-mini-avatar :user="auth()->user()" />
             <span class="font-bold text-base md:text-lg mt-2">Panel</span>
         </div>
         <nav class="flex flex-col space-y-1 md:space-y-2 overflow-y-auto">
             <!-- Inicio -->
             <a href="{{ route('dashboard') }}" class="flex items-center px-3 md:px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base md:text-lg text-white">
-                <i class="nf nf-fa-home mr-2"></i>
                 Inicio
             </a>
 
