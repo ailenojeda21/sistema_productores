@@ -209,14 +209,22 @@ function closeLocationModal() {
 
 // Toggle property details
 function showDetails(index) {
-    const details = document.getElementById(`details-${index}`);
+    // Cerrar cualquier otro detalle abierto
+    document.querySelectorAll('[id^="details-"]').forEach((element, i) => {
+        if (i !== index && !element.classList.contains('hidden')) {
+            element.classList.add('hidden');
+            // Cambiar el texto del botón a 'Ver más' para los demás
+            const otherButton = document.querySelector(`button[onclick="showDetails(${i})"]`);
+            if (otherButton) otherButton.textContent = 'Ver más';
+        }
+    });
+
+    const details = document.getElementById('details-' + index);
     const button = document.querySelector(`button[onclick="showDetails(${index})"]`);
     
-    if (details && button) {
-        // Toggle the visibility of the details
+    if (details) {
         details.classList.toggle('hidden');
-        
-        // Update button text based on current state
+        // Cambiar el texto del botón según el estado
         if (details.classList.contains('hidden')) {
             button.textContent = 'Ver más';
             button.classList.remove('bg-gray-500', 'hover:bg-gray-600');

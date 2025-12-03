@@ -4,7 +4,7 @@
 <div class="min-h-screen min-w-screen flex flex-col md:flex-row bg-gray-100" id="dashboard-container">
     <!-- Mobile Header with Hamburger Menu -->
     <div class="md:hidden fixed top-0 left-0 right-0 bg-azul-marino text-white flex items-center justify-between px-4 py-3 shadow-lg z-40">
-        <span class="font-bold text-lg">Panel</span>
+        <span class="font-bold text-lg">{{getenv('APP_NAME')}}</span>
         <button id="drawer-toggle" class="p-2 hover:bg-opacity-80 rounded transition" aria-label="Toggle menu">
             <i class="nf nf-fa-bars text-xl"></i>
         </button>
@@ -70,6 +70,11 @@
     <main class="flex-1 p-4 md:p-8 flex flex-col justify-start items-center overflow-y-auto text-base w-full mt-16 md:mt-0">
         @yield('dashboard-content')
     </main>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent"></div>
+    </div>
 </div>
 
 <!-- Drawer Toggle Script -->
@@ -122,6 +127,17 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function(e) {
             // Don't close if it's a form submit button
             if (this.tagName === 'BUTTON' && this.closest('form')) {
+                // Show loading overlay before form submission
+                const loadingOverlay = document.getElementById('loading-overlay');
+                if (loadingOverlay) {
+                    loadingOverlay.classList.remove('hidden');
+                    // Hide loading overlay after a short delay in case the page changes
+                    setTimeout(() => {
+                        if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
+                            loadingOverlay.classList.add('hidden');
+                        }
+                    }, 5000); // Hide after 5 seconds if not already hidden
+                }
                 // Allow form submission, don't close drawer
                 return;
             }
@@ -130,6 +146,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeDrawer();
             }
         });
+    });
+
+    // Hide loading overlay when page is fully loaded
+    window.addEventListener('load', function() {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('hidden');
+        }
     });
 
     // Close drawer on window resize to desktop
