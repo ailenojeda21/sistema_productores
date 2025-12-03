@@ -52,13 +52,7 @@
 <div class="w-full md:w-1/3 flex justify-center md:justify-end mt-4 md:mt-0">
     <div class="bg-white rounded-lg shadow-lg p-6 w-72 h-auto flex flex-col items-center">
 
-        <div class="h-44 w-44 md:h-48 md:w-48 rounded-full overflow-hidden shadow-lg">
-            <img src="{{ $user->avatar 
-                ? asset('images/avatars/'.$user->avatar) 
-                : asset('images/melon2.png') }}"
-                 alt="Avatar"
-                 class="h-full w-full object-cover">
-        </div>
+        <x-avatar :user="$user" size="profile" class="shadow-lg" />
 
         <div class="mt-4 text-xl font-semibold text-gray-700">Avatar</div>
 
