@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use Spatie\Permission\Traits\HasRoles;
-
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    use HasFactory, Notifiable, HasRoles;
+
     /**
      * Relación: Un usuario tiene muchas propiedades
      */
@@ -18,25 +18,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Propiedad::class, 'usuario_id');
     }
-  public function comercializacion()
-  {
-      return $this->hasMany(Comercio::class, 'usuario_id');
-  }
-    /**
-     * Relación: Un usuario tiene muchos archivos
-     */
+
+    public function comercializacion()
+    {
+        return $this->hasMany(Comercio::class, 'usuario_id');
+    }
+
     public function archivos()
     {
         return $this->hasMany(Archivo::class, 'usuario_id');
     }
 
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
-
     /**
      * The attributes that are mass assignable.
-     *
-     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -44,12 +38,11 @@ class User extends Authenticatable
         'password',
         'es_propietario',
         'dni',
+        'avatar', // <<--- AGREGADO
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * The attributes that should be hidden.
      */
     protected $hidden = [
         'password',
@@ -57,9 +50,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Attribute casting.
      */
     protected function casts(): array
     {
@@ -67,5 +58,19 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Accesor: URL del avatar.
+     * Si el usuario tiene avatar, devuelve la imagen elegida.
+     * Si no, devuelve un avatar por defecto.
+     */
+    public function getAvatarUrlAttribute()
+    {
+        if ($this->avatar) {
+            return asset('storage/avatars/' . $this->avatar);
+        }
+
+        return asset('storage/avatars/uno.png'); // avatar por defecto
     }
 }

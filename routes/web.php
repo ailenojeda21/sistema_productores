@@ -76,11 +76,20 @@ Route::post('/register', function (Request $request) {
 
 // Rutas protegidas
 Route::middleware('auth')->group(function () {
+
     // Perfil
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // NUEVA RUTA → Actualizar avatar
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])
+        ->name('profile.updateAvatar');
+        
+    Route::get('/profile/avatar', [ProfileController::class, 'editAvatar'])
+    ->name('profile.avatar');
+
 
     // Cultivos
     Route::resource('cultivos', CultivoController::class);
