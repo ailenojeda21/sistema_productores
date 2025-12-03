@@ -22,7 +22,8 @@
         <nav class="flex flex-col space-y-1 md:space-y-2 overflow-y-auto">
             <!-- Inicio -->
             <a href="{{ route('dashboard') }}" class="flex items-center px-3 md:px-4 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-base md:text-lg text-white">
-                Inicio
+                <i class="nf nf-fa-home mr-2"></i>
+                <span class="text-white sm:inline">Inicio</span>
             </a>
 
             <!-- Perfil -->
