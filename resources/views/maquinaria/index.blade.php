@@ -5,13 +5,13 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-azul-marino">Maquinaria</h1>
         @if(!isset($hasMaquinaria) || !$hasMaquinaria)
-            <a href="{{ route('maquinaria.create') }}" 
+            <a href="{{ route('maquinaria.create') }}"
                class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">
                Nueva Máquina
             </a>
         @else
             @php $first = $maquinarias->first(); @endphp
-            <a href="{{ route('maquinaria.edit', $first->id) }}" 
+            <a href="{{ route('maquinaria.edit', $first->id) }}"
                class="px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro font-semibold shadow">
                Editar Máquina
             </a>
@@ -22,7 +22,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
- 
+
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Máquina</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Modelo (Año)</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Implementos</th>
@@ -32,7 +32,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($maquinarias as $maquinaria)
                     <tr>
-           
+
                         <td class="px-4 py-2 text-base text-gray-700">{{ $maquinaria->tractor ? 'Tractor' : '-' }}</td>
                         <td class="px-4 py-2 text-base text-gray-700">{{ $maquinaria->modelo_tractor ?? '-' }}</td>
                         <td class="px-4 py-2 text-base text-gray-700">
@@ -54,15 +54,17 @@
                             @endif
                         </td>
                <td class="px-4 py-2 text-right">
-                            
+
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-                            No hay maquinaria registrada.
-                        </td>
-                    </tr>
+                <tr class="empty-row">
+                    <td colspan="4" class="px-4 py-6 text-center text-gray-600">
+                        <div class="p-2">
+                            @include('maquinaria.partials._table_empty')
+                        </div>
+                    </td>
+                </tr>
                 @endforelse
             </tbody>
         </table>

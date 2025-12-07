@@ -27,12 +27,12 @@
                 </tr>
             </thead>
             <tbody id="propiedades-tbody" class="bg-white divide-y divide-gray-200">
-                @foreach($propiedades as $propiedad)
+                @forelse($propiedades as $propiedad)
                 <tr>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->direccion }}</td>
                     <td class="px-4 py-2 text-base text-gray-700 whitespace-nowrap">
                         @if($propiedad->lat && $propiedad->lng)
-                            <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})" 
+                            <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})"
                                     class="text-blue-600 hover:text-blue-800 underline">Ver Mapa</button>
                         @else
                             Sin ubicación
@@ -66,14 +66,22 @@
                         </div>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr class="empty-row">
+                    <td colspan="13" class="px-4 py-6 text-center text-gray-600">
+                        <div class="p-2">
+                            @include('propiedades.partials._table_empty')
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
 
     </div>
-    
+
     <!-- Controles de paginación (cliente) -->
-    <div class="px-4 py-3 flex items-center justify-center space-x-4" role="navigation" aria-label="Paginación tabla">
+    <div id="prop-pagination" class="px-4 py-3 flex items-center justify-center space-x-4" role="navigation" aria-label="Paginación tabla">
         <button id="prop-prev" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Página anterior">◀</button>
         <span id="prop-page-info" class="text-sm text-gray-700">Página 1</span>
         <button id="prop-next" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Siguiente página">▶</button>
@@ -132,7 +140,7 @@ function showLocationModal(lat, lng) {
     }
 
     // Actualizar el texto de las coordenadas
-    document.getElementById('modalCoordinates').textContent = 
+    document.getElementById('modalCoordinates').textContent =
         lat.toFixed(7) + ', ' + lng.toFixed(7);
 
     // Forzar actualización del mapa
@@ -164,23 +172,29 @@ document.getElementById('mapModal').addEventListener('click', function(e) {
 
 <!-- Script: paginación cliente para propiedades (5 filas por página) -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const rows = Array.from(document.querySelectorAll('#propiedades-tbody tr'));
-    const perPage = 4;
+function setupTablePagination({tbodySelector, prevBtnId, nextBtnId, pageInfoId, paginationContainerId, perPage = 4}) {
+    const rows = Array.from(document.querySelectorAll(`${tbodySelector} tr`));
+    const dataRows = rows.filter(r => !r.classList.contains('empty-row'));
+    const emptyRow = rows.find(r => r.classList.contains('empty-row'));
     let currentPage = 1;
-    const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+    const totalPages = Math.max(1, Math.ceil(Math.max(1, dataRows.length) / perPage));
 
-    const prevBtn = document.getElementById('prop-prev');
-    const nextBtn = document.getElementById('prop-next');
-    const info = document.getElementById('prop-page-info');
+    const prevBtn = document.getElementById(prevBtnId);
+    const nextBtn = document.getElementById(nextBtnId);
+    const info = document.getElementById(pageInfoId);
+    const paginationContainer = document.getElementById(paginationContainerId);
 
     function renderPage(page) {
         currentPage = Math.min(Math.max(1, page), totalPages);
         const start = (currentPage - 1) * perPage;
         const end = start + perPage;
-        rows.forEach((r, i) => {
+        // Mostrar/ocultar solo filas con datos. La fila empty-row (si existe) siempre se muestra cuando no hay datos.
+        dataRows.forEach((r, i) => {
             r.style.display = (i >= start && i < end) ? '' : 'none';
         });
+        if (emptyRow) {
+            emptyRow.style.display = (dataRows.length === 0) ? '' : 'none';
+        }
         info.textContent = `Página ${currentPage} de ${totalPages}`;
         prevBtn.disabled = currentPage === 1;
         nextBtn.disabled = currentPage === totalPages;
@@ -189,8 +203,31 @@ document.addEventListener('DOMContentLoaded', function() {
     prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
     nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
 
-    // Inicializar
+    // Si no hay filas de datos, ocultar paginación y mostrar la fila de 'No registros'
+    if (dataRows.length === 0) {
+        if (paginationContainer) paginationContainer.style.display = 'none';
+        if (emptyRow) emptyRow.style.display = '';
+        return;
+    }
+
+    // Inicializar paginación
     renderPage(1);
+    return {
+        getCurrentPage: () => currentPage,
+        getTotalPages: () => totalPages
+    };
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Propiedades table pagination
+    setupTablePagination({
+        tbodySelector: '#propiedades-tbody',
+        prevBtnId: 'prop-prev',
+        nextBtnId: 'prop-next',
+        pageInfoId: 'prop-page-info',
+        paginationContainerId: 'prop-pagination',
+        perPage: 4
+    });
 });
 </script>
 @endsection

@@ -71,9 +71,11 @@
                     </td>
                 </tr>
                 @empty
-                <tr>
-                    <td colspan="4" class="px-4 py-4 text-center text-gray-500">
-                        No hay comercios registrados.
+                <tr class="empty-row">
+                    <td colspan="4" class="px-4 py-6 text-center text-gray-600">
+                        <div class="p-2">
+                            @include('comercios.partials._table_empty')
+                        </div>
                     </td>
                 </tr>
                 @endforelse
@@ -81,16 +83,5 @@
         </table>
     </div>
 
-    <div class="mt-6">
-        <h2 class="text-2xl font-bold text-azul-marino mb-4">Editar Imagen de Perfil</h2>
-        <form action="{{ route('profile.updateImage') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="mb-4">
-                <label for="profile_image" class="block text-sm font-medium text-gray-700">Selecciona una imagen:</label>
-                <input type="file" name="profile_image" id="profile_image" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50" accept="image/*" required>
-            </div>
-            <button type="submit" class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Actualizar Imagen</button>
-        </form>
-    </div>
 </div>
 @endsection

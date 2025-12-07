@@ -2,6 +2,29 @@
 
 @section('dashboard-content')
 <div class="w-full max-w-2xl mx-auto">
+    @php
+        // Revisar si la propiedad tiene valores útiles; si no, mostrar el partial de vacío
+        $hasPropiedadData = false;
+        if (isset($propiedad)) {
+            $hasPropiedadData = (bool) (
+                (!empty($propiedad->ubicacion)) ||
+                (!empty($propiedad->direccion)) ||
+                (!empty($propiedad->hectareas)) ||
+                ($propiedad->es_propietario) ||
+                ($propiedad->derecho_riego) ||
+                (!empty($propiedad->tipo_derecho_riego)) ||
+                ($propiedad->rut) ||
+                (!empty($propiedad->rut_archivo)) ||
+                ($propiedad->malla) ||
+                (!empty($propiedad->hectareas_malla)) ||
+                ($propiedad->cierre_perimetral)
+            );
+        }
+    @endphp
+
+    @if(!isset($propiedad) || !$hasPropiedadData)
+        @include('propiedades.partials._empty')
+    @else
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Detalle de Propiedad</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -22,5 +45,6 @@
         </div>
         <a href="{{ route('propiedades.index') }}" class="mt-8 px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro hover:text-azul-marino font-semibold shadow transition">Volver al listado</a>
     </div>
+    @endif
 </div>
 @endsection

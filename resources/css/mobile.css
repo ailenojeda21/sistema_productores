@@ -1,0 +1,223 @@
+/* Mobile Optimization Styles */
+
+/* Prevent horizontal scrolling and enable smooth vertical scrolling */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Main content container with vertical scrolling */
+.main-content {
+    height: calc(100vh - 4rem); /* Adjust based on your header/footer height */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 transparent;
+}
+
+/* Custom scrollbar for WebKit browsers */
+.main-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+    background-color: #cbd5e0;
+    border-radius: 3px;
+}
+
+/* Prevent content from jumping when scrollbar appears */
+html {
+    margin-left: calc(100vw - 100%);
+}
+
+/* Drawer Mobile Menu Styles */
+@media (max-width: 767px) {
+    /* Add padding to main content to account for fixed header */
+    main {
+        padding-top: 1rem;
+    }
+    
+    /* Drawer container */
+    #drawer {
+        max-width: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Drawer overlay */
+    #drawer-overlay {
+        backdrop-filter: blur(2px);
+    }
+    
+    /* Mobile header */
+    .md\:hidden {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+    }
+    
+    /* Hamburger button */
+    #drawer-toggle {
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Touch-friendly button sizes */
+@media (max-width: 768px) {
+    button, a[role="button"], input[type="button"], input[type="submit"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Improve touch targets */
+    a, button {
+        padding: 0.75rem;
+    }
+    
+    /* Better font size for mobile readability */
+    body {
+        font-size: 16px;
+    }
+    
+    /* Responsive images */
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+    
+    /* Sidebar responsive behavior */
+    aside {
+        max-height: 100vh;
+    }
+    
+    /* Main content responsive */
+    main {
+        padding: 1rem;
+    }
+    
+    /* Better spacing for small screens */
+    .p-8 {
+        padding: 1rem;
+    }
+    
+    /* Responsive text */
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.25rem;
+    }
+    
+    /* Better form inputs on mobile */
+    input, textarea, select {
+        font-size: 16px;
+        padding: 0.75rem;
+        width: 100%;
+    }
+    
+    /* Prevent zoom on input focus */
+    input, textarea, select {
+        font-size: 16px;
+    }
+    
+    /* Responsive tables */
+    table {
+        font-size: 0.875rem;
+    }
+    
+    /* Better spacing for navigation */
+    nav a {
+        padding: 0.75rem 0.5rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.25rem;
+    }
+    
+    h2 {
+        font-size: 1rem;
+    }
+    
+    /* Reduce padding on very small screens */
+    .p-4, .p-6, .p-8 {
+        padding: 0.5rem;
+    }
+    
+    /* Stack buttons vertically */
+    .flex.space-x-4 {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    button, a[role="button"] {
+        width: 100%;
+    }
+}
+
+/* Landscape mode adjustments */
+@media (max-height: 500px) {
+    aside {
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+    
+    main {
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+}
+
+/* High DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Optimize for retina displays */
+    img {
+        image-rendering: -webkit-optimize-contrast;
+    }
+}
+
+/* Prevent layout shift on scrollbar appearance */
+html {
+    overflow-y: scroll;
+}
+
+/* Better focus states for keyboard navigation */
+a:focus, button:focus, input:focus, select:focus, textarea:focus {
+    outline: 2px solid #F39200;
+    outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
