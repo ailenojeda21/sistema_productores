@@ -1,6 +1,8 @@
 @extends('layouts.main')
 
 @section('dashboard-content')
+    <x-backbutton route="{{ route('comercios.index') }}"/>
+    <div class="py-4"></div>
     <div class="w-full max-w-2xl mx-auto">
         <div class="bg-white rounded-lg shadow p-8">
             <h2 class="text-2xl font-bold text-azul-marino mb-6">Nuevo Comercio</h2>
