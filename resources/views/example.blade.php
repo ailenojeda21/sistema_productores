@@ -1,10 +1,10 @@
-@extends('layouts.dashboard')
+@extends('layouts.main')
 
 @php
-$breadcrumbs = [
-    ['url' => route('dashboard'), 'label' => 'Inicio'],
-    ['url' => '#', 'label' => 'Ejemplo'],
-];
+    $breadcrumbs = [
+        ['url' => route('dashboard'), 'label' => 'Inicio'],
+        ['url' => '#', 'label' => 'Ejemplo'],
+    ];
 @endphp
 
 @section('dashboard-content')
