@@ -121,18 +121,12 @@
 <script>
     (function () {
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('[drawer] DOMContentLoaded');
             const openBtn = document.getElementById('drawer-open');
             const closeBtn = document.getElementById('drawer-close');
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('drawer-backdrop');
 
-            console.log('[drawer] elements:', { openBtn, closeBtn, sidebar, backdrop });
-
-            if (!sidebar) {
-                console.warn('[drawer] sidebar not found, aborting');
-                return;
-            }
+            if (!sidebar) return;
 
             // ensure a smooth inline transition regardless of Tailwind purge
             sidebar.style.transition = sidebar.style.transition || 'transform 300ms ease-in-out';
@@ -166,10 +160,7 @@
             }
 
             if (openBtn) {
-                openBtn.addEventListener('click', function (e) {
-                    console.log('[drawer] open clicked');
-                    openDrawer();
-                });
+                openBtn.addEventListener('click', function (e) { openDrawer(); });
                 // also support keyboard activation
                 openBtn.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -177,21 +168,10 @@
                         openDrawer();
                     }
                 });
-            } else console.warn('[drawer] openBtn not found');
+            }
 
-            if (closeBtn) {
-                closeBtn.addEventListener('click', function (e) {
-                    console.log('[drawer] close clicked');
-                    closeDrawer();
-                });
-            } else console.warn('[drawer] closeBtn not found');
-
-            if (backdrop) {
-                backdrop.addEventListener('click', function (e) {
-                    console.log('[drawer] backdrop clicked');
-                    closeDrawer();
-                });
-            } else console.warn('[drawer] backdrop not found');
+            if (closeBtn) closeBtn.addEventListener('click', function (e) { closeDrawer(); });
+            if (backdrop) backdrop.addEventListener('click', function (e) { closeDrawer(); });
 
             // Cerrar con ESC
             document.addEventListener('keydown', function (e) {
