@@ -4,18 +4,18 @@
 <div class="min-h-screen flex bg-gray-100 " >
     <!-- Sidebar -->
     <aside class=" w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg">
-      <div class="flex flex-col items-center mb-10"> 
+      <div class="flex flex-col items-center mb-4"> 
     <!-- Contenedor circular -->
     <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-24 w-24">
-    <img 
-        src="{{ Auth::user()->avatar ? asset('images/avatars/' . Auth::user()->avatar) : asset('images/avatars/uno.png') }}" 
-        alt="Avatar" 
-        class="h-full w-full object-cover"
-    >
-</div>
-
-
-    <span class="font-bold text-lg">Panel</span>
+        <img 
+            src="{{ Auth::user()->avatar ? asset('images/avatars/' . Auth::user()->avatar) : asset('images/avatars/uno.png') }}" 
+            alt="Avatar" 
+            class="h-full w-full object-cover"
+        >
+    </div>
+    <!-- Nombre del usuario -->
+    <span class="mt-2 font-semibold text-sm text-white">{{ Auth::user()->name }}</span>
+    
 </div>
         <nav class="flex flex-col space-y-2">
             <!-- Dashboard -->
