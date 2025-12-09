@@ -17,6 +17,8 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <!-- Nueva columna: Propiedad -->
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Propiedad</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Estación</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas Totales</th>
@@ -29,6 +31,12 @@
                 @foreach($cultivos as $cultivo)
                 <tr>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $cultivo->nombre }}</td>
+
+                    <!-- Celda nueva: mostrar propiedad asociada -->
+                    <td class="px-4 py-2 text-base text-gray-700"> @if(isset($cultivo->propiedad) && $cultivo->propiedad) {{ $cultivo->propiedad->ubicacion ?? '' }}@if(!empty($cultivo->propiedad->direccion))  {{ $cultivo->propiedad->direccion }}@endif
+                        @else
+                        @endif
+                    </td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $cultivo->tipo }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $cultivo->estacion }}</td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ number_format($cultivo->hectareas, 2, '.', ',') }}</td>
