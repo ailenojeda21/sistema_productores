@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Models\Maquinaria;
 use App\Models\Propiedad;
+use Illuminate\Support\Facades\Validator;
 
 class MaquinariaController extends Controller
 {
@@ -23,58 +23,69 @@ class MaquinariaController extends Controller
 
     public function create()
     {
-        // Si ya existe una maquinaria asociada a cualquier propiedad del usuario, redirigir a editar
-        $existing = Maquinaria::whereHas('propiedad', function($q){
-            $q->where('usuario_id', auth()->id());
-        })->first();
-
-        if ($existing) {
-            return redirect()->route('maquinaria.edit', $existing->id)
-                             ->with('info', 'Ya existe una maquinaria. Puedes editarla.');
-        }
-
+        // obtener propiedades del usuario para el select
         $propiedades = Propiedad::where('usuario_id', auth()->id())->get();
         return view('maquinaria.create', compact('propiedades'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'propiedad_id' => 'required|exists:propiedades,id',
-            'modelo_tractor' => 'nullable|integer|min:1900|max:' . date('Y'),
-        ]);
+        // Si viene el bulk (maquinarias[]), procesar como múltiples registros
+        if ($request->has('maquinarias') && is_array($request->input('maquinarias'))) {
+            $implements = [
+                'arado','rastra','niveleta_comun','niveleta_laser','cincel_cultivadora',
+                'desmalezadora','pulverizadora_tractor','mochila_pulverizadora',
+                'cosechadora','enfardadora','retroexcavadora','carro_carreton'
+            ];
 
-        // Asegurar que la propiedad pertenece al usuario autenticado
-        if (!Propiedad::where('id', $validated['propiedad_id'])->where('usuario_id', auth()->id())->exists()) {
-            return redirect()->back()->withInput()->withErrors(['propiedad_id' => 'Propiedad inválida.']);
-        }
+            foreach ($request->input('maquinarias') as $i => $item) {
+                $validator = Validator::make($item, [
+                    'propiedad_id' => 'required|exists:propiedades,id',
+                    'modelo_tractor' => 'nullable|integer|min:1900|max:'.date('Y'),
+                    // las casillas checkbox se manejan manualmente después
+                ]);
 
-        foreach ([
-            'tractor', 'arado', 'rastra', 'niveleta_comun', 'niveleta_laser', 
-            'cincel_cultivadora', 'desmalezadora', 'pulverizadora_tractor', 
-            'mochila_pulverizadora', 'cosechadora', 'enfardadora', 'retroexcavadora', 'carro_carreton'
-        ] as $campo) {
-            $validated[$campo] = $request->has($campo) ? 1 : 0;
-        }
+                if ($validator->fails()) {
+                    // podrías recolectar errores y volver con ellos; aquí abortamos con el primer error
+                    return redirect()->back()->withErrors($validator)->withInput();
+                }
 
-        // Si ya existe una maquinaria para el usuario, actualizamos esa en vez de crear otra
-        $existing = Maquinaria::whereHas('propiedad', function($q){
-            $q->where('usuario_id', auth()->id());
-        })->first();
+                $ma = new Maquinaria();
+                $ma->propiedad_id = $item['propiedad_id'];
+                $ma->tractor = isset($item['tractor']) && $item['tractor'] ? 1 : 0;
+                $ma->modelo_tractor = $item['modelo_tractor'] ?? null;
 
-        try {
-            if ($existing) {
-                $existing->update($validated);
-                return redirect()->route('maquinaria.index')->with('success', 'Maquinaria actualizada correctamente');
+                // Asignar implementos booleanos
+                foreach ($implements as $field) {
+                    $ma->$field = isset($item[$field]) && $item[$field] ? 1 : 0;
+                }
+
+                $ma->save();
             }
 
-            Maquinaria::create($validated);
-        } catch (\Exception $e) {
-            Log::error('Error creando/actualizando maquinaria (single rule): ' . $e->getMessage(), ['input' => $request->all()]);
-            return redirect()->back()->withInput()->withErrors(['general' => 'Ocurrió un error al guardar la maquinaria.']);
+            return redirect()->route('maquinaria.index')->with('info', 'Maquinarias creadas correctamente.');
         }
 
-        return redirect()->route('maquinaria.index')->with('success', 'Maquinaria creada correctamente');
+        // Caso single (forma antigua / compatibilidad)
+        $validated = $request->validate([
+            'propiedad_id' => 'required|exists:propiedades,id',
+            'modelo_tractor' => 'nullable|integer|min:1900|max:'.date('Y'),
+            // agrega validaciones para checks si quieres
+        ]);
+
+        $ma = new Maquinaria();
+        $ma->propiedad_id = $validated['propiedad_id'];
+        $ma->tractor = $request->has('tractor') ? 1 : 0;
+        $ma->modelo_tractor = $validated['modelo_tractor'] ?? null;
+
+        // asignar implementos (compatibilidad simple)
+        foreach (['arado','rastra','niveleta_comun','niveleta_laser','cincel_cultivadora','desmalezadora','pulverizadora_tractor','mochila_pulverizadora','cosechadora','enfardadora','retroexcavadora','carro_carreton'] as $f) {
+            $ma->$f = $request->has($f) ? 1 : 0;
+        }
+
+        $ma->save();
+
+        return redirect()->route('maquinaria.index')->with('info', 'Maquinaria creada correctamente.');
     }
 
     public function edit($id)

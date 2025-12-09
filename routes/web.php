@@ -100,7 +100,7 @@ Route::middleware('auth')->group(function () {
     // Comercios
     Route::resource('comercios', ComercioController::class);
 
-    // Maquinaria
+    // Asegurarse de tener el resource para maquinaria (no duplicar si ya existe)
     Route::resource('maquinaria', MaquinariaController::class);
 });
 
