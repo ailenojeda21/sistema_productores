@@ -98,3 +98,37 @@
         </div>
     </div>
 @endsection
+
+<!-- Script paginación -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const rows = Array.from(document.querySelectorAll('#maquinarias-tbody tr'));
+    const perPage = 4;
+    let currentPage = 1;
+    const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+
+    const prevBtn = document.getElementById('maq-prev');
+    const nextBtn = document.getElementById('maq-next');
+    const info = document.getElementById('maq-page-info');
+
+    function render(page) {
+        currentPage = Math.min(Math.max(1, page), totalPages);
+        const start = (currentPage - 1) * perPage;
+        const end = start + perPage;
+
+        rows.forEach((r, i) => {
+            r.style.display = (i >= start && i < end) ? '' : 'none';
+        });
+
+        info.textContent = `Página ${currentPage} de ${totalPages}`;
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+    }
+
+    prevBtn.addEventListener('click', () => render(currentPage - 1));
+    nextBtn.addEventListener('click', () => render(currentPage + 1));
+
+    render(1);
+});
+</script>

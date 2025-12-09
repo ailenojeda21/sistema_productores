@@ -83,9 +83,8 @@
                         </td>
                     </tr>
                 @endforelse
-                </tbody>
-            </table>
-        </div>
-
+            </tbody>
+        </table>
     </div>
+</div>
 @endsection
