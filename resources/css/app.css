@@ -2,7 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
- 
+/* Clases de iconos */
+.fa-icon {
+  @apply w-5 text-center mr-2;
+  font-size: 1.25rem;
+}
+
+
 .field {
     @apply m-4 flex;
 }
