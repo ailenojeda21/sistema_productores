@@ -1,7 +1,8 @@
 @extends('layouts.dashboard')
 
 @section('dashboard-content')
-<div class="w-full max-w-5xl mx-auto">
+<!-- Desktop View -->
+<div class="hidden lg:block w-full max-w-5xl mx-auto">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-azul-marino">Comercialización</h1>
         @if($comercios->isEmpty())
@@ -79,5 +80,27 @@
         @include('comercios.partials.empty-state')
         @endif
     </div>
+</div>
+
+<!-- Mobile View -->
+<div class="lg:hidden">
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold text-azul-marino">Comercialización</h1>
+        @if($comercios->isEmpty())
+            <a href="{{ route('comercios.create') }}" class="p-2 bg-naranja-oscuro text-white rounded-full shadow-lg">
+                <span class="material-symbols-outlined">add</span>
+            </a>
+        @else
+            <a href="{{ route('comercios.edit', $comercios->first()->id) }}" class="p-2 bg-azul-marino text-white rounded-full shadow-lg">
+                <span class="material-symbols-outlined">edit</span>
+            </a>
+        @endif
+    </div>
+    
+    @if($comercios->count() > 0)
+        @include('comercios.partials.mobile-list')
+    @else
+        @include('comercios.partials.empty-state')
+    @endif
 </div>
 @endsection

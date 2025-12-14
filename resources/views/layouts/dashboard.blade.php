@@ -4,16 +4,7 @@
 <div class="h-full flex bg-gray-100">
     <!-- Sidebar -->
     <aside class="w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg h-full overflow-y-auto">
-        <div class="flex flex-col items-center mb-4"> 
-            <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-24 w-24">
-                <img 
-                    src="{{ Auth::user()->avatar ? asset('images/avatars/' . Auth::user()->avatar) : asset('images/avatars/uno.png') }}" 
-                    alt="Avatar" 
-                    class="h-full w-full object-cover"
-                >
-            </div>
-            <span class="mt-2 font-semibold text-sm text-white">{{ Auth::user()->name }}</span>
-        </div>
+        <x-user-avatar :user="Auth::user()" size="md" :gradient="false" :showName="true" class="mb-4" />
         
         <nav class="flex flex-col space-y-2">
             <!-- Dashboard -->
@@ -85,16 +76,7 @@
 
     <!-- Sidebar Drawer -->
     <aside id="drawer" class="fixed w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg h-full z-50 transition-transform duration-300 -translate-x-full overflow-y-auto">
-        <div class="flex flex-col items-center mb-4"> 
-            <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-24 w-24">
-                <img 
-                    src="{{ Auth::user()->avatar ? asset('images/avatars/' . Auth::user()->avatar) : asset('images/avatars/uno.png') }}" 
-                    alt="Avatar" 
-                    class="h-full w-full object-cover"
-                >
-            </div>
-            <span class="mt-2 font-semibold text-sm text-white">{{ Auth::user()->name }}</span>
-        </div>
+        <x-user-avatar :user="Auth::user()" size="md" :gradient="false" :showName="true" class="mb-4" />
         
         <nav class="flex flex-col space-y-2">
             <!-- Dashboard -->
@@ -168,6 +150,7 @@
 </script>
 @endsection
 
+@section('styles')
 <style>
 html, body {
   margin: 0;
@@ -185,3 +168,4 @@ td, th {
   white-space: normal;
 }
 </style>
+@endsection
