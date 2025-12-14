@@ -36,7 +36,7 @@
                 </tr>
             </thead>
 
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody id="comercios-tbody" class="bg-white divide-y divide-gray-200">
                 @forelse($comercios as $comercio)
                 <tr>
                     <td class="w-28 px-2 py-2 text-base text-gray-700">
@@ -80,6 +80,15 @@
         @include('comercios.partials.empty-state')
         @endif
     </div>
+    
+    <!-- Paginación -->
+    @if($comercios->count() > 2)
+    <div class="px-4 py-3 flex items-center justify-center space-x-4" role="navigation" aria-label="Paginación tabla">
+        <button id="comercio-prev" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Página anterior">◀</button>
+        <span id="comercio-page-info" class="text-sm text-gray-700">Página 1</span>
+        <button id="comercio-next" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Siguiente página">▶</button>
+    </div>
+    @endif
 </div>
 
 <!-- Mobile View -->
@@ -103,4 +112,40 @@
         @include('comercios.partials.empty-state')
     @endif
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = Array.from(document.querySelectorAll('#comercios-tbody tr'));
+    if (rows.length === 0) return;
+    
+    const perPage = 2;
+    let currentPage = 1;
+    const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+
+    const prevBtn = document.getElementById('comercio-prev');
+    const nextBtn = document.getElementById('comercio-next');
+    const info = document.getElementById('comercio-page-info');
+    
+    if (!prevBtn || !nextBtn || !info) return;
+
+    function renderPage(page) {
+        currentPage = Math.min(Math.max(1, page), totalPages);
+        const start = (currentPage - 1) * perPage;
+        const end = start + perPage;
+        rows.forEach((r, i) => {
+            r.style.display = (i >= start && i < end) ? '' : 'none';
+        });
+        info.textContent = `Página ${currentPage} de ${totalPages}`;
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+    }
+
+    prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
+    nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
+
+    renderPage(1);
+});
+</script>
+@endpush
 @endsection
