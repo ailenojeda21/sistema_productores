@@ -132,13 +132,31 @@ let modalMap = null;
 let modalMarker = null;
 
 function showLocationModal(lat, lng) {
+    console.log('showLocationModal called with:', lat, lng);
+    
+    // Convertir a números si vienen como strings
+    lat = parseFloat(lat);
+    lng = parseFloat(lng);
+    
+    if (isNaN(lat) || isNaN(lng)) {
+        console.error('Coordenadas inválidas:', lat, lng);
+        alert('Coordenadas inválidas');
+        return;
+    }
+    
     // Mostrar el modal
     const modal = document.getElementById('mapModal');
+    if (!modal) {
+        console.error('Modal no encontrado');
+        return;
+    }
+    
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 
     // Inicializar el mapa si no existe
     if (!modalMap) {
+        console.log('Inicializando mapa modal');
         modalMap = L.map('modalMap');
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
@@ -218,5 +236,100 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar
     renderPage(1);
 });
+
+// Inicializar mapas inline móviles - ejecutar inmediatamente después de que Leaflet esté disponible
+(function() {
+    if (typeof L === 'undefined') {
+        console.error('Leaflet no está cargado');
+        return;
+    }
+    
+    // Esperar a que el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileMaps);
+    } else {
+        initMobileMaps();
+    }
+    
+    function initMobileMaps() {
+        console.log('Inicializando mapas móviles');
+        
+        // Agregar delay antes de inicializar los mapas
+        setTimeout(() => {
+            const mapInstances = {};
+            
+            document.querySelectorAll('[id^="map-"]').forEach(mapDiv => {
+                if (mapDiv.dataset.lat && mapDiv.dataset.lng) {
+                    const lat = parseFloat(mapDiv.dataset.lat);
+                    const lng = parseFloat(mapDiv.dataset.lng);
+                    
+                    console.log('Creando mapa para:', mapDiv.id, lat, lng);
+                    
+                    try {
+                        const map = L.map(mapDiv.id, {
+                            zoomControl: false,
+                            dragging: false,
+                            scrollWheelZoom: false,
+                            doubleClickZoom: false,
+                            boxZoom: false,
+                            keyboard: false,
+                            tap: false,
+                            touchZoom: false
+                        }).setView([lat, lng], 15);
+                        
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; OpenStreetMap'
+                        }).addTo(map);
+                        
+                        L.marker([lat, lng]).addTo(map);
+                        
+                        // Guardar instancia del mapa
+                        mapInstances[mapDiv.id] = map;
+                        
+                        // Forzar render después de un breve delay
+                        setTimeout(() => map.invalidateSize(), 200);
+                    } catch (error) {
+                        console.error('Error creando mapa:', error);
+                    }
+                }
+            });
+            
+            // Agregar listeners de doble tap a los iconos de ubicación
+            document.querySelectorAll('[id^="coord-"]').forEach(coordDiv => {
+                let lastTap = 0;
+                
+                coordDiv.addEventListener('click', function(e) {
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTap;
+                    
+                    // Detectar doble tap (menos de 300ms entre clicks)
+                    if (tapLength < 300 && tapLength > 0) {
+                        e.preventDefault();
+                        
+                        const mapId = this.dataset.mapId;
+                        const lat = parseFloat(this.dataset.lat);
+                        const lng = parseFloat(this.dataset.lng);
+                        
+                        console.log('Doble tap detectado, refrescando mapa:', mapId);
+                        
+                        // Refrescar el mapa
+                        if (mapInstances[mapId]) {
+                            mapInstances[mapId].invalidateSize();
+                            mapInstances[mapId].setView([lat, lng], 15);
+                            
+                            // Feedback visual
+                            this.style.color = '#10b981';
+                            setTimeout(() => {
+                                this.style.color = '';
+                            }, 300);
+                        }
+                    }
+                    
+                    lastTap = currentTime;
+                });
+            });
+        }, 500); // Delay de 500ms antes de inicializar mapas
+    }
+})();
 </script>
 @endpush

@@ -37,14 +37,24 @@
                 <span class="font-medium text-gray-600 w-32">Malla:</span>
                 <span class="text-gray-800">{{ $propiedad->malla ? 'Sí' : 'No' }}</span>
             </div>
-            @if($propiedad->lat && $propiedad->lng)
-            <div class="flex items-center text-sm">
-                <span class="font-medium text-gray-600 w-32">Ubicación:</span>
-                <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})" 
-                        class="text-blue-600 underline">Ver Mapa</button>
-            </div>
-            @endif
         </div>
+
+        <!-- Mapa inline -->
+        @if($propiedad->lat && $propiedad->lng)
+        <div class="mb-4">
+            <div class="text-xs text-gray-500 mb-1 flex items-center gap-1 cursor-pointer" 
+                 id="coord-{{ $propiedad->id }}"
+                 data-map-id="map-{{ $propiedad->id }}"
+                 data-lat="{{ $propiedad->lat }}"
+                 data-lng="{{ $propiedad->lng }}">
+                <span class="material-symbols-outlined text-sm">location_on</span>
+                <span>{{ number_format($propiedad->lat, 7) }}, {{ number_format($propiedad->lng, 7) }}</span>
+            </div>
+            <div id="map-{{ $propiedad->id }}" class="w-full h-40 rounded-lg border border-gray-300 shadow-sm" 
+                 data-lat="{{ $propiedad->lat }}" 
+                 data-lng="{{ $propiedad->lng }}"></div>
+        </div>
+        @endif
 
         <!-- Acciones -->
         <div class="flex gap-2 pt-3 border-t border-gray-200">
@@ -106,14 +116,24 @@
                         <span class="font-medium text-gray-600 w-32">Malla:</span>
                         <span class="text-gray-800">{{ $propiedad->malla ? 'Sí' : 'No' }}</span>
                     </div>
-                    @if($propiedad->lat && $propiedad->lng)
-                    <div class="flex items-center text-sm">
-                        <span class="font-medium text-gray-600 w-32">Ubicación:</span>
-                        <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})" 
-                                class="text-blue-600 underline">Ver Mapa</button>
-                    </div>
-                    @endif
                 </div>
+
+                <!-- Mapa inline -->
+                @if($propiedad->lat && $propiedad->lng)
+                <div class="mb-4">
+                    <div class="text-xs text-gray-500 mb-1 flex items-center gap-1 cursor-pointer"
+                         id="coord-{{ $propiedad->id }}-exp"
+                         data-map-id="map-{{ $propiedad->id }}-exp"
+                         data-lat="{{ $propiedad->lat }}"
+                         data-lng="{{ $propiedad->lng }}">
+                        <span class="material-symbols-outlined text-sm">location_on</span>
+                        <span>{{ number_format($propiedad->lat, 7) }}, {{ number_format($propiedad->lng, 7) }}</span>
+                    </div>
+                    <div id="map-{{ $propiedad->id }}-exp" class="w-full h-40 rounded-lg border border-gray-300 shadow-sm"
+                         data-lat="{{ $propiedad->lat }}" 
+                         data-lng="{{ $propiedad->lng }}"></div>
+                </div>
+                @endif
 
                 <div class="flex gap-2 pt-3 border-t border-gray-200">
                     <a href="{{ route('propiedades.edit', $propiedad) }}" 
