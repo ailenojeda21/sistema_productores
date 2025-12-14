@@ -94,11 +94,15 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
     .custom-checkbox {
         width: 1.25rem;
         height: 1.25rem;
-        border-radius: 0.25rem; /* cuadrado */
+        border-radius: 0.25rem;
         border: 2px solid #cbd5e1;
         background: #fff;
         appearance: none;
@@ -112,6 +116,9 @@
         box-shadow: 0 0 0 2px #93c5fd;
     }
 </style>
+@endsection
+
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const rutCheckbox = document.getElementById('rut');
@@ -132,78 +139,79 @@
         toggleMallaFields();
     });
 </script>
-    <!-- Leaflet CSS/JS y script para el mapa -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let map, marker;
-        let mapInitialized = false;
 
-        // Toggle map visibility
-        document.getElementById('toggleMap').addEventListener('click', function() {
-            const mapContainer = document.getElementById('mapContainer');
-            mapContainer.classList.toggle('hidden');
-            
-            if (!mapInitialized) {
-                // Initialize map on first show
-                const latInput = document.getElementById('lat');
-                const lngInput = document.getElementById('lng');
-                const initialLat = parseFloat(latInput.value) || -31.5;
-                const initialLng = parseFloat(lngInput.value) || -68.5;
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let map, marker;
+    let mapInitialized = false;
 
-                map = L.map('map').setView([initialLat, initialLng], 13);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
+    const toggleBtn = document.getElementById('toggleMap');
+    if (!toggleBtn) return;
 
-                // If we have coordinates, show marker
-                if (latInput.value && lngInput.value) {
-                    updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
-                }
+    // Toggle map visibility
+    toggleBtn.addEventListener('click', function() {
+        const mapContainer = document.getElementById('mapContainer');
+        mapContainer.classList.toggle('hidden');
+        
+        if (!mapInitialized) {
+            // Initialize map on first show
+            const latInput = document.getElementById('lat');
+            const lngInput = document.getElementById('lng');
+            const initialLat = parseFloat(latInput.value) || -31.5;
+            const initialLng = parseFloat(lngInput.value) || -68.5;
 
-                // Try to get user location if no coordinates set
-                if (!latInput.value && navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function(pos) {
-                        map.setView([pos.coords.latitude, pos.coords.longitude], 13);
-                    });
-                }
+            map = L.map('map').setView([initialLat, initialLng], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
 
-                // Click on map to set marker
-                map.on('click', function(e) {
-                    updateMarker(e.latlng);
-                });
-
-                mapInitialized = true;
+            // If we have coordinates, show marker
+            if (latInput.value && lngInput.value) {
+                updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
             }
-            
-            // Force map resize when showing
-            if (!mapContainer.classList.contains('hidden')) {
+
+            // Try to get user location if no coordinates set
+            if (!latInput.value && navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+                });
+            }
+
+            // Click on map to set marker
+            map.on('click', function(e) {
+                updateMarker(e.latlng);
+            });
+
+            mapInitialized = true;
+        }
+        
+        // Force map resize when showing
+        if (!mapContainer.classList.contains('hidden')) {
+            setTimeout(() => {
                 map.invalidateSize();
-            }
-        });
-
-        // Function to update marker and coordinates
-        function updateMarker(latlng) {
-            if (marker) {
-                marker.setLatLng(latlng);
-            } else {
-                marker = L.marker(latlng, {draggable: true}).addTo(map);
-                // Event for marker drag
-                marker.on('dragend', function(e) {
-                    updateMarker(e.target.getLatLng());
-                });
-            }
-            
-            // Update hidden fields and show coordinates
-            document.getElementById('lat').value = latlng.lat.toFixed(7);
-            document.getElementById('lng').value = latlng.lng.toFixed(7);
-            document.getElementById('coordenadas').textContent = 
-                latlng.lat.toFixed(7) + ', ' + latlng.lng.toFixed(7);
+            }, 100);
         }
     });
-    </script>
-        </form>
-    </div>
-</div>
-@endsection
+
+    // Function to update marker and coordinates
+    function updateMarker(latlng) {
+        if (marker) {
+            marker.setLatLng(latlng);
+        } else {
+            marker = L.marker(latlng, {draggable: true}).addTo(map);
+            // Event for marker drag
+            marker.on('dragend', function(e) {
+                updateMarker(e.target.getLatLng());
+            });
+        }
+        
+        // Update hidden fields and show coordinates
+        document.getElementById('lat').value = latlng.lat.toFixed(7);
+        document.getElementById('lng').value = latlng.lng.toFixed(7);
+        document.getElementById('coordenadas').textContent = 
+            latlng.lat.toFixed(7) + ', ' + latlng.lng.toFixed(7);
+    }
+});
+</script>
+@endpush
