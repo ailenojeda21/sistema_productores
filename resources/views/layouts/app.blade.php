@@ -16,14 +16,14 @@
     @yield('styles')
     @yield('scripts')
 </head>
-<body class="font-sans antialiased bg-gray-100 w-full h-full min-h-screen overflow-hidden">
+<body class="font-sans antialiased bg-gray-100 w-full h-screen">
     <!-- Desktop Version -->
-    <main class="hidden lg:block">
+    <main class="hidden lg:block h-full">
         @yield('desktop-content')
     </main>
     
     <!-- Mobile Version -->
-    <main class="block lg:hidden">
+    <main class="block lg:hidden h-full">
         @yield('mobile-content')
     </main>
 </body>

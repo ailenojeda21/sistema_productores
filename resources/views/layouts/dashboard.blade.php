@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('desktop-content')
-<div class="min-h-screen flex bg-gray-100">
+<div class="h-full flex bg-gray-100">
     <!-- Sidebar -->
-    <aside class="w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg">
+    <aside class="w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg h-full overflow-y-auto">
         <div class="flex flex-col items-center mb-4"> 
             <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-24 w-24">
                 <img 
@@ -65,14 +65,16 @@
     </aside>
     
     <!-- Main Panel -->
-    <main class="flex-1 p-8 flex flex-col justify-start items-center overflow-y-auto text-base">
-        @yield('dashboard-content')
+    <main class="flex-1 p-8 overflow-y-auto text-base">
+        <div class="w-full max-w-7xl mx-auto">
+            @yield('dashboard-content')
+        </div>
     </main>
 </div>
 @endsection
 
 @section('mobile-content')
-<div class="min-h-screen flex flex-col bg-gray-100">
+<div class="h-full flex flex-col bg-gray-100">
     <!-- Overlay for mobile -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
     
@@ -82,7 +84,7 @@
     </button>
 
     <!-- Sidebar Drawer -->
-    <aside id="drawer" class="fixed w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg h-full z-50 transition-transform duration-300 -translate-x-full">
+    <aside id="drawer" class="fixed w-64 bg-azul-marino text-white flex flex-col py-8 px-4 shadow-lg h-full z-50 transition-transform duration-300 -translate-x-full overflow-y-auto">
         <div class="flex flex-col items-center mb-4"> 
             <div class="bg-blue-50 rounded-full p-0 shadow-md overflow-hidden h-24 w-24">
                 <img 
@@ -144,7 +146,7 @@
     </aside>
     
     <!-- Main Panel -->
-    <main class="flex-1 pt-16 p-4 flex flex-col justify-start items-center overflow-y-auto text-base">
+    <main class="flex-1 pt-16 p-4 overflow-y-auto text-base">
         @yield('dashboard-content')
     </main>
 </div>
