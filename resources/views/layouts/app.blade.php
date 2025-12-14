@@ -17,14 +17,23 @@
     @yield('scripts')
 </head>
 <body class="font-sans antialiased bg-gray-100 w-full h-screen">
-    <!-- Desktop Version -->
-    <main class="hidden lg:block h-full">
-        @yield('desktop-content')
-    </main>
+    @hasSection('desktop-content')
+        <!-- Desktop Version -->
+        <main class="hidden lg:block h-full">
+            @yield('desktop-content')
+        </main>
+        
+        <!-- Mobile Version -->
+        <main class="block lg:hidden h-full">
+            @yield('mobile-content')
+        </main>
+    @else
+        <!-- Fallback para vistas que usan 'content' -->
+        <main class="h-full">
+            @yield('content')
+        </main>
+    @endif
     
-    <!-- Mobile Version -->
-    <main class="block lg:hidden h-full">
-        @yield('mobile-content')
-    </main>
+    @stack('scripts')
 </body>
 </html>

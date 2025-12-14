@@ -1,7 +1,8 @@
 @extends('layouts.dashboard')
 
 @section('dashboard-content')
-<div class="w-full max-w-6xl mx-auto">
+<!-- Desktop View -->
+<div class="hidden lg:block w-full max-w-6xl mx-auto">
 
     <!-- Encabezado -->
     <div class="flex justify-between items-center mb-6">
@@ -140,6 +141,22 @@
         <button id="maq-next" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50">▶</button>
     </div>
 
+</div>
+
+<!-- Mobile View -->
+<div class="lg:hidden">
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold text-azul-marino">Maquinarias</h1>
+        <a href="{{ route('maquinaria.create') }}" class="p-2 bg-naranja-oscuro text-white rounded-full shadow-lg">
+            <span class="material-symbols-outlined">add</span>
+        </a>
+    </div>
+    
+    @if($maquinarias->count() > 0)
+        @include('maquinaria.partials.mobile-list')
+    @else
+        @include('maquinaria.partials.empty-state')
+    @endif
 </div>
 @endsection
 

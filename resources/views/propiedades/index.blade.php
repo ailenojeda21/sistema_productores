@@ -2,7 +2,8 @@
 @extends('layouts.dashboard')
 
 @section('dashboard-content')
-<div class="w-full max-w-5xl mx-auto">
+<!-- Desktop View -->
+<div class="hidden lg:block w-full max-w-5xl mx-auto">
     <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-azul-marino">Propiedades</h1>
     <a href="{{ route('propiedades.create') }}" class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Nueva Propiedad</a>
@@ -81,10 +82,25 @@
         <span id="prop-page-info" class="text-sm text-gray-700">Página 1</span>
         <button id="prop-next" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Siguiente página">▶</button>
     </div>
-
 </div>
 
-<!-- Modal para mostrar el mapa -->
+<!-- Mobile View -->
+<div class="lg:hidden">
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold text-azul-marino">Propiedades</h1>
+        <a href="{{ route('propiedades.create') }}" class="p-2 bg-naranja-oscuro text-white rounded-full shadow-lg">
+            <span class="material-symbols-outlined">add</span>
+        </a>
+    </div>
+    
+    @if($propiedades->count() > 0)
+        @include('propiedades.partials.mobile-list')
+    @else
+        @include('propiedades.partials.empty-state')
+    @endif
+</div>
+
+<!-- Modal para mostrar el mapa (compartido entre desktop y mobile) -->
 <div id="mapModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
         <div class="flex justify-between items-center mb-4">
@@ -101,9 +117,14 @@
         </p>
     </div>
 </div>
+@endsection
 
 <!-- Leaflet CSS y JS -->
+@section('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+@endsection
+
+@push('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
@@ -163,12 +184,12 @@ document.getElementById('mapModal').addEventListener('click', function(e) {
         closeLocationModal();
     }
 });
-</script>
 
-<!-- Script: paginación cliente para propiedades (5 filas por página) -->
-<script>
+// Script: paginación cliente para propiedades (5 filas por página)
 document.addEventListener('DOMContentLoaded', function() {
     const rows = Array.from(document.querySelectorAll('#propiedades-tbody tr'));
+    if (rows.length === 0) return; // No hay filas en mobile
+    
     const perPage = 4;
     let currentPage = 1;
     const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
@@ -176,6 +197,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevBtn = document.getElementById('prop-prev');
     const nextBtn = document.getElementById('prop-next');
     const info = document.getElementById('prop-page-info');
+    
+    if (!prevBtn || !nextBtn || !info) return; // Elementos no existen en mobile
 
     function renderPage(page) {
         currentPage = Math.min(Math.max(1, page), totalPages);
@@ -196,4 +219,4 @@ document.addEventListener('DOMContentLoaded', function() {
     renderPage(1);
 });
 </script>
-@endsection
+@endpush
