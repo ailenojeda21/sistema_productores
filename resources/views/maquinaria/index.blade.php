@@ -52,7 +52,7 @@
                     </td>
 
                     <!-- Implementos -->
-                    <td class="px-4 py-2 text-base text-gray-700">
+                    <td class="px-4 py-3 text-base text-gray-700">
 
                         @php
                             $items = [
@@ -62,7 +62,7 @@
                                 'niveleta_laser' => 'Niveleta láser',
                                 'cincel_cultivadora' => 'Cincel/Cultivadora',
                                 'desmalezadora' => 'Desmalezadora',
-                                'pulverizadora_tractor' => 'Pulverizadora tractor',
+                                'pulverizadora_tractor' => 'Pulverizadora',
                                 'mochila_pulverizadora' => 'Mochila pulverizadora',
                                 'cosechadora' => 'Cosechadora',
                                 'enfardadora' => 'Enfardadora',
@@ -77,36 +77,26 @@
                                     $activos[] = $label;
                                 }
                             }
-
-                            // Dividir en dos columnas
-                            $col1 = array_slice($activos, 0, 6);
-                            $col2 = array_slice($activos, 6, 6);
                         @endphp
 
                         @if(count($activos))
-                            <div class="grid grid-cols-2 gap-x-10">
-                                <ul class="list-disc list-inside space-y-1">
-                                    @foreach($col1 as $item)
-                                        <li>{{ $item }}</li>
-                                    @endforeach
-                                </ul>
-
-                                <ul class="list-disc list-inside space-y-1">
-                                    @foreach($col2 as $item)
-                                        <li>{{ $item }}</li>
-                                    @endforeach
-                                </ul>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($activos as $item)
+                                    <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                                        {{ $item }}
+                                    </span>
+                                @endforeach
                             </div>
                         @else
-                            <span class="text-gray-400 italic">Sin implementos</span>
+                            <span class="text-gray-400 italic text-sm">Sin implementos</span>
                         @endif
                     </td>
 
                     <!-- Botones -->
-                    <td class="px-4 py-2">
-                        <div class="flex items-center gap-2">
+                    <td class="px-4 py-3 align-middle">
+                        <div class="flex flex-col gap-2">
                             <a href="{{ route('maquinaria.edit', $maq->id) }}"
-                               class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow">
+                               class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center text-sm">
                                 Editar
                             </a>
 
@@ -116,7 +106,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
-                                    class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow">
+                                    class="w-full px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-sm">
                                     Eliminar
                                 </button>
                             </form>
