@@ -8,6 +8,20 @@
         <form method="POST" action="{{ route('maquinaria.store') }}">
             @csrf
 
+            @if(session('error'))
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined">error</span>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
             @if(session('info'))
                 <div class="mb-4 bg-blue-50 p-3 rounded text-blue-700">
                     {{ session('info') }}

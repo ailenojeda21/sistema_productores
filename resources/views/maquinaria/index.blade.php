@@ -13,6 +13,21 @@
         </a>
     </div>
 
+    <!-- Mensajes de error/éxito -->
+    @if(session('error'))
+        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center gap-2">
+            <span class="material-symbols-outlined">error</span>
+            <span>{{ session('error') }}</span>
+        </div>
+    @endif
+
+    @if(session('success'))
+        <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center gap-2">
+            <span class="material-symbols-outlined">check_circle</span>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
     <!-- Tabla -->
     <div class="bg-white rounded-lg shadow p-6 overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -141,6 +156,21 @@
             <span class="material-symbols-outlined">add</span>
         </a>
     </div>
+    
+    <!-- Mensajes de error/éxito -->
+    @if(session('error'))
+        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">error</span>
+            <span class="text-sm">{{ session('error') }}</span>
+        </div>
+    @endif
+
+    @if(session('success'))
+        <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">check_circle</span>
+            <span class="text-sm">{{ session('success') }}</span>
+        </div>
+    @endif
     
     @if($maquinarias->count() > 0)
         @include('maquinaria.partials.mobile-list')
