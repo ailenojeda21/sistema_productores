@@ -18,20 +18,20 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1">Ubicación</label>
-                    <input type="hidden" name="lat" id="lat" value="{{ old('lat', $propiedad->lat) }}">
-                    <input type="hidden" name="lng" id="lng" value="{{ old('lng', $propiedad->lng) }}">
+                    <input type="hidden" name="lat" class="lat-input" value="{{ old('lat', $propiedad->lat) }}">
+                    <input type="hidden" name="lng" class="lng-input" value="{{ old('lng', $propiedad->lng) }}">
                     
                     <!-- Botón para mostrar/ocultar mapa -->
-                    <button type="button" id="toggleMap" class="px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro hover:text-azul-marino font-semibold shadow transition">
+                    <button type="button" class="toggle-map-btn px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro hover:text-azul-marino font-semibold shadow transition">
                         Ver mapa
                     </button>
                     
                     <!-- Contenedor del mapa (inicialmente oculto) -->
-                    <div id="mapContainer" class="hidden mt-4">
-                        <div id="map" class="w-full h-64 rounded border"></div>
+                    <div class="map-container hidden mt-4">
+                        <div class="map-element w-full h-64 rounded border"></div>
                         <p class="text-sm text-gray-500 mt-2">
                             Coordenadas seleccionadas:
-                            <span id="coordenadas" class="font-semibold">{{ $propiedad->lat ? $propiedad->lat . ', ' . $propiedad->lng : 'No seleccionadas' }}</span>
+                            <span class="coordenadas-display font-semibold">{{ $propiedad->lat ? $propiedad->lat . ', ' . $propiedad->lng : 'No seleccionadas' }}</span>
                         </p>
                         <p class="text-sm text-gray-500">Haz click en el mapa para ubicar la propiedad. También puedes arrastrar el pin.</p>
                     </div>
@@ -152,75 +152,79 @@ window.onload = function() {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let map, marker;
-    let mapInitialized = false;
-
-    const toggleBtn = document.getElementById('toggleMap');
-    if (!toggleBtn) return;
-
-    // Toggle map visibility
-    toggleBtn.addEventListener('click', function() {
-        const mapContainer = document.getElementById('mapContainer');
-        mapContainer.classList.toggle('hidden');
+    // Inicializar cada botón de mapa por separado
+    const toggleButtons = document.querySelectorAll('.toggle-map-btn');
+    
+    toggleButtons.forEach(function(toggleBtn) {
+        let map, marker;
+        let mapInitialized = false;
         
-        if (!mapInitialized) {
-            // Initialize map on first show
-            const latInput = document.getElementById('lat');
-            const lngInput = document.getElementById('lng');
-            const initialLat = parseFloat(latInput.value) || -31.5;
-            const initialLng = parseFloat(lngInput.value) || -68.5;
+        const container = toggleBtn.closest('div').querySelector('.map-container');
+        const mapElement = container.querySelector('.map-element');
+        const latInput = toggleBtn.closest('div').querySelector('.lat-input');
+        const lngInput = toggleBtn.closest('div').querySelector('.lng-input');
+        const coordDisplay = container.querySelector('.coordenadas-display');
+        
+        // Toggle map visibility
+        toggleBtn.addEventListener('click', function() {
+            container.classList.toggle('hidden');
+            
+            if (!mapInitialized) {
+                // Initialize map on first show
+                const initialLat = parseFloat(latInput.value) || -31.5;
+                const initialLng = parseFloat(lngInput.value) || -68.5;
 
-            map = L.map('map').setView([initialLat, initialLng], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
+                map = L.map(mapElement).setView([initialLat, initialLng], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
 
-            // If we have coordinates, show marker
-            if (latInput.value && lngInput.value) {
-                updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
+                // If we have coordinates, show marker
+                if (latInput.value && lngInput.value) {
+                    updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
+                }
+
+                // Try to get user location if no coordinates set
+                if (!latInput.value && navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(pos) {
+                        map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+                    });
+                }
+
+                // Click on map to set marker
+                map.on('click', function(e) {
+                    updateMarker(e.latlng);
+                });
+
+                mapInitialized = true;
             }
+            
+            // Force map resize when showing
+            if (!container.classList.contains('hidden')) {
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+            }
+        });
 
-            // Try to get user location if no coordinates set
-            if (!latInput.value && navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(pos) {
-                    map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+        // Function to update marker and coordinates
+        function updateMarker(latlng) {
+            if (marker) {
+                marker.setLatLng(latlng);
+            } else {
+                marker = L.marker(latlng, {draggable: true}).addTo(map);
+                // Event for marker drag
+                marker.on('dragend', function(e) {
+                    updateMarker(e.target.getLatLng());
                 });
             }
-
-            // Click on map to set marker
-            map.on('click', function(e) {
-                updateMarker(e.latlng);
-            });
-
-            mapInitialized = true;
-        }
-        
-        // Force map resize when showing
-        if (!mapContainer.classList.contains('hidden')) {
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 100);
+            
+            // Update hidden fields and show coordinates
+            latInput.value = latlng.lat.toFixed(7);
+            lngInput.value = latlng.lng.toFixed(7);
+            coordDisplay.textContent = latlng.lat.toFixed(7) + ', ' + latlng.lng.toFixed(7);
         }
     });
-
-    // Function to update marker and coordinates
-    function updateMarker(latlng) {
-        if (marker) {
-            marker.setLatLng(latlng);
-        } else {
-            marker = L.marker(latlng, {draggable: true}).addTo(map);
-            // Event for marker drag
-            marker.on('dragend', function(e) {
-                updateMarker(e.target.getLatLng());
-            });
-        }
-        
-        // Update hidden fields and show coordinates
-        document.getElementById('lat').value = latlng.lat.toFixed(7);
-        document.getElementById('lng').value = latlng.lng.toFixed(7);
-        document.getElementById('coordenadas').textContent = 
-            latlng.lat.toFixed(7) + ', ' + latlng.lng.toFixed(7);
-    }
 });
 </script>
 @endpush
