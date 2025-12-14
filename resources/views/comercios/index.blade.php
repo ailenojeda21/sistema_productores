@@ -71,14 +71,13 @@
                     </td>
                 </tr>
                 @empty
-                <tr>
-                    <td colspan="4" class="px-4 py-4 text-center text-gray-500">
-                        No hay comercios registrados.
-                    </td>
-                </tr>
                 @endforelse
             </tbody>
         </table>
+
+        @if($comercios->isEmpty())
+        @include('comercios.partials.empty-state')
+        @endif
     </div>
 </div>
 @endsection

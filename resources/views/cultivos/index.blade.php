@@ -13,6 +13,7 @@
 
     <!-- Tabla -->
     <div class="bg-white rounded-lg shadow p-6 overflow-x-auto">
+        @if($cultivos->count() > 0)
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
@@ -69,6 +70,9 @@
                 @endforeach
             </tbody>
         </table>
+        @else
+        @include('cultivos.partials.empty-state')
+        @endif
     </div>
 
     <!-- Paginación -->
