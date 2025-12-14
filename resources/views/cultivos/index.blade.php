@@ -84,10 +84,11 @@
     </div>
     
     <!-- Script de paginación -->
+    @push('scripts')
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const rows = Array.from(document.querySelectorAll('#cultivos-tbody tr'));
-        const perPage = 2;
+        const perPage = 3; // antes: 2
         let currentPage = 1;
         const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
 
@@ -113,6 +114,7 @@
         renderPage(1);
     });
     </script>
+    @endpush
 </div>
 
 <!-- Mobile View -->
