@@ -2,10 +2,18 @@
 
 @section('dashboard-content')
 <!-- Desktop View -->
-<div class="hidden lg:flex bg-white rounded-lg shadow-lg p-8 w-full max-w-2xl flex-col items-center">
-    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-48 mb-6">
-    <h2 class="text-2xl font-bold text-azul-marino mb-4">Bienvenido {{ Auth::user()->name }} al Sistema Agrícola Lavalle</h2>
-    <p class="text-gray-700">Aquí podrás gestionar tus propiedades, cultivos, maquinarias y más.</p>
+<div class="hidden lg:flex h-full w-full p-6">
+    <div class="bg-white rounded-lg shadow-lg p-8 w-full flex flex-col items-center justify-center">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-48 mb-6">
+
+        <h2 class="text-2xl font-bold text-azul-marino mb-4 text-center">
+            Bienvenido {{ Auth::user()->name }} al Sistema Agrícola Lavalle
+        </h2>
+
+        <p class="text-gray-700 text-center max-w-xl">
+            Aquí podrás gestionar tus propiedades, cultivos, maquinarias y más.
+        </p>
+    </div>
 </div>
 
 <!-- Mobile View -->
