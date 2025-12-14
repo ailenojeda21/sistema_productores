@@ -42,12 +42,19 @@ class MaquinariaController extends Controller
                 $validator = Validator::make($item, [
                     'propiedad_id' => 'required|exists:propiedades,id',
                     'modelo_tractor' => 'nullable|integer|min:1900|max:'.date('Y'),
-                    // las casillas checkbox se manejan manualmente después
                 ]);
 
                 if ($validator->fails()) {
-                    // podrías recolectar errores y volver con ellos; aquí abortamos con el primer error
                     return redirect()->back()->withErrors($validator)->withInput();
+                }
+                
+                // Verificar si ya existe una maquinaria para esta propiedad
+                $existente = Maquinaria::where('propiedad_id', $item['propiedad_id'])->first();
+                if ($existente) {
+                    $propiedad = Propiedad::find($item['propiedad_id']);
+                    return redirect()->back()
+                        ->with('error', 'Ya existe una maquinaria registrada para la propiedad: ' . ($propiedad->direccion ?? 'ID ' . $item['propiedad_id']))
+                        ->withInput();
                 }
 
                 $ma = new Maquinaria();
@@ -63,15 +70,23 @@ class MaquinariaController extends Controller
                 $ma->save();
             }
 
-            return redirect()->route('maquinaria.index')->with('info', 'Maquinarias creadas correctamente.');
+            return redirect()->route('maquinaria.index')->with('success', 'Maquinarias creadas correctamente.');
         }
 
         // Caso single (forma antigua / compatibilidad)
         $validated = $request->validate([
             'propiedad_id' => 'required|exists:propiedades,id',
             'modelo_tractor' => 'nullable|integer|min:1900|max:'.date('Y'),
-            // agrega validaciones para checks si quieres
         ]);
+        
+        // Verificar si ya existe una maquinaria para esta propiedad
+        $existente = Maquinaria::where('propiedad_id', $validated['propiedad_id'])->first();
+        if ($existente) {
+            $propiedad = Propiedad::find($validated['propiedad_id']);
+            return redirect()->back()
+                ->with('error', 'Ya existe una maquinaria registrada para la propiedad: ' . ($propiedad->direccion ?? 'ID ' . $validated['propiedad_id']))
+                ->withInput();
+        }
 
         $ma = new Maquinaria();
         $ma->propiedad_id = $validated['propiedad_id'];
@@ -108,6 +123,18 @@ class MaquinariaController extends Controller
         if (!Propiedad::where('id', $validated['propiedad_id'])->where('usuario_id', auth()->id())->exists()) {
             return redirect()->back()->withInput()->withErrors(['propiedad_id' => 'Propiedad inválida.']);
         }
+        
+        // Verificar si ya existe otra maquinaria para esta propiedad (excluyendo la actual)
+        $existente = Maquinaria::where('propiedad_id', $validated['propiedad_id'])
+            ->where('id', '!=', $id)
+            ->first();
+            
+        if ($existente) {
+            $propiedad = Propiedad::find($validated['propiedad_id']);
+            return redirect()->back()
+                ->with('error', 'Ya existe otra maquinaria registrada para la propiedad: ' . ($propiedad->direccion ?? 'ID ' . $validated['propiedad_id']))
+                ->withInput();
+        }
 
         foreach ([
             'tractor', 'arado', 'rastra', 'niveleta_comun', 'niveleta_laser', 
@@ -120,7 +147,7 @@ class MaquinariaController extends Controller
         try {
             $maquinaria->update($validated);
         } catch (\Exception $e) {
-            Log::error('Error actualizando maquinaria: ' . $e->getMessage(), ['input' => $request->all(), 'id' => $id]);
+            \Log::error('Error actualizando maquinaria: ' . $e->getMessage(), ['input' => $request->all(), 'id' => $id]);
             return redirect()->back()->withInput()->withErrors(['general' => 'Ocurrió un error al actualizar la maquinaria.']);
         }
 
