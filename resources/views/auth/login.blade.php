@@ -16,11 +16,28 @@
 
         <div class="max-w-md w-full mx-auto">
             <h1 class="text-4xl font-bold text-center text-naranja-oscuro mb-8">Inicia sesión</h1>
+            
+            <!-- Mensaje de error de sesión -->
+            @if(session('error'))
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined">error</span>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+            
+            <!-- Mensaje de éxito -->
+            @if(session('status'))
+                <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>{{ session('status') }}</span>
+                </div>
+            @endif
+            
             <form method="POST" action="{{ route('login') }}" class="space-y-6">
                 @csrf
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
-                    <input id="email" name="email" type="email" required autofocus class="mt-1 block w-full rounded border-gray-300 focus:border-naranja-oscuro focus:ring focus:ring-naranja-oscuro/30">
+                    <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus class="mt-1 block w-full rounded border-gray-300 focus:border-naranja-oscuro focus:ring focus:ring-naranja-oscuro/30">
                     @error('email')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
                 </div>
                 <div>
