@@ -87,7 +87,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const rows = Array.from(document.querySelectorAll('#cultivos-tbody tr'));
-        const perPage = 4;
+        const perPage = 2;
         let currentPage = 1;
         const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
 
