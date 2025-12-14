@@ -124,14 +124,13 @@
                 </tr>
 
                 @empty
-                <tr>
-                    <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-                        No hay maquinaria registrada.
-                    </td>
-                </tr>
                 @endforelse
             </tbody>
         </table>
+
+        @if($maquinarias->isEmpty())
+        @include('maquinaria.partials.empty-state')
+        @endif
     </div>
 
     <!-- Paginación -->

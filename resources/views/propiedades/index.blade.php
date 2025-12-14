@@ -8,6 +8,7 @@
     <a href="{{ route('propiedades.create') }}" class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Nueva Propiedad</a>
     </div>
     <div class="bg-white rounded-lg shadow p-6 overflow-x-auto">
+        @if($propiedades->count() > 0)
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
@@ -69,7 +70,9 @@
                 @endforeach
             </tbody>
         </table>
-
+        @else
+        @include('propiedades.partials.empty-state')
+        @endif
     </div>
     
     <!-- Controles de paginación (cliente) -->
