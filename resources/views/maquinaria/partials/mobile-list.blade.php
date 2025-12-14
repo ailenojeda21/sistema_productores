@@ -51,30 +51,37 @@
             
             @if(count($activos) > 0)
             <div class="text-sm">
-                <span class="font-medium text-gray-600">Implementos:</span>
-                <div class="mt-1 flex flex-wrap gap-1">
+                <span class="font-medium text-gray-600 block mb-2">Implementos:</span>
+                <div class="flex flex-wrap gap-1.5">
                     @foreach($activos as $item)
-                    <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs">{{ $item }}</span>
+                    <span class="inline-flex items-center px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                        {{ $item }}
+                    </span>
                     @endforeach
                 </div>
+            </div>
+            @else
+            <div class="text-sm">
+                <span class="font-medium text-gray-600">Implementos:</span>
+                <span class="text-gray-400 italic text-xs ml-2">Sin implementos</span>
             </div>
             @endif
         </div>
 
         <!-- Acciones -->
-        <div class="flex gap-2 pt-3 border-t border-gray-200">
+        <div class="flex flex-col gap-2 pt-3 border-t border-gray-200">
             <a href="{{ route('maquinaria.edit', $maq) }}" 
-               class="flex-1 py-2 bg-yellow-500 text-white rounded text-center font-medium flex items-center justify-center gap-1">
-                <span class="material-symbols-outlined text-sm">edit</span>
+               class="w-full py-2.5 bg-yellow-500 text-white rounded-lg text-center font-medium flex items-center justify-center gap-2 hover:bg-yellow-600 transition">
+                <span class="material-symbols-outlined text-lg">edit</span>
                 Editar
             </a>
             <form action="{{ route('maquinaria.destroy', $maq) }}" method="POST" 
-                  onsubmit="return confirm('¿Seguro que deseas eliminar esta maquinaria?');" class="flex-1">
+                  onsubmit="return confirm('¿Seguro que deseas eliminar esta maquinaria?');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" 
-                        class="w-full py-2 bg-red-500 text-white rounded font-medium flex items-center justify-center gap-1">
-                    <span class="material-symbols-outlined text-sm">delete</span>
+                        class="w-full py-2.5 bg-red-500 text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-red-600 transition">
+                    <span class="material-symbols-outlined text-lg">delete</span>
                     Eliminar
                 </button>
             </form>
@@ -121,29 +128,36 @@
                     
                     @if(count($activos) > 0)
                     <div class="text-sm">
-                        <span class="font-medium text-gray-600">Implementos:</span>
-                        <div class="mt-1 flex flex-wrap gap-1">
+                        <span class="font-medium text-gray-600 block mb-2">Implementos:</span>
+                        <div class="flex flex-wrap gap-1.5">
                             @foreach($activos as $item)
-                            <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs">{{ $item }}</span>
+                            <span class="inline-flex items-center px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                                {{ $item }}
+                            </span>
                             @endforeach
                         </div>
+                    </div>
+                    @else
+                    <div class="text-sm">
+                        <span class="font-medium text-gray-600">Implementos:</span>
+                        <span class="text-gray-400 italic text-xs ml-2">Sin implementos</span>
                     </div>
                     @endif
                 </div>
 
-                <div class="flex gap-2 pt-3 border-t border-gray-200">
+                <div class="flex flex-col gap-2 pt-3 border-t border-gray-200">
                     <a href="{{ route('maquinaria.edit', $maq) }}" 
-                       class="flex-1 py-2 bg-yellow-500 text-white rounded text-center font-medium flex items-center justify-center gap-1">
-                        <span class="material-symbols-outlined text-sm">edit</span>
+                       class="w-full py-2.5 bg-yellow-500 text-white rounded-lg text-center font-medium flex items-center justify-center gap-2 hover:bg-yellow-600 transition">
+                        <span class="material-symbols-outlined text-lg">edit</span>
                         Editar
                     </a>
                     <form action="{{ route('maquinaria.destroy', $maq) }}" method="POST" 
-                          onsubmit="return confirm('¿Seguro que deseas eliminar esta maquinaria?');" class="flex-1">
+                          onsubmit="return confirm('¿Seguro que deseas eliminar esta maquinaria?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" 
-                                class="w-full py-2 bg-red-500 text-white rounded font-medium flex items-center justify-center gap-1">
-                            <span class="material-symbols-outlined text-sm">delete</span>
+                                class="w-full py-2.5 bg-red-500 text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-red-600 transition">
+                            <span class="material-symbols-outlined text-lg">delete</span>
                             Eliminar
                         </button>
                     </form>
