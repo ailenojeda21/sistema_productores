@@ -1,5 +1,3 @@
-
-
 @extends('layouts.dashboard')
 
 @section('dashboard-content')
@@ -20,6 +18,10 @@
                 <div class="flex items-center mt-6">
                     <input type="checkbox" name="comercio_mercado" id="comercio_mercado" class="mr-2 rounded-full custom-checkbox">
                     <label for="comercio_mercado">¿Vende en mercados?¿Cuál? </label>
+                </div>
+                <div class="flex items-center mt-6">
+                    <input type="checkbox" name="comercializa_cooperativas" id="comercializa_cooperativas" class="mr-2 rounded-full custom-checkbox">
+                    <label for="comercializa_cooperativas">¿Comercializa en cooperativas?</label>
                 </div>
 
                 <!-- Mercados -->

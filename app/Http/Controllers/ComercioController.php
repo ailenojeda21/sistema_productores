@@ -50,6 +50,7 @@ class ComercioController extends Controller
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
         $validated['comercio_mercado'] = $request->has('comercio_mercado') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
+        $validated['comercializa_cooperativas'] = $request->has('comercializa_cooperativas') ? 1 : 0;
 
         // Si no vende en mercado, nombre_mercado y mercados deben ser null
         if (!$validated['comercio_mercado']) {
@@ -102,6 +103,7 @@ class ComercioController extends Controller
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
         $validated['comercio_mercado'] = $request->has('comercio_mercado') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
+        $validated['comercializa_cooperativas'] = $request->has('comercializa_cooperativas') ? 1 : 0;
 
         // Si no vende en mercado, nombre_mercado y mercados deben ser null
         if (!$validated['comercio_mercado']) {
