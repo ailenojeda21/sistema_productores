@@ -29,7 +29,7 @@
                 <select name="propiedad_id" id="propiedad_id" class="w-full p-2 border border-gray-300 rounded">
                     @foreach($propiedades as $propiedad)
                         <option value="{{ $propiedad->id }}" {{ (old('propiedad_id', $maquinaria->propiedad_id) == $propiedad->id) ? 'selected' : '' }}>
-                            {{ $propiedad->ubicacion }} - {{ $propiedad->direccion }}
+                            {{ $propiedad->ubicacion }}  {{ $propiedad->direccion }}
                         </option>
                     @endforeach
                 </select>

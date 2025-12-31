@@ -11,9 +11,11 @@
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="propiedad_id">Propiedad</label>
                     <select id="propiedad_id" name="propiedad_id" class="w-full p-2 border border-gray-300 rounded" required>
-                        <option value="">Seleccione propiedad</option>
-                        @foreach(App\Models\Propiedad::all() as $propiedad)
-                            <option value="{{ $propiedad->id }}" {{ old('propiedad_id', $cultivo->propiedad_id) == $propiedad->id ? 'selected' : '' }}>{{ $propiedad->direccion }} (ID: {{ $propiedad->id }})</option>
+                     
+                        @foreach($propiedades as $propiedad)
+                        <option value="{{ $propiedad->id }}" data-hectareas="{{ $propiedad->hectareas }}" {{ old('propiedad_id', $cultivo->propiedad_id) == $propiedad->id ? 'selected' : '' }}>
+                            {{ $propiedad->direccion }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -71,4 +73,26 @@
         </form>
     </div>
 </div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectProp = document.getElementById('propiedad_id');
+    const hectareasInput = document.getElementById('hectareas');
+    if (!selectProp || !hectareasInput) return;
+
+    function syncMaxHectareas() {
+        const opt = selectProp.options[selectProp.selectedIndex];
+        const maxVal = opt && opt.dataset.hectareas ? parseFloat(opt.dataset.hectareas) : 0;
+        hectareasInput.max = maxVal || '';
+        hectareasInput.placeholder = maxVal ? ('Máx ' + maxVal) : '';
+        const current = parseFloat(hectareasInput.value);
+        if (maxVal && current > maxVal) hectareasInput.value = maxVal;
+    }
+
+    selectProp.addEventListener('change', syncMaxHectareas);
+    hectareasInput.addEventListener('input', syncMaxHectareas);
+    syncMaxHectareas();
+});
+</script>
+@endpush
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cultivo;
+use App\Models\Propiedad;
 
 class CultivoController extends Controller
 {
@@ -56,7 +57,8 @@ class CultivoController extends Controller
     public function edit(string $id)
     {
         $cultivo = Cultivo::findOrFail($id);
-        return view('cultivos.edit', compact('cultivo'));
+        $propiedades = Propiedad::where('usuario_id', auth()->id())->get();
+        return view('cultivos.edit', compact('cultivo', 'propiedades'));
     }
 
     /**

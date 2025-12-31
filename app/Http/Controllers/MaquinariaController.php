@@ -24,7 +24,9 @@ class MaquinariaController extends Controller
     public function create()
     {
         // obtener propiedades del usuario para el select
-        $propiedades = Propiedad::where('usuario_id', auth()->id())->get();
+        $propiedades = Propiedad::where('usuario_id', auth()->id())
+            ->whereDoesntHave('maquinaria')
+            ->get();
         return view('maquinaria.create', compact('propiedades'));
     }
 
@@ -106,7 +108,12 @@ class MaquinariaController extends Controller
     public function edit($id)
     {
         $maquinaria = Maquinaria::findOrFail($id);
-        $propiedades = Propiedad::where('usuario_id', auth()->id())->get();
+        $propiedades = Propiedad::where('usuario_id', auth()->id())
+            ->where(function($q) use ($maquinaria) {
+                $q->whereDoesntHave('maquinaria')
+                  ->orWhere('id', $maquinaria->propiedad_id);
+            })
+            ->get();
         return view('maquinaria.edit', compact('maquinaria', 'propiedades'));
     }
 

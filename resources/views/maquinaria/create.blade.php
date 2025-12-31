@@ -45,7 +45,7 @@
                     <option value="">Seleccione una propiedad...</option>
                     @foreach($propiedades as $propiedad)
                         <option value="{{ $propiedad->id }}" {{ old('propiedad_id') == $propiedad->id ? 'selected' : '' }}>
-                            {{ $propiedad->ubicacion }} - {{ $propiedad->direccion }}
+                            {{ $propiedad->ubicacion }}  {{ $propiedad->direccion }}
                         </option>
                     @endforeach
                 </select>
