@@ -27,6 +27,7 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'dni' => ['nullable', 'string', 'max:20'],
             'es_propietario' => ['nullable', 'boolean'],
+            'telefono' => ['nullable', 'string', 'max:20'],
         ];
     }
 }
