@@ -32,6 +32,10 @@
                         <td class="px-4 py-3 text-base text-gray-700">{{ $user->dni ?? '-' }}</td>
                     </tr>
                     <tr>
+                        <td class="px-4 py-3 text-base text-gray-700 font-semibold">Telefono:</td>
+                        <td class="px-4 py-3 text-base text-gray-700">{{ $user->telefono ?? '-' }}</td>
+                    </tr>
+                    <tr>
                         <td class="px-4 py-3 text-base text-gray-700 font-semibold">Es propietario:</td>
                         <td class="px-4 py-3 text-base text-gray-700">{{ $user->es_propietario ? 'Sí' : 'No' }}</td>
                     </tr>

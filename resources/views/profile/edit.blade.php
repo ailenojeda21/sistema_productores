@@ -33,6 +33,13 @@
                         <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="mb-4 md:col-span-2">
+                    <label class="block text-gray-700 font-semibold mb-1" for="telefono">Telefono</label>
+                    <input id="telefono" name="telefono" type="text" class="w-full p-2 border border-gray-300 rounded" value="{{ old('telefono', $user->telefono) }}">
+                    @error('telefono')
+                        <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
                 <div class="mb-4 flex items-center md:col-span-2">
                     <input id="es_propietario" name="es_propietario" type="checkbox" class="mr-2 custom-checkbox" value="1" {{ old('es_propietario', $user->es_propietario) ? 'checked' : '' }}>
                     <label for="es_propietario" class="text-gray-700 font-semibold">Es propietario</label>
