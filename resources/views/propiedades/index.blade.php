@@ -1,4 +1,3 @@
-
 @extends('layouts.dashboard')
 
 @section('dashboard-content')
@@ -41,10 +40,28 @@
                         @endif
                     </td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ number_format($propiedad->hectareas, 2, ',', '.') }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->es_propietario ? 'Sí' : 'No' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->derecho_riego ? 'Sí' : 'No' }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700 text-center">
+                        @if($propiedad->es_propietario)
+                            <span class="text-green-600 font-semibold">✓ Sí</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✗ No</span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-2 text-base text-gray-700 text-center">
+                        @if($propiedad->derecho_riego)
+                            <span class="text-green-600 font-semibold">✓ Sí</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✗ No</span>
+                        @endif
+                    </td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->tipo_derecho_riego ? $propiedad->tipo_derecho_riego : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut ? 'Sí' : 'No' }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700 text-center">
+                        @if($propiedad->rut)
+                            <span class="text-green-600 font-semibold">✓ Sí</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✗ No</span>
+                        @endif
+                    </td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut_valor ? number_format($propiedad->rut_valor, 0, '', '') : '-' }}</td>
                     <td class="px-4 py-2 text-base text-gray-700 whitespace-nowrap">
                         @if($propiedad->rut_archivo)
@@ -53,9 +70,21 @@
                             -
                         @endif
                     </td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->malla ? 'Sí' : 'No' }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700 text-center">
+                        @if($propiedad->malla)
+                            <span class="text-green-600 font-semibold">✓ Sí</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✗ No</span>
+                        @endif
+                    </td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->hectareas_malla ? number_format($propiedad->hectareas_malla, 2, ',', '.') : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</td>
+                    <td class="px-4 py-2 text-base text-gray-700 text-center">
+                        @if($propiedad->cierre_perimetral)
+                            <span class="text-green-600 font-semibold">✓ Sí</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✗ No</span>
+                        @endif
+                    </td>
                     <td class="px-4 py-2">
                         <div class="flex items-center gap-2">
                             <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">Editar</a>

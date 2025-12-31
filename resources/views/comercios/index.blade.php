@@ -16,14 +16,17 @@
         <table class="min-w-full divide-y divide-gray-200 table-fixed">
             <thead class="bg-gray-50">
                 <tr>
-                    <th style="width:20%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    <th style="width:18%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                         Infraestructura Empaque
                     </th>
                     <th style="width:20%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                         Comercialización en Mercados
                     </th>
-                    <th style="width:20%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    <th style="width:15%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                         Vende en Finca
+                    </th>
+                    <th style="width:20%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                        Comercializa en Cooperativas
                     </th>
                     <th style="width:40%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                         Mercados
@@ -34,14 +37,33 @@
             <tbody id="comercios-tbody" class="bg-white divide-y divide-gray-200">
                 @forelse($comercios as $comercio)
                 <tr>
-                    <td style="width:20%" class="px-2 py-2 text-base text-gray-700">
-                        {{ $comercio->infraestructura_empaque ? 'Sí' : 'No' }}
+                    <td style="width:15%" class="px-2 py-2 text-base text-gray-700 text-center">
+                        @if($comercio->infraestructura_empaque)
+                            <span class="text-green-600 font-semibold">✓ Sí</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✗ No</span>
+                        @endif
                     </td>
-                    <td style="width:20%" class="px-2 py-2 text-base text-gray-700">
-                        {{ $comercio->comercio_mercado ? 'Sí' : 'No' }}
+                    <td style="width:15%" class="px-2 py-2 text-base text-gray-700 text-center">
+                        @if($comercio->comercio_mercado)
+                            <span class="text-green-600 font-semibold">✓ Sí</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✗ No</span>
+                        @endif
                     </td>
-                    <td style="width:20%" class="px-2 py-2 text-base text-gray-700">
-                        {{ $comercio->vende_en_finca ? 'Sí' : 'No' }}
+                    <td style="width:15%" class="px-2 py-2 text-base text-gray-700 text-center">
+                        @if($comercio->vende_en_finca)
+                            <span class="text-green-600 font-semibold">✓ Sí</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✗ No</span>
+                        @endif
+                    </td>
+                    <td style="width:15%" class="px-2 py-2 text-base text-gray-700 text-center">
+                        @if($comercio->comercializa_cooperativas)
+                            <span class="text-green-600 font-semibold">✓ Sí</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✗ No</span>
+                        @endif
                     </td>
                     <td style="width:40%" class="px-2 py-2 text-base text-gray-700">
                         @php

@@ -18,7 +18,7 @@
                            {{ old('vende_en_finca', $comercio->vende_en_finca) ? 'checked' : '' }}>
                     <label for="vende_en_finca">¿Vende en finca?</label>
                 </div>
-                <!-- Checkbox infraestructura -->
+                
                 <div class="flex items-center mt-6">
                     <input type="checkbox"
                            name="infraestructura_empaque"
@@ -28,7 +28,6 @@
                     <label for="infraestructura_empaque">¿Tiene infraestructura de empaque?</label>
                 </div>
 
-                <!-- Checkbox comercio mercados -->
                 <div class="flex items-center mt-6">
                     <input type="checkbox"
                            name="comercio_mercado"
@@ -36,6 +35,12 @@
                            class="mr-2 custom-checkbox"
                            {{ old('comercio_mercado', $comercio->comercio_mercado) ? 'checked' : '' }}>
                     <label for="comercio_mercado">¿Vende en mercados?¿Cuál?</label>
+                </div>
+
+                <div class="flex items-center mt-6">
+                    <input type="checkbox" name="comercializa_cooperativas" id="comercializa_cooperativas" class="mr-2 custom-checkbox"
+                           {{ old('comercializa_cooperativas', $comercio->comercializa_cooperativas) ? 'checked' : '' }}>
+                    <label for="comercializa_cooperativas">¿Comercializa en cooperativas?</label>
                 </div>
 
                 <div id="mercado-fields" class="hidden md:col-span-2 mt-8">
@@ -61,6 +66,7 @@
                         @endforeach
                     </div>
                 </div>
+            </div>
 
             <button type="submit"
                     class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">

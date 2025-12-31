@@ -13,10 +13,12 @@ class Comercio extends Model
         'vende_en_finca',
         'nombre_mercado',
         'mercados',
+        'comercializa_cooperativas',
     ];
 
     protected $casts = [
         'mercados' => 'array',
+        'comercializa_cooperativas' => 'boolean',
     ];
 
     public function usuario()
