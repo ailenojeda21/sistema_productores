@@ -18,7 +18,7 @@
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Propietario</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Derecho de riego</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo derecho de riego</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">RUT</th>
+                    <th class="px-6 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider min-w-[90px]">RUT</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nº RUT</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[120px]">Adjunto RUT</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Malla antigranizo</th>
