@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('desktop-content')
+
+
 <div class="h-full flex bg-gray-100">
     <!-- Sidebar -->
     <aside class="w-64 bg-azul-marino text-white flex flex-col py-6 px-3 shadow-lg h-screen overflow-y-hidden">
@@ -20,7 +22,7 @@
             <!-- Dashboard -->
             <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
                 <span class="material-symbols-outlined mr-2">dashboard</span>
-                Dashboard
+                Inicio
             </a>
             <!-- Perfil -->
             <a href="{{ route('profile') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
@@ -34,12 +36,12 @@
             </a>
             <!-- Cultivos -->
             <a href="{{ route('cultivos.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
-                <span class="material-symbols-outlined mr-2">agriculture</span>
+                 <span class="material-symbols-outlined mr-3">spa</span>
                 Cultivos
             </a>
             <!-- Maquinarias -->
             <a href="{{ route('maquinaria.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
-                <span class="material-symbols-outlined mr-2">precision_manufacturing</span>
+               <span class="material-symbols-outlined mr-2">agriculture</span>
                 Maquinarias
             </a>
             <!-- Comercios -->
@@ -81,14 +83,14 @@
 
     <!-- Sidebar Drawer -->
     <aside id="drawer" class="fixed w-64 bg-azul-marino text-white flex flex-col py-6 px-3 shadow-lg h-screen z-50 transition-transform duration-300 -translate-x-full overflow-y-hidden">
-        <x-user-avatar :user="Auth::user()" size="md" :gradient="false" :showName="true" class="mb-0" />
-        <p class="text-white text-sm text-center mt-0.5 mb-1">{{ Auth::user()->name }}</p>
+        <x-user-avatar :user="Auth::user()" size="md" :gradient="false" :showName="true" class="mb-0.3" />
+        <p class="text-white text-sm text-center mt-0 mb-4">{{ Auth::user()->name }}</p>
 
         <nav class="flex flex-col space-y-1">
             <!-- Dashboard -->
             <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
                 <span class="material-symbols-outlined mr-3">dashboard</span>
-                Dashboard
+                Inicio
             </a>
 
             <!-- Perfil -->
@@ -105,13 +107,13 @@
 
             <!-- Cultivos -->
             <a href="{{ route('cultivos.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <span class="material-symbols-outlined mr-3">agriculture</span>
+                <span class="material-symbols-outlined mr-3">spa</span>
                 Cultivos
             </a>
 
             <!-- Maquinarias -->
             <a href="{{ route('maquinaria.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <span class="material-symbols-outlined mr-3">precision_manufacturing</span>
+                <span class="material-symbols-outlined mr-3">agriculture</span>
                 Maquinarias
             </a>
 
