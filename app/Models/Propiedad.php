@@ -60,6 +60,14 @@ class Propiedad extends Model
     }
 
     /**
+     * Relación: Una propiedad tiene un maquinaria
+     */
+    public function maquinaria()
+    {
+        return $this->hasOne(Maquinaria::class);
+    }
+
+    /**
      * Relación: Una propiedad tiene muchos cultivos
      */
     public function cultivos()

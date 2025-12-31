@@ -125,6 +125,8 @@
         const rutFields = document.getElementById('rut-fields');
         const mallaCheckbox = document.getElementById('malla');
         const mallaFields = document.getElementById('malla-fields');
+        const hectareasInput = document.getElementById('hectareas');
+        const hectareasMallaInput = document.getElementById('hectareas_malla');
 
         function toggleRutFields() {
             rutFields.classList.toggle('hidden', !rutCheckbox.checked);
@@ -132,11 +134,24 @@
         function toggleMallaFields() {
             mallaFields.classList.toggle('hidden', !mallaCheckbox.checked);
         }
+        function syncHectareasMallaMax() {
+            const total = parseFloat(hectareasInput.value) || 0;
+            hectareasMallaInput.max = total > 0 ? total : '';
+            hectareasMallaInput.placeholder = total > 0 ? ('Máx ' + total) : '';
+            if (hectareasMallaInput.value) {
+                const val = parseFloat(hectareasMallaInput.value) || 0;
+                if (total && val > total) hectareasMallaInput.value = total;
+            }
+        }
+
+        hectareasInput.addEventListener('input', syncHectareasMallaMax);
+        hectareasMallaInput.addEventListener('input', syncHectareasMallaMax);
         rutCheckbox.addEventListener('change', toggleRutFields);
         mallaCheckbox.addEventListener('change', toggleMallaFields);
         // Inicializar estado
         toggleRutFields();
         toggleMallaFields();
+        syncHectareasMallaMax();
     });
 </script>
 

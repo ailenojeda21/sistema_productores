@@ -9,10 +9,20 @@
         <form method="POST" action="{{ route('cultivos.store') }}">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                    <label class="block text-gray-700 font-semibold mb-1" for="propiedad_id">Propiedad</label>
+                    <select id="propiedad_id" name="propiedad_id" class="w-full p-2 border border-gray-300 rounded" required>
+                        <option value="">Seleccione propiedad</option>
+                        @foreach($propiedades as $propiedad)
+                        <option value="{{ $propiedad->id }}" data-hectareas="{{ $propiedad->hectareas }}">{{ $propiedad->direccion }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="nombre">Nombre</label>
                     <input id="nombre" name="nombre" type="text" class="w-full p-2 border border-gray-300 rounded" required>
                 </div>
+
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="tipo">Tipo</label>
                     <select id="tipo" name="tipo" class="w-full p-2 border border-gray-300 rounded" required>
@@ -59,15 +69,7 @@
                         <option value="Aspersión">Aspersión</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-1" for="propiedad_id">Propiedad</label>
-                    <select id="propiedad_id" name="propiedad_id" class="w-full p-2 border border-gray-300 rounded" required>
-                        <option value="">Seleccione propiedad</option>
-                        @foreach($propiedades as $propiedad)
-      <option value="{{ $propiedad->id }}">{{ $propiedad->direccion }}</option>
-                        @endforeach
-                    </select>
-                </div>
+            
             </div>
             <button type="submit" class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar</button>
         </form>
@@ -92,5 +94,27 @@
         box-shadow: 0 0 0 2px #93c5fd;
     }
 </style>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectProp = document.getElementById('propiedad_id');
+    const hectareasInput = document.getElementById('hectareas');
+    if (!selectProp || !hectareasInput) return;
+
+    function syncMaxHectareas() {
+        const opt = selectProp.options[selectProp.selectedIndex];
+        const maxVal = opt && opt.dataset.hectareas ? parseFloat(opt.dataset.hectareas) : 0;
+        hectareasInput.max = maxVal || '';
+        hectareasInput.placeholder = maxVal ? ('Máx ' + maxVal) : '';
+        const current = parseFloat(hectareasInput.value);
+        if (maxVal && current > maxVal) hectareasInput.value = maxVal;
+    }
+
+    selectProp.addEventListener('change', syncMaxHectareas);
+    hectareasInput.addEventListener('input', syncMaxHectareas);
+    syncMaxHectareas();
+});
+</script>
+@endpush
 <!-- Eliminado script malla antigranizo -->
 @endsection
