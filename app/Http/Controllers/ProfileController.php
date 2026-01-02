@@ -22,26 +22,27 @@ class ProfileController extends Controller
     /**
      * Actualizar información general del perfil.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $user = $request->user();
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . auth()->id()],
+            'dni' => ['nullable', 'string', 'max:20'],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'tipo_tenencia' => ['nullable', 'string', 'in:propietario,arrendatario,otros'],
+            'especificar_tenencia' => ['nullable', 'required_if:tipo_tenencia,otros', 'string', 'max:255'],
+        ], [
+            'especificar_tenencia.required_if' => 'Debe especificar la condición cuando selecciona "Otro".',
+        ]);
 
-        $data = $request->validated();
-
-        if (isset($data['email'])) {
-            $data['email'] = strtolower($data['email']);
+        $user = auth()->user();
+        
+        // Si no selecciona "otros", limpiar el campo especificar_tenencia
+        if ($validated['tipo_tenencia'] !== 'otros') {
+            $validated['especificar_tenencia'] = null;
         }
-
-        // Checkbox propietario
-        $data['es_propietario'] = $request->has('es_propietario') ? 1 : 0;
-
-        $user->fill($data);
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
+        
+        $user->update($validated);
 
         return Redirect::route('profile')->with('status', 'Perfil actualizado correctamente.');
     }

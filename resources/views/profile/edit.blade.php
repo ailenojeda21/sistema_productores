@@ -8,9 +8,9 @@
         @if (session('success'))
             <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
         @endif
-        <form method="POST" action="{{ route('profile.update') }}">
+        <form method="POST" action="{{ route('profile.update') }}" id="profileForm">
             @csrf
-          @method('PATCH')
+            @method('PATCH')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="mb-4 md:col-span-2">
                     <label class="block text-gray-700 font-semibold mb-1" for="name">Nombre</label>
@@ -40,9 +40,32 @@
                         <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="mb-4 flex items-center md:col-span-2">
-                    <input id="es_propietario" name="es_propietario" type="checkbox" class="mr-2 custom-checkbox" value="1" {{ old('es_propietario', $user->es_propietario) ? 'checked' : '' }}>
-                    <label for="es_propietario" class="text-gray-700 font-semibold">Es propietario</label>
+                <div class="mb-4 md:col-span-2">
+                    <label class="block text-gray-700 font-semibold mb-3" for="tenencia">Tipo de tenencia de la propiedad</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="tipo_tenencia" value="propietario" class="mr-2 tenencia-radio" {{ old('tipo_tenencia', $user->tipo_tenencia) == 'propietario' ? 'checked' : '' }}>
+                            <span class="text-gray-700">Propietario</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="tipo_tenencia" value="arrendatario" class="mr-2 tenencia-radio" {{ old('tipo_tenencia', $user->tipo_tenencia) == 'arrendatario' ? 'checked' : '' }}>
+                            <span class="text-gray-700">Arrendatario</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="tipo_tenencia" value="otros" class="mr-2 tenencia-radio" {{ old('tipo_tenencia', $user?->tipo_tenencia) == 'otros' ? 'checked' : '' }}>
+                            <span class="text-gray-700">Otro</span>
+                            <div id="otros-tenencia-container" class="ml-6 {{ old('tipo_tenencia', $user?->tipo_tenencia) == 'otros' ? '' : 'hidden' }}">
+                                <input id="especificar_tenencia" name="especificar_tenencia" type="text" class="w-96 p-2 border border-gray-300 rounded text-sm" placeholder="Especifique la condición" value="{{ old('especificar_tenencia', $user?->especificar_tenencia) }}">
+                            </div>
+                        </label>
+
+                    </div>
+                    @error('tipo_tenencia')
+                        <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                    @enderror
+                    @error('especificar_tenencia')
+                        <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
             <button type="submit" class="w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar Cambios</button>
@@ -67,7 +90,7 @@
     @endif
     
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <form method="POST" action="{{ route('profile.update') }}">
+        <form method="POST" action="{{ route('profile.update') }}" id="profileFormMobile">
             @csrf
             @method('PATCH')
             
@@ -127,30 +150,56 @@
                     @enderror
                 </div>
                 
-                <!-- Es Propietario -->
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label class="flex items-center cursor-pointer">
-                        <input id="es_propietario-mobile" name="es_propietario" type="checkbox" 
-                               class="mr-3 custom-checkbox-mobile" value="1" 
-                               {{ old('es_propietario', $user->es_propietario) ? 'checked' : '' }}>
-                        <div class="flex-1">
-                            <div class="flex items-center">
-                                <span class="material-symbols-outlined text-azul-marino mr-2">home_work</span>
-                                <span class="text-gray-900 font-semibold">Soy propietario</span>
-                            </div>
-                            <p class="text-gray-500 text-xs mt-1 ml-8">Marca si eres dueño de propiedades</p>
-                        </div>
+                <!-- Tipo de Tenencia -->
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-3 text-sm">
+                        <span class="material-symbols-outlined text-azul-marino mr-2 text-xl">home_work</span>
+                        Tipo de tenencia de la propiedad
                     </label>
+                    <div class="space-y-3 ml-9">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="tipo_tenencia" value="propietario" class="mr-3 tenencia-radio-mobile" {{ old('tipo_tenencia', $user->tipo_tenencia) == 'propietario' ? 'checked' : '' }}>
+                            <span class="text-gray-700">Propietario</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="tipo_tenencia" value="arrendatario" class="mr-3 tenencia-radio-mobile" {{ old('tipo_tenencia', $user->tipo_tenencia) == 'arrendatario' ? 'checked' : '' }}>
+                            <span class="text-gray-700">Arrendatario</span>
+                        </label>
+                        <div>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="tipo_tenencia" value="otros" class="mr-3 tenencia-radio-mobile" {{ old('tipo_tenencia', $user->tipo_tenencia) == 'otros' ? 'checked' : '' }}>
+                                <span class="text-gray-700">Otro</span>
+                                <div id="otros-tenencia-container-mobile" class="ml-6 {{ old('tipo_tenencia', $user->tipo_tenencia) == 'otros' ? '' : 'hidden' }}">
+                                    <input id="especificar_tenencia_mobile" name="especificar_tenencia" type="text" 
+                                           class="w-40 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-marino focus:border-transparent text-sm" 
+                                           placeholder="Especifique la condición"
+                                           value="{{ old('especificar_tenencia', $user->especificar_tenencia) }}">
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    @error('tipo_tenencia')
+                        <div class="text-red-600 text-sm mt-2 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">error</span>
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    @error('especificar_tenencia')
+                        <div class="text-red-600 text-sm mt-2 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">error</span>
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
-            </div>
-            
-            <!-- Submit Button -->
-            <div class="p-4 bg-gray-50 border-t border-gray-200">
-                <button type="submit" 
-                        class="w-full py-3 px-4 bg-azul-marino text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined">save</span>
-                    Guardar Cambios
-                </button>
+                
+                <!-- Submit Button -->
+                <div class="p-4 bg-gray-50 border-t border-gray-200">
+                    <button type="submit" 
+                            class="w-full py-3 px-4 bg-azul-marino text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">save</span>
+                        Guardar Cambios
+                    </button>
+                </div>
             </div>
         </form>
     </div>
@@ -204,4 +253,38 @@
         transform: translate(-50%, -50%);
     }
 </style>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tenenciaRadios = document.querySelectorAll('.tenencia-radio');
+        const otrosContainer = document.getElementById('otros-tenencia-container');
+        
+        const tenenciaRadiosMobile = document.querySelectorAll('.tenencia-radio-mobile');
+        const otrosContainerMobile = document.getElementById('otros-tenencia-container-mobile');
+        
+        function toggleOtrosField() {
+            const isOtros = document.querySelector('.tenencia-radio:checked')?.value === 'otros';
+            otrosContainer.classList.toggle('hidden', !isOtros);
+        }
+        
+        function toggleOtrosFieldMobile() {
+            const isOtros = document.querySelector('.tenencia-radio-mobile:checked')?.value === 'otros';
+            otrosContainerMobile.classList.toggle('hidden', !isOtros);
+        }
+        
+        tenenciaRadios.forEach(radio => {
+            radio.addEventListener('change', toggleOtrosField);
+        });
+        
+        tenenciaRadiosMobile.forEach(radio => {
+            radio.addEventListener('change', toggleOtrosFieldMobile);
+        });
+        
+        // Inicializar al cargar
+        toggleOtrosField();
+        toggleOtrosFieldMobile();
+    });
+</script>
 @endsection
