@@ -89,6 +89,59 @@
                     <input type="checkbox" name="cierre_perimetral" id="cierre_perimetral" class="mr-2 rounded-full custom-checkbox">
                     <label for="cierre_perimetral">¿Tiene cierre perimetral?</label>
                 </div>
+                <!-- Tipo de Tenencia -->
+<div class="md:col-span-2 mt-6">
+    <label class="block text-gray-700 font-semibold mb-3">
+        Tipo de tenencia de la propiedad
+    </label>
+
+    <div class="space-y-3">
+        <label class="flex items-center cursor-pointer">
+            <input type="radio"
+                   name="tipo_tenencia"
+                   value="propietario"
+                   class="mr-3 tenencia-radio"
+                   {{ old('tipo_tenencia') === 'propietario' ? 'checked' : '' }}>
+            <span class="text-gray-700">Propietario</span>
+        </label>
+
+        <label class="flex items-center cursor-pointer">
+            <input type="radio"
+                   name="tipo_tenencia"
+                   value="arrendatario"
+                   class="mr-3 tenencia-radio"
+                   {{ old('tipo_tenencia') === 'arrendatario' ? 'checked' : '' }}>
+            <span class="text-gray-700">Arrendatario</span>
+        </label>
+
+        <label class="flex items-center cursor-pointer">
+            <input type="radio"
+                   name="tipo_tenencia"
+                   value="otros"
+                   class="mr-3 tenencia-radio"
+                   {{ old('tipo_tenencia') === 'otros' ? 'checked' : '' }}>
+            <span class="text-gray-700">Otro</span>
+        </label>
+
+        <div id="otros-tenencia-container"
+             class="ml-6 {{ old('tipo_tenencia') === 'otros' ? '' : 'hidden' }}">
+            <input type="text"
+                   name="especificar_tenencia"
+                   class="w-full md:w-96 p-2 border border-gray-300 rounded text-sm"
+                   placeholder="Especifique la condición"
+                   value="{{ old('especificar_tenencia') }}">
+        </div>
+    </div>
+
+    @error('tipo_tenencia')
+        <div class="text-red-600 text-sm mt-2">{{ $message }}</div>
+    @enderror
+
+    @error('especificar_tenencia')
+        <div class="text-red-600 text-sm mt-2">{{ $message }}</div>
+    @enderror
+</div>
+
             </div>
             <button type="submit" class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar</button>
         </form>
@@ -153,6 +206,27 @@
         toggleMallaFields();
         syncHectareasMallaMax();
     });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tenenciaRadios = document.querySelectorAll('.tenencia-radio');
+    const otrosContainer = document.getElementById('otros-tenencia-container');
+
+    function toggleOtrosTenencia() {
+        const selected = document.querySelector('.tenencia-radio:checked');
+        otrosContainer.classList.toggle(
+            'hidden',
+            !selected || selected.value !== 'otros'
+        );
+    }
+
+    tenenciaRadios.forEach(radio => {
+        radio.addEventListener('change', toggleOtrosTenencia);
+    });
+
+    // Inicializar al cargar
+    toggleOtrosTenencia();
+});
 </script>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

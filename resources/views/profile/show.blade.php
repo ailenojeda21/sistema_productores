@@ -35,20 +35,7 @@
                         <td class="px-4 py-3 text-base text-gray-700 font-semibold">Telefono:</td>
                         <td class="px-4 py-3 text-base text-gray-700">{{ $user->telefono ?? '-' }}</td>
                     </tr>
-                    <tr>
-                        <td class="px-4 py-3 text-base text-gray-700 font-semibold">Tipo de tenencia:</td>
-                        <td class="px-4 py-3 text-base text-gray-700">
-                            @if($user->tipo_tenencia == 'propietario')
-                                Propietario
-                            @elseif($user->tipo_tenencia == 'arrendatario')
-                                Arrendatario
-                            @elseif($user->tipo_tenencia == 'otros')
-                                Otro: {{ $user->especificar_tenencia ?? '-' }}
-                            @else
-                                -
-                            @endif
-                        </td>
-                    </tr>
+    
             
                 </tbody>
             </table>

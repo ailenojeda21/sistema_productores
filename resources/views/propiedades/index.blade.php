@@ -15,7 +15,12 @@
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Direccion</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[100px]">Ubicación</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Propietario</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                        Tenencia
+                    </th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                        Detalle tenencia
+                    </th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Derecho de riego</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo derecho de riego</th>
                     <th class="px-6 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider min-w-[90px]">RUT</th>
@@ -40,13 +45,20 @@
                         @endif
                     </td>
                     <td class="px-4 py-2 text-base text-gray-700">{{ number_format($propiedad->hectareas, 2, ',', '.') }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700 text-center">
-                        @if($propiedad->es_propietario)
-                            <span class="text-green-600 font-semibold">✓ Sí</span>
-                        @else
-                            <span class="text-red-600 font-semibold">✗ No</span>
-                        @endif
-                    </td>
+                   <td class="px-4 py-2 text-base text-gray-700">
+    @if($propiedad->tipo_tenencia)
+        <span class="font-medium capitalize">
+            {{ str_replace('_', ' ', $propiedad->tipo_tenencia) }}
+        </span>
+    @else
+        -
+    @endif
+</td>
+
+<td class="px-4 py-2 text-base text-gray-700">
+    {{ $propiedad->especificar_tenencia ?? '-' }}
+</td>
+
                     <td class="px-4 py-2 text-base text-gray-700 text-center">
                         @if($propiedad->derecho_riego)
                             <span class="text-green-600 font-semibold">✓ Sí</span>

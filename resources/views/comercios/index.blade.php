@@ -16,7 +16,7 @@
         <table class="min-w-full divide-y divide-gray-200 table-fixed">
             <thead class="bg-gray-50">
                 <tr>
-                    <th style="width:18%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    <th style="width:20%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                         Infraestructura Empaque
                     </th>
                     <th style="width:20%" class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">

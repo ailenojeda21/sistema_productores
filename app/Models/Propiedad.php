@@ -14,7 +14,6 @@ class Propiedad extends Model
         'usuario_id',
         'direccion',
         'hectareas',
-        'es_propietario',
         'derecho_riego',
         'tipo_derecho_riego',
         'rut',
@@ -25,6 +24,8 @@ class Propiedad extends Model
         'hectareas_malla',
         'cierre_perimetral',
         'malla',
+        'tipo_tenencia',
+        'especificar_tenencia',
     ];
 
     /**
