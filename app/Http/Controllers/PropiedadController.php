@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PropiedadController extends Controller
 {
-
     /**
      * Mostrar formulario de creación
      */
@@ -26,6 +25,7 @@ class PropiedadController extends Controller
         $propiedades = Propiedad::with(['usuario', 'maquinarias', 'cultivos'])
             ->where('usuario_id', Auth::id())
             ->get();
+
         return view('propiedades.index', compact('propiedades'));
     }
 
@@ -37,36 +37,46 @@ class PropiedadController extends Controller
         $validated = $request->validate([
             'direccion' => 'required|string|max:255',
             'hectareas' => 'required|numeric|min:0',
-            'es_propietario' => 'nullable',
+
             'malla' => 'nullable',
             'derecho_riego' => 'nullable',
             'tipo_derecho_riego' => 'nullable|string|in:Subterráneo,Superficial,Ambos',
+
             'rut' => 'nullable',
             'rut_valor' => 'nullable|numeric',
-            'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240', // máximo 10MB
+            'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240',
+
             'lat' => 'nullable|numeric|between:-90,90',
             'lng' => 'nullable|numeric|between:-180,180',
+
             'hectareas_malla' => 'nullable|numeric',
             'cierre_perimetral' => 'nullable',
+
+            // ✅ NUEVO SISTEMA DE TENENCIA
+            'tipo_tenencia' => 'required|in:propietario,arrendatario,otros',
+            'especificar_tenencia' => 'nullable|required_if:tipo_tenencia,otros|string|max:255',
+        ], [
+            'especificar_tenencia.required_if' => 'Debe especificar la condición cuando selecciona "Otro".',
         ]);
 
-        $validated['es_propietario'] = $request->has('es_propietario') ? 1 : 0;
-        $validated['malla'] = $request->has('malla') ? 1 : 0;
-        $validated['derecho_riego'] = $request->has('derecho_riego') ? 1 : 0;
-        $validated['rut'] = $request->has('rut') ? 1 : 0;
-        $validated['cierre_perimetral'] = $request->has('cierre_perimetral') ? 1 : 0;
+        // Checkboxes
+        $validated['malla'] = $request->has('malla');
+        $validated['derecho_riego'] = $request->has('derecho_riego');
+        $validated['rut'] = $request->has('rut');
+        $validated['cierre_perimetral'] = $request->has('cierre_perimetral');
+
         $validated['usuario_id'] = Auth::id();
 
-        // Manejar el archivo PDF si se subió uno
+        // Archivo RUT
         if ($request->hasFile('rut_archivo_file')) {
-            $path = $request->file('rut_archivo_file')->store('rut_files', 'public');
-            $validated['rut_archivo'] = $path;
+            $validated['rut_archivo'] = $request->file('rut_archivo_file')
+                ->store('rut_files', 'public');
         }
 
         Propiedad::create($validated);
 
         return redirect()->route('propiedades.index')
-                         ->with('success', 'Propiedad creada correctamente');
+            ->with('success', 'Propiedad creada correctamente');
     }
 
     /**
@@ -75,6 +85,7 @@ class PropiedadController extends Controller
     public function edit(string $id)
     {
         $propiedad = Propiedad::findOrFail($id);
+
         return view('propiedades.edit', compact('propiedad'));
     }
 
@@ -86,44 +97,50 @@ class PropiedadController extends Controller
         $propiedad = Propiedad::findOrFail($id);
 
         $validated = $request->validate([
-            'usuario_id' => 'sometimes|exists:users,id',
             'direccion' => 'required|string|max:255',
             'hectareas' => 'sometimes|numeric|min:0',
-            'es_propietario' => 'nullable',
+
             'malla' => 'nullable',
             'derecho_riego' => 'nullable',
             'tipo_derecho_riego' => 'nullable|string|in:Subterráneo,Superficial,Ambos',
+
             'rut' => 'nullable',
             'rut_valor' => 'nullable|numeric',
-            'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240', // máximo 10MB
+            'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240',
+
             'lat' => 'nullable|numeric|between:-90,90',
             'lng' => 'nullable|numeric|between:-180,180',
+
             'hectareas_malla' => 'nullable|numeric',
             'cierre_perimetral' => 'nullable',
+
+            // ✅ TENENCIA
+            'tipo_tenencia' => 'required|in:propietario,arrendatario,otros',
+            'especificar_tenencia' => 'nullable|required_if:tipo_tenencia,otros|string|max:255',
+        ], [
+            'especificar_tenencia.required_if' => 'Debe especificar la condición cuando selecciona "Otro".',
         ]);
 
-        $validated['es_propietario'] = $request->has('es_propietario') ? 1 : 0;
-        $validated['malla'] = $request->has('malla') ? 1 : 0;
-        $validated['derecho_riego'] = $request->has('derecho_riego') ? 1 : 0;
-        $validated['rut'] = $request->has('rut') ? 1 : 0;
-        $validated['cierre_perimetral'] = $request->has('cierre_perimetral') ? 1 : 0;
+        // Checkboxes
+        $validated['malla'] = $request->has('malla');
+        $validated['derecho_riego'] = $request->has('derecho_riego');
+        $validated['rut'] = $request->has('rut');
+        $validated['cierre_perimetral'] = $request->has('cierre_perimetral');
 
-        // Manejar el archivo PDF si se subió uno nuevo
+        // Archivo RUT
         if ($request->hasFile('rut_archivo_file')) {
-            // Eliminar el archivo anterior si existe
             if ($propiedad->rut_archivo) {
                 Storage::disk('public')->delete($propiedad->rut_archivo);
             }
-            
-            // Guardar el nuevo archivo
-            $path = $request->file('rut_archivo_file')->store('rut_files', 'public');
-            $validated['rut_archivo'] = $path;
+
+            $validated['rut_archivo'] = $request->file('rut_archivo_file')
+                ->store('rut_files', 'public');
         }
 
         $propiedad->update($validated);
 
         return redirect()->route('propiedades.index')
-                         ->with('success', 'Propiedad actualizada correctamente');
+            ->with('success', 'Propiedad actualizada correctamente');
     }
 
     /**
@@ -135,6 +152,6 @@ class PropiedadController extends Controller
         $propiedad->delete();
 
         return redirect()->route('propiedades.index')
-                         ->with('success', 'Propiedad eliminada correctamente');
+            ->with('success', 'Propiedad eliminada correctamente');
     }
 }

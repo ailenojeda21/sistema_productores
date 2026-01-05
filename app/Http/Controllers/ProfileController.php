@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,26 +24,17 @@ class ProfileController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . auth()->id()],
-            'dni' => ['nullable', 'string', 'max:20'],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . auth()->id()],
+            'dni'      => ['nullable', 'string', 'max:20'],
             'telefono' => ['nullable', 'string', 'max:20'],
-            'tipo_tenencia' => ['nullable', 'string', 'in:propietario,arrendatario,otros'],
-            'especificar_tenencia' => ['nullable', 'required_if:tipo_tenencia,otros', 'string', 'max:255'],
-        ], [
-            'especificar_tenencia.required_if' => 'Debe especificar la condición cuando selecciona "Otro".',
         ]);
 
         $user = auth()->user();
-        
-        // Si no selecciona "otros", limpiar el campo especificar_tenencia
-        if ($validated['tipo_tenencia'] !== 'otros') {
-            $validated['especificar_tenencia'] = null;
-        }
-        
         $user->update($validated);
 
-        return Redirect::route('profile')->with('status', 'Perfil actualizado correctamente.');
+        return Redirect::route('profile')
+            ->with('status', 'Perfil actualizado correctamente.');
     }
 
     /**
@@ -61,7 +51,6 @@ class ProfileController extends Controller
      */
     public function updateAvatar(Request $request)
     {
-        // Lista válida de avatares
         $validAvatars = [
             'uno.png',
             'dos.png',
@@ -70,17 +59,15 @@ class ProfileController extends Controller
             'cinco.png',
         ];
 
-        // Validación
         $request->validate([
             'avatar' => 'required|in:' . implode(',', $validAvatars),
         ]);
 
-        // Guardar avatar
         $user = Auth::user();
         $user->avatar = $request->avatar;
         $user->save();
 
-        return Redirect::route('profile.update')
+        return Redirect::route('profile')
             ->with('status', 'Avatar actualizado correctamente.');
     }
 
@@ -96,7 +83,6 @@ class ProfileController extends Controller
         $user = $request->user();
 
         Auth::logout();
-
         $user->delete();
 
         $request->session()->invalidate();
@@ -113,6 +99,4 @@ class ProfileController extends Controller
         $user = Auth::user();
         return view('profile.show', compact('user'));
     }
-
-    
 }

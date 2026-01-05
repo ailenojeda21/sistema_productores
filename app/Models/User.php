@@ -38,9 +38,6 @@ class User extends Authenticatable
         'password',
         'dni',
         'telefono',
-        'es_propietario',
-        'tipo_tenencia',
-        'especificar_tenencia',
         'avatar', 
         // <<--- AGREGADO
     ];

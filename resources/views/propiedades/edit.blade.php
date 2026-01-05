@@ -4,115 +4,145 @@
 <div class="w-full max-w-2xl mx-auto">
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Editar Propiedad</h2>
+
         @if (session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
+            <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
+                {{ session('success') }}
+            </div>
         @endif
+
         <form method="POST" action="{{ route('propiedades.update', $propiedad) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-           
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+                {{-- Dirección --}}
                 <div>
-                    <label class="block text-gray-700 font-semibold mb-1" for="direccion">Dirección</label>
-                    <input id="direccion" name="direccion" type="text" class="w-full p-2 border border-gray-300 rounded" value="{{ old('direccion', $propiedad->direccion) }}">
+                    <label class="block font-semibold mb-1">Dirección</label>
+                    <input name="direccion" type="text"
+                        class="w-full p-2 border border-gray-300 rounded"
+                        value="{{ old('direccion', $propiedad->direccion) }}">
                 </div>
+
+                {{-- Ubicación --}}
                 <div>
-                    <label class="block text-gray-700 font-semibold mb-1">Ubicación</label>
+                    <label class="block font-semibold mb-1">Ubicación</label>
                     <input type="hidden" name="lat" class="lat-input" value="{{ old('lat', $propiedad->lat) }}">
                     <input type="hidden" name="lng" class="lng-input" value="{{ old('lng', $propiedad->lng) }}">
-                    
-                    <!-- Botón para mostrar/ocultar mapa -->
-                    <button type="button" class="toggle-map-btn px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro hover:text-azul-marino font-semibold shadow transition">
+
+                    <button type="button"
+                        class="toggle-map-btn px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro hover:text-azul-marino transition">
                         Ver mapa
                     </button>
-                    
-                    <!-- Contenedor del mapa (inicialmente oculto) -->
+
                     <div class="map-container hidden mt-4">
                         <div class="map-element w-full h-64 rounded border"></div>
                         <p class="text-sm text-gray-500 mt-2">
-                            Coordenadas seleccionadas:
-                            <span class="coordenadas-display font-semibold">{{ $propiedad->lat ? $propiedad->lat . ', ' . $propiedad->lng : 'No seleccionadas' }}</span>
+                            Coordenadas:
+                            <span class="coordenadas-display font-semibold">
+                                {{ $propiedad->lat ? $propiedad->lat.', '.$propiedad->lng : 'No seleccionadas' }}
+                            </span>
                         </p>
-                        <p class="text-sm text-gray-500">Haz click en el mapa para ubicar la propiedad. También puedes arrastrar el pin.</p>
                     </div>
+                </div>
+
+                {{-- Hectáreas --}}
+                <div>
+                    <label class="block font-semibold mb-1">Hectáreas</label>
+                    <input id="hectareas" name="hectareas" type="number" step="0.01"
+                        class="w-full p-2 border border-gray-300 rounded"
+                        value="{{ old('hectareas', $propiedad->hectareas) }}">
+                </div>
+
+                {{-- TENENCIA --}}
+                <div>
+                    <label class="block font-semibold mb-1">Tipo de tenencia</label>
+                    <select name="tipo_tenencia" id="tipo_tenencia"
+                        class="w-full p-2 border border-gray-300 rounded" required>
+                        <option value="">Seleccione...</option>
+                        <option value="propietario" {{ old('tipo_tenencia', $propiedad->tipo_tenencia) == 'propietario' ? 'selected' : '' }}>Propietario</option>
+                        <option value="arrendatario" {{ old('tipo_tenencia', $propiedad->tipo_tenencia) == 'arrendatario' ? 'selected' : '' }}>Arrendatario</option>
+                        <option value="otros" {{ old('tipo_tenencia', $propiedad->tipo_tenencia) == 'otros' ? 'selected' : '' }}>Otros</option>
+                    </select>
+                </div>
+
+                {{-- ESPECIFICAR TENENCIA --}}
+                <div id="especificarTenenciaDiv" class="hidden md:col-span-2">
+                    <label class="block font-semibold mb-1">Especificar tenencia</label>
+                    <input type="text" name="especificar_tenencia"
+                        class="w-full p-2 border border-gray-300 rounded"
+                        value="{{ old('especificar_tenencia', $propiedad->especificar_tenencia) }}">
                 </div>
             </div>
 
+            {{-- CHECKBOXES --}}
             <div class="space-y-6">
+
+                {{-- Derecho de riego --}}
                 <div>
-                    <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
-                    <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" value="{{ old('hectareas', isset($propiedad) ? $propiedad->hectareas : '') }}">
-                </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="derecho_riego" name="derecho_riego"
+                            class="mr-2 custom-checkbox"
+                            {{ old('derecho_riego', $propiedad->derecho_riego) ? 'checked' : '' }}>
+                        <label>¿Tiene derecho de riego?</label>
+                    </div>
 
-                <!-- Checkboxes básicos -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex items-center">
-                        <input type="checkbox" name="es_propietario" id="es_propietario" class="mr-2 custom-checkbox" {{ old('es_propietario', $propiedad->es_propietario) ? 'checked' : '' }}>
-                        <label for="es_propietario">¿Es propietario?</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" name="cierre_perimetral" id="cierre_perimetral" class="mr-2 custom-checkbox" {{ old('cierre_perimetral', $propiedad->cierre_perimetral) ? 'checked' : '' }}>
-                        <label for="cierre_perimetral">¿Tiene cierre perimetral?</label>
-                    </div>
-                </div>
-
-                <!-- Derecho de Riego -->
-                <div class="space-y-4">
-                    <div class="flex items-center">
-                        <input type="checkbox" name="derecho_riego" id="derecho_riego" class="mr-2 custom-checkbox" {{ old('derecho_riego', $propiedad->derecho_riego) ? 'checked' : '' }} onchange="document.getElementById('tipoDerechoRiegoDiv').style.display = this.checked ? 'block' : 'none';">
-                        <label for="derecho_riego">¿Tiene derecho de riego?</label>
-                    </div>
-                    <div id="tipoDerechoRiegoDiv" style="display:none;" class="ml-7">
-                        <label for="tipo_derecho_riego" class="block text-gray-700 font-semibold mb-1">Tipo de derecho de riego:</label>
-                        <select name="tipo_derecho_riego" id="tipo_derecho_riego" class="w-full p-2 border border-gray-300 rounded">
+                    <div id="tipoDerechoRiegoDiv" class="hidden ml-7 mt-2">
+                        <select name="tipo_derecho_riego" class="w-full p-2 border border-gray-300 rounded">
                             <option value="">Seleccione...</option>
-                            <option value="Subterráneo" {{ old('tipo_derecho_riego', $propiedad->tipo_derecho_riego) == 'subterráneo' ? 'selected' : '' }}>Subterráneo</option>
-                            <option value="Superficial" {{ old('tipo_derecho_riego', $propiedad->tipo_derecho_riego) == 'superficial' ? 'selected' : '' }}>Superficial</option>
-                            <option value="Ambos" {{ old('tipo_derecho_riego', $propiedad->tipo_derecho_riego) == 'ambos' ? 'selected' : '' }}>Ambos</option>
+                            <option value="Subterráneo" {{ $propiedad->tipo_derecho_riego == 'Subterráneo' ? 'selected' : '' }}>Subterráneo</option>
+                            <option value="Superficial" {{ $propiedad->tipo_derecho_riego == 'Superficial' ? 'selected' : '' }}>Superficial</option>
+                            <option value="Ambos" {{ $propiedad->tipo_derecho_riego == 'Ambos' ? 'selected' : '' }}>Ambos</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- RUT -->
-                <div class="space-y-4">
+                {{-- RUT --}}
+                <div>
                     <div class="flex items-center">
-                        <input type="checkbox" name="rut" id="rut" class="mr-2 custom-checkbox" {{ old('rut', $propiedad->rut) ? 'checked' : '' }} onchange="document.getElementById('rutFields').style.display = this.checked ? 'block' : 'none';">
-                        <label for="rut">¿Posee RUT?</label>
+                        <input type="checkbox" id="rut" name="rut"
+                            class="mr-2 custom-checkbox"
+                            {{ old('rut', $propiedad->rut) ? 'checked' : '' }}>
+                        <label>¿Posee RUT?</label>
                     </div>
-                    <div id="rutFields" style="display:none;" class="ml-7 space-y-4">
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-1" for="rut_valor">Nº RUT</label>
-                            <input id="rut_valor" name="rut_valor" type="number" step="1" class="w-full p-2 border border-gray-300 rounded" value="{{ old('rut_valor', isset($propiedad) ? $propiedad->rut_valor : '') }}">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-1" for="rut_archivo_file">Adjuntar RUT (PDF, opcional)</label>
-                            <input id="rut_archivo_file" name="rut_archivo_file" type="file" accept="application/pdf" class="w-full p-2 border border-gray-300 rounded">
-                            @error('rut_archivo_file')
-                                <span class="text-red-600 text-sm">{{ $message }}</span>
-                            @enderror
-                            @if($propiedad->rut_archivo)
-                                <div class="mt-2">
-                                    <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Ver RUT actual</a>
-                                </div>
-                            @endif
-                        </div>
+
+                    <div id="rutFields" class="hidden ml-7 mt-2">
+                        <input name="rut_valor" type="number"
+                            class="w-full p-2 border border-gray-300 rounded"
+                            value="{{ old('rut_valor', $propiedad->rut_valor) }}">
                     </div>
                 </div>
 
-                <!-- Malla Antigranizo -->
-                <div class="space-y-4">
+                {{-- Malla --}}
+                <div>
                     <div class="flex items-center">
-                        <input type="checkbox" name="malla" id="malla" class="mr-2 custom-checkbox" {{ old('malla', $propiedad->malla) ? 'checked' : '' }} onchange="document.getElementById('mallaFields').style.display = this.checked ? 'block' : 'none';">
-                        <label for="malla">¿Tiene malla antigranizo?</label>
+                        <input type="checkbox" id="malla" name="malla"
+                            class="mr-2 custom-checkbox"
+                            {{ old('malla', $propiedad->malla) ? 'checked' : '' }}>
+                        <label>¿Tiene malla antigranizo?</label>
                     </div>
-                    <div id="mallaFields" style="display:none;" class="ml-7">
-                        <label class="block text-gray-700 font-semibold mb-1" for="hectareas_malla">Hectáreas con malla</label>
-                        <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" value="{{ old('hectareas_malla', isset($propiedad) ? $propiedad->hectareas_malla : '') }}">
+
+                    <div id="mallaFields" class="hidden ml-7 mt-2">
+                        <input name="hectareas_malla" type="number" step="0.01"
+                            class="w-full p-2 border rounded"
+                            value="{{ old('hectareas_malla', $propiedad->hectareas_malla) }}">
                     </div>
+                </div>
+
+                {{-- Cierre --}}
+                <div class="flex items-center">
+                    <input type="checkbox" name="cierre_perimetral"
+                        class="mr-2 custom-checkbox"
+                        {{ old('cierre_perimetral', $propiedad->cierre_perimetral) ? 'checked' : '' }}>
+                    <label>¿Tiene cierre perimetral?</label>
                 </div>
             </div>
 
-            <button type="submit" class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar Cambios</button>
+            <button type="submit"
+                class="mt-8 w-full py-2 bg-azul-marino text-white font-bold rounded hover:bg-amarillo-claro hover:text-azul-marino transition">
+                Guardar cambios
+            </button>
         </form>
     </div>
 </div>
@@ -147,6 +177,34 @@ window.onload = function() {
     document.getElementById('rutFields').style.display = document.getElementById('rut').checked ? 'block' : 'none';
     document.getElementById('mallaFields').style.display = document.getElementById('malla').checked ? 'block' : 'none';
 };
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tipoTenencia = document.getElementById('tipo_tenencia');
+    const especificar = document.getElementById('especificarTenenciaDiv');
+    const riego = document.getElementById('derecho_riego');
+    const riegoDiv = document.getElementById('tipoDerechoRiegoDiv');
+    const rut = document.getElementById('rut');
+    const rutDiv = document.getElementById('rutFields');
+    const malla = document.getElementById('malla');
+    const mallaDiv = document.getElementById('mallaFields');
+
+    const toggle = (check, div) => div.classList.toggle('hidden', !check.checked);
+
+    tipoTenencia.addEventListener('change', () =>
+        especificar.classList.toggle('hidden', tipoTenencia.value !== 'otros')
+    );
+
+    riego.addEventListener('change', () => toggle(riego, riegoDiv));
+    rut.addEventListener('change', () => toggle(rut, rutDiv));
+    malla.addEventListener('change', () => toggle(malla, mallaDiv));
+
+    // init
+    toggle(riego, riegoDiv);
+    toggle(rut, rutDiv);
+    toggle(malla, mallaDiv);
+    especificar.classList.toggle('hidden', tipoTenencia.value !== 'otros');
+});
 </script>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
