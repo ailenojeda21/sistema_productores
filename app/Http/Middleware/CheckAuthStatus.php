@@ -10,19 +10,23 @@ class CheckAuthStatus
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::check() && !$request->is('login*', 'register*')) {
-            // Si no está autenticado y no está en las rutas de login/register
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Unauthorized', 'redirect' => route('login')], 401);
-            }
-            return redirect()->route('login');
-        }
+        $loginRoutes = ['login', 'register', 'logout', 'password.', 'verification.'];
 
-        // Si está autenticado, actualizar timestamp de última actividad
         if (Auth::check()) {
             Auth::user()->touch();
+            return $next($request);
         }
 
-        return $next($request);
+        foreach ($loginRoutes as $route) {
+            if ($request->is($route) || $request->routeIs($route)) {
+                return $next($request);
+            }
+        }
+
+        if ($request->ajax()) {
+            return response()->json(['error' => 'Unauthorized', 'redirect' => route('login')], 401);
+        }
+
+        return redirect()->route('login');
     }
 }
