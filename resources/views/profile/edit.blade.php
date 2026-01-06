@@ -3,6 +3,10 @@
 @section('dashboard-content')
 <!-- Desktop View -->
 <div class="hidden lg:block w-full max-w-2xl mx-auto">
+    <x-breadcrumb :items="[
+        ['name' => 'Perfil', 'route' => 'profile'],
+        ['name' => 'Editar']
+    ]" />
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Editar Perfil</h2>
 
