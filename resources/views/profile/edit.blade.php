@@ -3,6 +3,10 @@
 @section('dashboard-content')
 <!-- Desktop View -->
 <div class="hidden lg:block w-full max-w-2xl mx-auto">
+    <x-breadcrumb :items="[
+        ['name' => 'Perfil', 'route' => 'profile'],
+        ['name' => 'Editar']
+    ]" />
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Editar Perfil</h2>
 
@@ -19,7 +23,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Nombre -->
                 <div class="md:col-span-2">
-                    <label class="block text-gray-700 font-semibold mb-1">Nombre</label>
+                    <label class="flex items-center text-gray-700 font-semibold mb-1">
+                        <span class="material-symbols-outlined mr-2">badge</span>
+                        Nombre completo
+                    </label>
                     <input name="name" type="text"
                            class="w-full p-2 border border-gray-300 rounded"
                            value="{{ old('name', $user->name) }}" required>
@@ -28,7 +35,10 @@
 
                 <!-- Email -->
                 <div class="md:col-span-2">
-                    <label class="block text-gray-700 font-semibold mb-1">Email</label>
+                    <label class="flex items-center text-gray-700 font-semibold mb-1">
+                        <span class="material-symbols-outlined mr-2">mail</span>
+                        Correo electrónico
+                    </label>
                     <input name="email" type="email"
                            class="w-full p-2 border border-gray-300 rounded"
                            value="{{ old('email', $user->email) }}" required>
@@ -36,8 +46,11 @@
                 </div>
 
                 <!-- DNI -->
-                <div class="md:col-span-2">
-                    <label class="block text-gray-700 font-semibold mb-1">DNI</label>
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-1">
+                        <span class="material-symbols-outlined mr-2">credit_card</span>
+                        DNI
+                    </label>
                     <input name="dni" type="text"
                            class="w-full p-2 border border-gray-300 rounded"
                            value="{{ old('dni', $user->dni) }}">
@@ -45,12 +58,27 @@
                 </div>
 
                 <!-- Teléfono -->
-                <div class="md:col-span-2">
-                    <label class="block text-gray-700 font-semibold mb-1">Teléfono</label>
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-1">
+                        <span class="material-symbols-outlined mr-2">phone</span>
+                        Teléfono
+                    </label>
                     <input name="telefono" type="text"
                            class="w-full p-2 border border-gray-300 rounded"
                            value="{{ old('telefono', $user->telefono) }}">
                     @error('telefono') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
+                </div>
+
+                <!-- Creado (solo lectura) -->
+                <div class="md:col-span-2">
+                    <label class="flex items-center text-gray-700 font-semibold mb-1">
+                        <span class="material-symbols-outlined mr-2">calendar_today</span>
+                        Cuenta creada
+                    </label>
+                    <input type="text"
+                           class="w-full p-2 border border-gray-200 rounded bg-gray-50 text-gray-600"
+                           value="{{ $user->created_at->format('d/m/Y H:i') }}"
+                           readonly>
                 </div>
             </div>
 
@@ -117,6 +145,29 @@
                     <input name="dni" type="text"
                            class="w-full p-3 border border-gray-300 rounded-lg"
                            value="{{ old('dni', $user->dni) }}">
+                </div>
+
+                <!-- Teléfono -->
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-2 text-sm">
+                        <span class="material-symbols-outlined mr-2">phone</span>
+                        Teléfono
+                    </label>
+                    <input name="telefono" type="text"
+                           class="w-full p-3 border border-gray-300 rounded-lg"
+                           value="{{ old('telefono', $user->telefono) }}">
+                </div>
+
+                <!-- Creado (solo lectura) -->
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-2 text-sm">
+                        <span class="material-symbols-outlined mr-2">calendar_today</span>
+                        Cuenta creada
+                    </label>
+                    <input type="text"
+                           class="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-600"
+                           value="{{ $user->created_at->format('d/m/Y H:i') }}"
+                           readonly>
                 </div>
             </div>
 

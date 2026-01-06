@@ -3,6 +3,10 @@
 @section('dashboard-content')
 <!-- Desktop View -->
 <div class="hidden lg:block w-full max-w-3xl mx-auto">
+    <x-breadcrumb :items="[
+        ['name' => 'Perfil', 'route' => 'profile'],
+        ['name' => 'Avatar']
+    ]" />
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-3xl font-bold text-azul-marino mb-6 text-center">
             Seleccionar Avatar
