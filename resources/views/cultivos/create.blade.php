@@ -4,6 +4,10 @@
 
 @section('dashboard-content')
 <div class="w-full max-w-2xl mx-auto">
+    <x-breadcrumb :items="[
+        ['name' => 'Cultivos', 'route' => 'cultivos.index'],
+        ['name' => 'Nuevo']
+    ]" />
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Nuevo Cultivo</h2>
         <form method="POST" action="{{ route('cultivos.store') }}">

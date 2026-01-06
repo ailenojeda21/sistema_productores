@@ -3,6 +3,9 @@
 @section('dashboard-content')
 <!-- Desktop View -->
 <div class="hidden lg:block w-full max-w-5xl mx-auto">
+    <x-breadcrumb :items="[
+        ['name' => 'Comercialización', 'route' => 'comercios.index']
+    ]" />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-azul-marino">Comercialización</h1>
         @if($comercios->isEmpty())

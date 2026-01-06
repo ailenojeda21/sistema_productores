@@ -80,6 +80,18 @@ class PropiedadController extends Controller
     }
 
     /**
+     * Mostrar propiedad individual
+     */
+    public function show(string $id)
+    {
+        $propiedad = Propiedad::with(['usuario', 'maquinarias', 'cultivos'])
+            ->where('usuario_id', Auth::id())
+            ->findOrFail($id);
+
+        return view('propiedades.show', compact('propiedad'));
+    }
+
+    /**
      * Mostrar formulario de edición
      */
     public function edit(string $id)
