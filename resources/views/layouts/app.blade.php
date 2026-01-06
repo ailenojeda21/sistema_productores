@@ -13,8 +13,8 @@
             font-weight: normal;
         }
     </style>
+    @stack('styles')
     @yield('styles')
-    @yield('scripts')
 </head>
 <body class="font-sans antialiased bg-gray-100 w-full h-screen">
     @hasSection('desktop-content')
@@ -35,5 +35,6 @@
     @endif
     
     @stack('scripts')
+    @yield('scripts')
 </body>
 </html>
