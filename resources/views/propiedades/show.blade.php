@@ -2,6 +2,10 @@
 
 @section('dashboard-content')
 <div class="w-full max-w-2xl mx-auto">
+    <x-breadcrumb :items="[
+        ['name' => 'Propiedades', 'route' => 'propiedades.index'],
+        ['name' => 'Detalle']
+    ]" />
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Detalle de Propiedad</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

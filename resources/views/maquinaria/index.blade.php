@@ -3,6 +3,9 @@
 @section('dashboard-content')
 <!-- Desktop View -->
 <div class="hidden lg:block w-full max-w-6xl mx-auto">
+    <x-breadcrumb :items="[
+        ['name' => 'Maquinaria', 'route' => 'maquinaria.index']
+    ]" />
 
     <!-- Encabezado -->
     <div class="flex justify-between items-center mb-6">

@@ -2,6 +2,9 @@
 
 @section('dashboard-content')
 <div class="w-full max-w-5xl mx-auto">
+    <x-breadcrumb :items="[
+        ['name' => 'Perfil', 'route' => 'profile']
+    ]" />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-azul-marino">Perfil de Usuario</h1>
     </div>
