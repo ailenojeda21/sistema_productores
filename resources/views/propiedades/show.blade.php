@@ -77,31 +77,52 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DOM Content Loaded ===');
+    
     const toggleBtn = document.getElementById('toggleMapBtn');
     const mapContainer = document.getElementById('mapContainer');
     const mapDiv = document.getElementById('propiedadMap');
     const toggleText = document.getElementById('mapToggleText');
     
+    console.log('Elementos encontrados:', {
+        toggleBtn: !!toggleBtn,
+        mapContainer: !!mapContainer,
+        mapDiv: !!mapDiv,
+        toggleText: !!toggleText
+    });
+    
     let map = null;
     
     if (toggleBtn && mapContainer && mapDiv) {
         toggleBtn.addEventListener('click', function() {
+            console.log('=== Botón clickeado ===');
+            
             mapContainer.classList.toggle('hidden');
             const isVisible = !mapContainer.classList.contains('hidden');
+            console.log('Mapa visible:', isVisible);
             
             if (toggleText) {
                 toggleText.textContent = isVisible ? 'Ocultar mapa' : 'Ver mapa';
             }
             
             if (isVisible && map === null) {
-                // Inicializar mapa
+                // Mostrar contenedor temporalmente para inicializar mapa
+                const containerStyle = mapContainer.getAttribute('style');
+                console.log('Style actual:', containerStyle);
+                
+                // Forzar dimensiones para inicialización
+                mapDiv.style.position = 'absolute';
+                mapDiv.style.visibility = 'hidden';
+                mapDiv.style.display = 'block';
+                
                 const lat = parseFloat(mapContainer.dataset.lat);
                 const lng = parseFloat(mapContainer.dataset.lng);
                 
-                console.log('Inicializando mapa en show:', lat, lng);
+                console.log('Coordenadas:', lat, lng);
                 
                 if (!isNaN(lat) && !isNaN(lng)) {
                     try {
+                        console.log('Inicializando Leaflet...');
                         map = L.map('propiedadMap', {
                             zoomControl: true,
                             scrollWheelZoom: true,
@@ -117,6 +138,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             .openPopup();
                         
                         console.log('Mapa inicializado correctamente');
+                        
+                        // Restaurar estilos
+                        mapDiv.style.position = '';
+                        mapDiv.style.visibility = '';
+                        mapDiv.style.display = '';
+                        
+                        // Invalidar tamaño
+                        setTimeout(function() {
+                            if (map) {
+                                map.invalidateSize();
+                                console.log('Mapa invalidado');
+                            }
+                        }, 100);
                     } catch (error) {
                         console.error('Error al inicializar mapa:', error);
                     }
@@ -128,16 +162,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (map !== null) {
                 setTimeout(function() {
                     map.invalidateSize();
-                    console.log('Mapa invalidado correctamente');
-                }, 200);
+                    console.log('Mapa invalidado después de toggle');
+                }, 300);
             }
         });
     } else {
         console.error('Elementos del mapa no encontrados');
-        console.log('toggleBtn:', toggleBtn);
-        console.log('mapContainer:', mapContainer);
-        console.log('mapDiv:', mapDiv);
     }
+    
+    // Log para verificar que L de Leaflet está disponible
+    console.log('Leaflet disponible:', typeof L !== 'undefined');
 });
 </script>
 @endpush
