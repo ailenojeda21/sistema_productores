@@ -1,5 +1,9 @@
 @extends('layouts.dashboard')
 
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+@endpush
+
 @section('dashboard-content')
 <div class="w-full max-w-2xl mx-auto">
     <x-breadcrumb :items="[
@@ -17,16 +21,16 @@
                 <strong>Coordenadas:</strong> 
                 <span class="text-gray-600">{{ number_format($propiedad->lat, 7) }}, {{ number_format($propiedad->lng, 7) }}</span>
                 
-                <button type="button" onclick="toggleMapShow(this)" 
-                    class="mt-2 px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro hover:text-azul-marino font-semibold shadow transition flex items-center gap-2">
+                <button type="button" id="toggleMapBtn" 
+                    class="mt-2 px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro font-semibold shadow transition flex items-center gap-2">
                     <span class="material-symbols-outlined">map</span>
-                    <span class="map-toggle-text">Ver mapa</span>
+                    <span id="mapToggleText">Ver mapa</span>
                 </button>
                 
-                <div class="map-show-container hidden mt-4" 
+                <div id="mapContainer" class="hidden mt-4" 
                      data-lat="{{ $propiedad->lat }}" 
                      data-lng="{{ $propiedad->lng }}">
-                    <div class="map-show-element w-full h-64 md:h-80 rounded border border-gray-300 shadow-sm"></div>
+                    <div id="propiedadMap" class="w-full h-64 md:h-80 rounded border border-gray-300 shadow-sm"></div>
                 </div>
             </div>
             @else
@@ -70,64 +74,70 @@
 @endsection
 
 @push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// Objeto global para almacenar mapas por elemento
-const showMaps = new Map();
-
-function toggleMapShow(button) {
-    const container = button.closest('.mb-4, .mb-4\.md\:col-span-2').querySelector('.map-show-container');
-    const mapElement = container.querySelector('.map-show-element');
-    const toggleText = button.querySelector('.map-toggle-text');
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggleMapBtn');
+    const mapContainer = document.getElementById('mapContainer');
+    const mapDiv = document.getElementById('propiedadMap');
+    const toggleText = document.getElementById('mapToggleText');
     
-    // Toggle visibility
-    container.classList.toggle('hidden');
+    let map = null;
     
-    const isVisible = !container.classList.contains('hidden');
-    
-    // Update button text
-    if (toggleText) {
-        toggleText.textContent = isVisible ? 'Ocultar mapa' : 'Ver mapa';
-    }
-    
-    if (isVisible) {
-        // Si el mapa no existe, crearlo
-        if (!showMaps.has(mapElement)) {
-            const lat = parseFloat(container.dataset.lat);
-            const lng = parseFloat(container.dataset.lng);
+    if (toggleBtn && mapContainer && mapDiv) {
+        toggleBtn.addEventListener('click', function() {
+            mapContainer.classList.toggle('hidden');
+            const isVisible = !mapContainer.classList.contains('hidden');
             
-            try {
-                const map = L.map(mapElement, {
-                    zoomControl: true,
-                    scrollWheelZoom: true,
-                    dragging: true
-                }).setView([lat, lng], 15);
-                
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
-                
-                L.marker([lat, lng]).addTo(map)
-                    .bindPopup('Ubicación de la propiedad')
-                    .openPopup();
-                
-                showMaps.set(mapElement, map);
-                console.log('Mapa inicializado en show:', lat, lng);
-            } catch (error) {
-                console.error('Error al inicializar mapa:', error);
+            if (toggleText) {
+                toggleText.textContent = isVisible ? 'Ocultar mapa' : 'Ver mapa';
             }
-        }
-        
-        // Invalidar tamaño después de mostrar
-        setTimeout(() => {
-            const map = showMaps.get(mapElement);
-            if (map) {
-                map.invalidateSize();
-                const lat = parseFloat(container.dataset.lat);
-                const lng = parseFloat(container.dataset.lng);
-                map.setView([lat, lng], 15);
+            
+            if (isVisible && map === null) {
+                // Inicializar mapa
+                const lat = parseFloat(mapContainer.dataset.lat);
+                const lng = parseFloat(mapContainer.dataset.lng);
+                
+                console.log('Inicializando mapa en show:', lat, lng);
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    try {
+                        map = L.map('propiedadMap', {
+                            zoomControl: true,
+                            scrollWheelZoom: true,
+                            dragging: true
+                        }).setView([lat, lng], 15);
+                        
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; OpenStreetMap contributors'
+                        }).addTo(map);
+                        
+                        L.marker([lat, lng]).addTo(map)
+                            .bindPopup('Ubicación de la propiedad')
+                            .openPopup();
+                        
+                        console.log('Mapa inicializado correctamente');
+                    } catch (error) {
+                        console.error('Error al inicializar mapa:', error);
+                    }
+                } else {
+                    console.error('Coordenadas inválidas:', lat, lng);
+                }
             }
-        }, 200);
+            
+            if (map !== null) {
+                setTimeout(function() {
+                    map.invalidateSize();
+                    console.log('Mapa invalidado correctamente');
+                }, 200);
+            }
+        });
+    } else {
+        console.error('Elementos del mapa no encontrados');
+        console.log('toggleBtn:', toggleBtn);
+        console.log('mapContainer:', mapContainer);
+        console.log('mapDiv:', mapDiv);
     }
-}
+});
 </script>
 @endpush
