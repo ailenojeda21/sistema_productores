@@ -122,6 +122,29 @@
                            class="w-full p-3 border border-gray-300 rounded-lg"
                            value="{{ old('dni', $user->dni) }}">
                 </div>
+
+                <!-- Teléfono -->
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-2 text-sm">
+                        <span class="material-symbols-outlined mr-2">phone</span>
+                        Teléfono
+                    </label>
+                    <input name="telefono" type="text"
+                           class="w-full p-3 border border-gray-300 rounded-lg"
+                           value="{{ old('telefono', $user->telefono) }}">
+                </div>
+
+                <!-- Creado (solo lectura) -->
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-2 text-sm">
+                        <span class="material-symbols-outlined mr-2">calendar_today</span>
+                        Cuenta creada
+                    </label>
+                    <input type="text"
+                           class="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-600"
+                           value="{{ $user->created_at->format('d/m/Y H:i') }}"
+                           readonly>
+                </div>
             </div>
 
             <div class="p-4 bg-gray-50 border-t">
