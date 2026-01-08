@@ -146,9 +146,25 @@
                     </div>
 
                     <div id="rutFields" class="hidden ml-7 mt-2">
-                        <input name="rut_valor" type="number"
+                        <input name="rut_valor" type="number" step="1"
                             class="w-full p-2 border border-gray-300 rounded"
-                            value="{{ old('rut_valor', $propiedad->rut_valor) }}">
+                       value="{{ old('rut_valor', number_format($propiedad->rut_valor, 0, '', '')) }}"
+>
+                    </div>
+
+                    {{-- Adjunto RUT --}}
+                    <div id="rutArchivoDiv" class="hidden ml-7 mt-2">
+                        <label class="block font-semibold mb-1">Adjunto RUT</label>
+                        @if ($propiedad->rut_archivo)
+                            <p class="text-sm text-gray-500 mb-2">
+                                Archivo actual: 
+                                <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                                    Ver archivo
+                                </a>
+                            </p>
+                        @endif
+                        <input type="file" name="rut_archivo_file" class="w-full p-2 border border-gray-300 rounded" accept=".pdf,.jpg,.jpeg,.png">
+                        <p class="text-xs text-gray-500 mt-1">Sube un nuevo archivo si deseas reemplazar el actual (PDF, JPG, PNG - máx 2MB).</p>
                     </div>
                 </div>
 
@@ -162,9 +178,10 @@
                     </div>
 
                     <div id="mallaFields" class="hidden ml-7 mt-2">
-                        <input name="hectareas_malla" type="number" step="0.01"
+                        <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01"
                             class="w-full p-2 border border-gray-300 rounded"
-                            value="{{ old('hectareas_malla', $propiedad->hectareas_malla) }}">
+                            value="{{ old('hectareas_malla', $propiedad->hectareas_malla) }}"
+                            placeholder="Max: {{ number_format($propiedad->hectareas ?? 0, 2) }}">
                     </div>
                 </div>
 
@@ -176,6 +193,8 @@
                     <label>¿Tiene cierre perimetral?</label>
                 </div>
             </div>
+
+        
 
             <button type="submit"
                 class="mt-8 w-full py-2 bg-azul-marino text-white font-bold rounded hover:bg-amarillo-claro hover:text-azul-marino transition">
@@ -209,26 +228,78 @@ document.addEventListener('DOMContentLoaded', () => {
     const riegoDiv = document.getElementById('tipoDerechoRiegoDiv');
     const rut = document.getElementById('rut');
     const rutDiv = document.getElementById('rutFields');
+    const rutValorInput = document.querySelector('input[name="rut_valor"]');
     const malla = document.getElementById('malla');
     const mallaDiv = document.getElementById('mallaFields');
+    const rutArchivoDiv = document.getElementById('rutArchivoDiv');
 
     const toggle = (check, div) => div.classList.toggle('hidden', !check.checked);
     const toggleOtros = () => {
-        const sel = document.querySelector('.tenencia-radio:checked');
-        inputOtro.classList.toggle('hidden', !sel || sel.value !== 'otros');
-    };
+    const sel = document.querySelector('.tenencia-radio:checked');
+
+    if (!sel || sel.value !== 'otros') {
+        // Ocultar y borrar el valor
+        inputOtro.classList.add('hidden');
+        inputOtro.value = '';
+    } else {
+        // Mostrar si es "otros"
+        inputOtro.classList.remove('hidden');
+        inputOtro.focus();
+    }
+};
+
 
     tenenciaRadios.forEach(r => r.addEventListener('change', toggleOtros));
     riego.addEventListener('change', () => toggle(riego, riegoDiv));
-    rut.addEventListener('change', () => toggle(rut, rutDiv));
+    rut.addEventListener('change', () => {
+        toggle(rut, rutDiv);
+        toggle(rut, rutArchivoDiv);
+        // Hacer obligatorio el Nº RUT cuando el checkbox esté tildado
+        rutValorInput.required = rut.checked;
+    });
     malla.addEventListener('change', () => toggle(malla, mallaDiv));
 
     toggleOtros();
     toggle(riego, riegoDiv);
     toggle(rut, rutDiv);
     toggle(malla, mallaDiv);
+    // Inicializar required para Nº RUT
+    rutValorInput.required = rut.checked;
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const hectareasInput = document.getElementById('hectareas');
+    const hectareasMallaInput = document.getElementById('hectareas_malla');
+
+    if (!hectareasInput || !hectareasMallaInput) return;
+
+    function syncHectareasMallaMax() {
+        const total = parseFloat(hectareasInput.value) || 0;
+        const malla = parseFloat(hectareasMallaInput.value) || 0;
+
+        // Setear máximo
+        hectareasMallaInput.max = total > 0 ? total : '';
+
+        // Placeholder informativo
+        hectareasMallaInput.placeholder = total > 0
+            ? `Máx: ${total}`
+            : 'Ingrese hectáreas totales';
+
+        // Corregir valor si se pasa
+        if (total > 0 && malla > total) {
+            hectareasMallaInput.value = total;
+        }
+    }
+
+    hectareasInput.addEventListener('input', syncHectareasMallaMax);
+    hectareasMallaInput.addEventListener('input', syncHectareasMallaMax);
+
+    // Inicializar al cargar EDIT
+    syncHectareasMallaMax();
+});
+</script>
+
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
