@@ -93,13 +93,14 @@
                     <input type="checkbox" name="cierre_perimetral" id="cierre_perimetral" class="mr-2 rounded-full custom-checkbox">
                     <label for="cierre_perimetral">¿Tiene cierre perimetral?</label>
                 </div>
-                <!-- Tipo de Tenencia -->
+               <!-- Tipo de Tenencia -->
 <div class="md:col-span-2 mt-6">
     <label class="block text-gray-700 font-semibold mb-3">
         Tipo de tenencia de la propiedad
     </label>
 
     <div class="space-y-3">
+        <!-- Propietario -->
         <label class="flex items-center cursor-pointer">
             <input type="radio"
                    name="tipo_tenencia"
@@ -109,6 +110,7 @@
             <span class="text-gray-700">Propietario</span>
         </label>
 
+        <!-- Arrendatario -->
         <label class="flex items-center cursor-pointer">
             <input type="radio"
                    name="tipo_tenencia"
@@ -118,23 +120,23 @@
             <span class="text-gray-700">Arrendatario</span>
         </label>
 
-        <label class="flex items-center cursor-pointer">
+        <!-- Otro (input en la misma fila) -->
+        <label class="flex items-center gap-4 cursor-pointer">
             <input type="radio"
                    name="tipo_tenencia"
                    value="otros"
-                   class="mr-3 tenencia-radio"
+                   class="tenencia-radio"
                    {{ old('tipo_tenencia') === 'otros' ? 'checked' : '' }}>
-            <span class="text-gray-700">Otro</span>
-        </label>
 
-        <div id="otros-tenencia-container"
-             class="ml-6 {{ old('tipo_tenencia') === 'otros' ? '' : 'hidden' }}">
+            <span class="text-gray-700 whitespace-nowrap">Otro</span>
+
             <input type="text"
                    name="especificar_tenencia"
-                   class="w-full md:w-96 p-2 border border-gray-300 rounded text-sm"
+                   class="w-72 p-2 border border-gray-300 rounded text-sm
+                          {{ old('tipo_tenencia') === 'otros' ? '' : 'hidden' }}"
                    placeholder="Especifique la condición"
                    value="{{ old('especificar_tenencia') }}">
-        </div>
+        </label>
     </div>
 
     @error('tipo_tenencia')
@@ -145,6 +147,7 @@
         <div class="text-red-600 text-sm mt-2">{{ $message }}</div>
     @enderror
 </div>
+
 
             </div>
             <button type="submit" class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar</button>
@@ -176,6 +179,25 @@
 @endsection
 
 @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const radios = document.querySelectorAll('.tenencia-radio');
+    const inputOtro = document.querySelector('input[name="especificar_tenencia"]');
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (radio.value === 'otros') {
+                inputOtro.classList.remove('hidden');
+                inputOtro.focus();
+            } else {
+                inputOtro.classList.add('hidden');
+                inputOtro.value = '';
+            }
+        });
+    });
+});
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const rutCheckbox = document.getElementById('rut');
