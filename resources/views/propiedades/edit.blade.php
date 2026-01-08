@@ -56,34 +56,12 @@
                     <label class="block font-semibold mb-1">Hectáreas</label>
                     <input id="hectareas" name="hectareas" type="number" step="0.01"
                         class="w-full p-2 border border-gray-300 rounded"
-                        value="{{ old('hectareas', $propiedad->hectareas) }}">
+                        value="{{ old('hectareas', $propiedad->hectareas) }}"
+                        placeholder="Hectáreas totales">
+                    <p class="text-xs text-gray-500 mt-1">Recuerda indicar las hectáreas con malla más abajo.</p>
                 </div>
 
-                {{-- TENENCIA --}}
-                <div>
-                    <label class="block font-semibold mb-1">Tipo de tenencia</label>
-                    <select name="tipo_tenencia" id="tipo_tenencia"
-                        class="w-full p-2 border border-gray-300 rounded" required>
-                        <option value="">Seleccione...</option>
-                        <option value="propietario" {{ old('tipo_tenencia', $propiedad->tipo_tenencia) == 'propietario' ? 'selected' : '' }}>Propietario</option>
-                        <option value="arrendatario" {{ old('tipo_tenencia', $propiedad->tipo_tenencia) == 'arrendatario' ? 'selected' : '' }}>Arrendatario</option>
-                        <option value="otros" {{ old('tipo_tenencia', $propiedad->tipo_tenencia) == 'otros' ? 'selected' : '' }}>Otros</option>
-                    </select>
-                </div>
-
-                {{-- ESPECIFICAR TENENCIA --}}
-                <div id="especificarTenenciaDiv" class="hidden md:col-span-2">
-                    <label class="block font-semibold mb-1">Especificar tenencia</label>
-                    <input type="text" name="especificar_tenencia"
-                        class="w-full p-2 border border-gray-300 rounded"
-                        value="{{ old('especificar_tenencia', $propiedad->especificar_tenencia) }}">
-                </div>
-            </div>
-
-            {{-- CHECKBOXES --}}
-            <div class="space-y-6">
-
-                {{-- Derecho de riego --}}
+                {{-- Derecho de riego (junto a hectáreas) --}}
                 <div>
                     <div class="flex items-center">
                         <input type="checkbox" id="derecho_riego" name="derecho_riego"
@@ -91,8 +69,7 @@
                             {{ old('derecho_riego', $propiedad->derecho_riego) ? 'checked' : '' }}>
                         <label>¿Tiene derecho de riego?</label>
                     </div>
-
-                    <div id="tipoDerechoRiegoDiv" class="hidden ml-7 mt-2">
+                    <div id="tipoDerechoRiegoDiv" class="hidden mt-2">
                         <select name="tipo_derecho_riego" class="w-full p-2 border border-gray-300 rounded">
                             <option value="">Seleccione...</option>
                             <option value="Subterráneo" {{ $propiedad->tipo_derecho_riego == 'Subterráneo' ? 'selected' : '' }}>Subterráneo</option>
@@ -102,6 +79,63 @@
                     </div>
                 </div>
 
+                {{-- Tenencia --}}
+                <div class="md:col-span-2">
+                    <label class="block font-semibold mb-3">
+                        Tipo de tenencia
+                    </label>
+
+                    <div class="space-y-3">
+                        <!-- Propietario -->
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio"
+                                   name="tipo_tenencia"
+                                   value="propietario"
+                                   class="mr-3 tenencia-radio"
+                                   {{ old('tipo_tenencia', $propiedad->tipo_tenencia) === 'propietario' ? 'checked' : '' }}>
+                            <span>Propietario</span>
+                        </label>
+
+                        <!-- Arrendatario -->
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio"
+                                   name="tipo_tenencia"
+                                   value="arrendatario"
+                                   class="mr-3 tenencia-radio"
+                                   {{ old('tipo_tenencia', $propiedad->tipo_tenencia) === 'arrendatario' ? 'checked' : '' }}>
+                            <span>Arrendatario</span>
+                        </label>
+
+                        <!-- Otro con input en línea -->
+                        <label class="flex items-center gap-4 cursor-pointer">
+                            <input type="radio"
+                                   name="tipo_tenencia"
+                                   value="otros"
+                                   class="tenencia-radio"
+                                   {{ old('tipo_tenencia', $propiedad->tipo_tenencia) === 'otros' ? 'checked' : '' }}>
+
+                            <span class="whitespace-nowrap">Otro</span>
+
+                            <input type="text"
+                                   name="especificar_tenencia"
+                                   class="w-72 p-2 border border-gray-300 rounded text-sm
+                                          {{ old('tipo_tenencia', $propiedad->tipo_tenencia) === 'otros' ? '' : 'hidden' }}"
+                                   placeholder="Especifique la condición"
+                                   value="{{ old('especificar_tenencia', $propiedad->especificar_tenencia) }}">
+                        </label>
+                    </div>
+
+                    @error('tipo_tenencia')
+                    <div class="mt-2 text-red-600 text-sm">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+            </div>
+
+            {{-- Checkboxes --}}
+            <div class="space-y-6">
+                {{-- Derecho de riego (removido de aquí) --}}
                 {{-- RUT --}}
                 <div>
                     <div class="flex items-center">
@@ -129,7 +163,7 @@
 
                     <div id="mallaFields" class="hidden ml-7 mt-2">
                         <input name="hectareas_malla" type="number" step="0.01"
-                            class="w-full p-2 border rounded"
+                            class="w-full p-2 border border-gray-300 rounded"
                             value="{{ old('hectareas_malla', $propiedad->hectareas_malla) }}">
                     </div>
                 </div>
@@ -155,37 +189,22 @@
 @section('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-   .custom-checkbox {
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 0.25rem;
-    border: 2px solid #cbd5e1;
-    background: #fff;
-    appearance: none;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-}
-.custom-checkbox:checked {
-    background-color: #2563eb;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px #93c5fd;
-}
+    .custom-checkbox {
+        width: 1.25rem; height: 1.25rem; border-radius: 0.25rem;
+        border: 2px solid #cbd5e1; background: #fff; appearance: none;
+        outline: none; transition: border-color 0.2s, box-shadow 0.2s; cursor: pointer;
+    }
+    .custom-checkbox:checked {
+        background-color: #2563eb; border-color: #2563eb; box-shadow: 0 0 0 2px #93c5fd;
+    }
 </style>
 @endsection
 
 @push('scripts')
 <script>
-window.onload = function() {
-    document.getElementById('tipoDerechoRiegoDiv').style.display = document.getElementById('derecho_riego').checked ? 'block' : 'none';
-    document.getElementById('rutFields').style.display = document.getElementById('rut').checked ? 'block' : 'none';
-    document.getElementById('mallaFields').style.display = document.getElementById('malla').checked ? 'block' : 'none';
-};
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const tipoTenencia = document.getElementById('tipo_tenencia');
-    const especificar = document.getElementById('especificarTenenciaDiv');
+document.addEventListener('DOMContentLoaded', () => {
+    const tenenciaRadios = document.querySelectorAll('.tenencia-radio');
+    const inputOtro = document.querySelector('input[name="especificar_tenencia"]');
     const riego = document.getElementById('derecho_riego');
     const riegoDiv = document.getElementById('tipoDerechoRiegoDiv');
     const rut = document.getElementById('rut');
@@ -194,20 +213,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const mallaDiv = document.getElementById('mallaFields');
 
     const toggle = (check, div) => div.classList.toggle('hidden', !check.checked);
+    const toggleOtros = () => {
+        const sel = document.querySelector('.tenencia-radio:checked');
+        inputOtro.classList.toggle('hidden', !sel || sel.value !== 'otros');
+    };
 
-    tipoTenencia.addEventListener('change', () =>
-        especificar.classList.toggle('hidden', tipoTenencia.value !== 'otros')
-    );
-
+    tenenciaRadios.forEach(r => r.addEventListener('change', toggleOtros));
     riego.addEventListener('change', () => toggle(riego, riegoDiv));
     rut.addEventListener('change', () => toggle(rut, rutDiv));
     malla.addEventListener('change', () => toggle(malla, mallaDiv));
 
-    // init
+    toggleOtros();
     toggle(riego, riegoDiv);
     toggle(rut, rutDiv);
     toggle(malla, mallaDiv);
-    especificar.classList.toggle('hidden', tipoTenencia.value !== 'otros');
 });
 </script>
 
