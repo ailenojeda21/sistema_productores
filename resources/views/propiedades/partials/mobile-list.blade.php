@@ -279,21 +279,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Función para inicializar un mapa preview
     function initializeMapPreview(mapDiv) {
-        if (!mapDiv || mapDiv.dataset.initialized) return;
+        if (!mapDiv || mapDiv.dataset.initialized) {
+            console.log('Mapa ya inicializado o contenedor inválido:', mapDiv?.id);
+            return;
+        }
 
         const lat = parseFloat(mapDiv.dataset.lat);
         const lng = parseFloat(mapDiv.dataset.lng);
         const mapId = mapDiv.id;
 
+        console.log('Verificando coordenadas para mapa:', mapId);
+        console.log('Lat:', mapDiv.dataset.lat, '-> parsed:', lat);
+        console.log('Lng:', mapDiv.dataset.lng, '-> parsed:', lng);
+
         if (isNaN(lat) || isNaN(lng)) {
-            console.error('Coordenadas inválidas para mapa:', mapId, lat, lng);
+            console.error('Coordenadas inválidas para mapa:', mapId, 'lat:', lat, 'lng:', lng);
+            showMapError(mapDiv, 'Coordenadas inválidas');
             return;
         }
 
-        console.log('Inicializando mapa preview:', mapId, 'con coordenadas:', lat, lng);
+        // Verificar rango válido de coordenadas
+        if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+            console.error('Coordenadas fuera de rango para mapa:', mapId, 'lat:', lat, 'lng:', lng);
+            showMapError(mapDiv, 'Coordenadas fuera de rango');
+            return;
+        }
+
+        console.log('Inicializando mapa preview:', mapId, 'con coordenadas válidas:', lat, lng);
 
         try {
+            // Limpiar contenido anterior
+            mapDiv.innerHTML = '';
+
+            // Verificar que el contenedor tenga dimensiones
+            const rect = mapDiv.getBoundingClientRect();
+            console.log('Dimensiones del contenedor:', mapId, 'width:', rect.width, 'height:', rect.height);
+
+            if (rect.width === 0 || rect.height === 0) {
+                console.warn('Contenedor sin dimensiones, reintentando en 500ms:', mapId);
+                setTimeout(() => initializeMapPreview(mapDiv), 500);
+                return;
+            }
+
             // Crear el mapa con opciones optimizadas para preview
+            console.log('Creando instancia de mapa para:', mapId);
             const map = L.map(mapId, {
                 zoomControl: false,
                 dragging: false,
@@ -303,16 +332,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 keyboard: false,
                 tap: false,
                 touchZoom: false,
-                attributionControl: false // Ocultar atribución para preview más limpio
-            }).setView([lat, lng], 16); // Zoom más cercano para preview
+                attributionControl: false,
+                fadeAnimation: false,
+                zoomAnimation: false
+            });
+
+            console.log('Mapa creado, configurando vista para:', mapId);
+            map.setView([lat, lng], 16);
 
             // Agregar tile layer
+            console.log('Agregando tile layer para:', mapId);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: false // Sin atribución para preview
+                attribution: false,
+                maxZoom: 18
             }).addTo(map);
 
             // Agregar marker
-            L.marker([lat, lng], {
+            console.log('Agregando marker para:', mapId);
+            const marker = L.marker([lat, lng], {
                 icon: L.divIcon({
                     className: 'custom-marker',
                     html: '<div class="w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>',
@@ -325,28 +362,33 @@ document.addEventListener('DOMContentLoaded', function () {
             mapDiv._previewMap = map;
             mapDiv.dataset.initialized = '1';
 
-            console.log('Mapa preview inicializado:', mapId);
+            console.log('Mapa preview inicializado exitosamente:', mapId);
 
             // Refrescar después de un breve delay
             setTimeout(() => {
                 if (mapDiv._previewMap) {
+                    console.log('Refrescando mapa preview:', mapId);
                     mapDiv._previewMap.invalidateSize();
-                    console.log('Mapa preview refrescado:', mapId);
+                    console.log('Mapa preview refrescado exitosamente:', mapId);
                 }
             }, 100);
 
         } catch (error) {
             console.error('Error inicializando mapa preview:', mapId, error);
-            // Mostrar mensaje de error en el contenedor
-            mapDiv.innerHTML = `
-                <div class="flex items-center justify-center h-full text-red-500 text-xs">
-                    <div class="text-center">
-                        <div class="material-symbols-outlined text-lg mb-1">error</div>
-                        <div>Error cargando mapa</div>
-                    </div>
-                </div>
-            `;
+            showMapError(mapDiv, 'Error al cargar el mapa');
         }
+    }
+
+    // Función auxiliar para mostrar errores
+    function showMapError(mapDiv, message) {
+        mapDiv.innerHTML = `
+            <div class="flex items-center justify-center h-full text-red-500 text-xs">
+                <div class="text-center">
+                    <div class="material-symbols-outlined text-lg mb-1">error</div>
+                    <div>${message}</div>
+                </div>
+            </div>
+        `;
     }
 
     // Usar Intersection Observer para inicializar mapas cuando sean visibles
