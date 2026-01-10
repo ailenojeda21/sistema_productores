@@ -45,10 +45,10 @@
                     <label for="es_propietario">¿Es propietario?</label>
                 </div>
                 <div class="flex items-center mt-6">
-                    <input type="checkbox" name="derecho_riego" id="derecho_riego" class="mr-2 rounded-full custom-checkbox" onchange="document.getElementById('tipoDerechoRiegoDiv').style.display = this.checked ? 'block' : 'none';">
+                    <input type="checkbox" name="derecho_riego" id="derecho_riego" class="mr-2 rounded-full custom-checkbox">
                     <label for="derecho_riego">¿Tiene derecho de riego?</label>
                 </div>
-                <div id="tipoDerechoRiegoDiv" style="display:none;" class="mt-2 md:col-span-2">
+                <div id="tipoDerechoRiegoDiv" class="hidden mt-2 md:col-span-2">
                     <label for="tipo_derecho_riego" class="block text-gray-700 font-semibold mb-1">Tipo de derecho de riego:</label>
                     <select name="tipo_derecho_riego" id="tipo_derecho_riego" class="w-full p-2 border border-gray-300 rounded">
                         <option value="">Seleccione...</option>
@@ -57,11 +57,6 @@
                         <option value="Ambos">Ambos</option>
                     </select>
                 </div>
-                <script>
-                window.onload = function() {
-                    document.getElementById('tipoDerechoRiegoDiv').style.display = document.getElementById('derecho_riego').checked ? 'block' : 'none';
-                };
-                </script>
                 <div class="flex items-center mt-6">
                     <input type="checkbox" name="rut" id="rut" class="mr-2 rounded-full custom-checkbox">
                     <label for="rut">¿Posee RUT?</label>
