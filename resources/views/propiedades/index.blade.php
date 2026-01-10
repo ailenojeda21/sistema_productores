@@ -132,8 +132,8 @@
 <div class="lg:hidden">
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold text-azul-marino">Propiedades</h1>
-        <a href="{{ route('propiedades.create') }}" class="p-2 bg-naranja-oscuro text-white rounded-full shadow-lg">
-            <span class="material-symbols-outlined">add</span>
+        <a href="{{ route('propiedades.create') }}" class="w-14 h-14 bg-naranja-oscuro text-white rounded-full shadow-lg flex items-center justify-center hover:bg-amarillo-claro hover:text-azul-marino transition-colors">
+            <span class="material-symbols-outlined text-2xl">add</span>
         </a>
     </div>
     
