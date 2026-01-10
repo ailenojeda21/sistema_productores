@@ -245,52 +245,56 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('Script de mapas móviles cargado');
+
+    // Verificar que Leaflet esté disponible
     if (typeof L === 'undefined') {
-        console.warn('Leaflet no está cargado, mapas no disponibles');
+        console.error('Leaflet no está disponible');
         return;
     }
 
-    console.log('Inicializando toggle de mapas móviles');
+    console.log('Leaflet disponible, inicializando toggle de mapas');
 
-    document.querySelectorAll('.ml-toggle-map').forEach(link => {
+    // Buscar todos los enlaces de toggle
+    const toggleLinks = document.querySelectorAll('.ml-toggle-map');
+    console.log('Encontrados', toggleLinks.length, 'enlaces de toggle');
+
+    toggleLinks.forEach((link, index) => {
+        console.log('Configurando enlace', index, 'con target:', link.dataset.target);
+
         link.addEventListener('click', function (e) {
             e.preventDefault();
-            const targetId = this.dataset.target;
-            const mapDiv = document.getElementById(targetId);
+            console.log('Click en enlace de mapa');
 
+            const targetId = this.dataset.target;
+            console.log('Target ID:', targetId);
+
+            const mapDiv = document.getElementById(targetId);
             if (!mapDiv) {
-                console.error('Map container not found:', targetId);
+                console.error('Contenedor de mapa no encontrado:', targetId);
                 return;
             }
 
-            const wasHidden = mapDiv.classList.contains('hidden');
+            console.log('Contenedor encontrado, toggling visibility');
             mapDiv.classList.toggle('hidden');
-            const isNowVisible = !mapDiv.classList.contains('hidden');
 
-            console.log('Toggle map:', targetId, 'was hidden:', wasHidden, 'now visible:', isNowVisible);
+            const isVisible = !mapDiv.classList.contains('hidden');
+            console.log('Mapa ahora visible:', isVisible);
 
-            // Verificar si el mapa ya fue inicializado por el script global
-            let mapInstance = null;
-            if (mapDiv._leaflet_id) {
-                // El mapa ya fue inicializado por el script global, buscar la instancia
-                mapInstance = Object.values(window).find(obj =>
-                    obj && obj._leaflet_id === mapDiv._leaflet_id
-                );
-            }
+            // Inicializar mapa si es necesario
+            if (!mapDiv.dataset.initialized) {
+                console.log('Inicializando mapa para:', targetId);
 
-            // Si no hay instancia guardada, intentar inicializar
-            if (!mapInstance && !mapDiv.dataset.initialized) {
-                console.log('Initializing map for:', targetId);
                 const lat = parseFloat(mapDiv.dataset.lat);
                 const lng = parseFloat(mapDiv.dataset.lng);
 
                 if (isNaN(lat) || isNaN(lng)) {
-                    console.error('Invalid coordinates for map:', targetId, lat, lng);
+                    console.error('Coordenadas inválidas:', lat, lng);
                     return;
                 }
 
                 try {
-                    mapInstance = L.map(targetId, {
+                    const map = L.map(targetId, {
                         zoomControl: false,
                         dragging: false,
                         scrollWheelZoom: false,
@@ -303,50 +307,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; OpenStreetMap contributors'
-                    }).addTo(mapInstance);
+                    }).addTo(map);
 
-                    L.marker([lat, lng]).addTo(mapInstance);
+                    L.marker([lat, lng]).addTo(map);
 
-                    // Guardar instancia
-                    mapDiv._mlMap = mapInstance;
+                    mapDiv._mlMap = map;
                     mapDiv.dataset.initialized = '1';
 
-                    console.log('Map initialized for:', targetId);
+                    console.log('Mapa inicializado exitosamente para:', targetId);
+
+                    if (isVisible) {
+                        setTimeout(() => map.invalidateSize(), 200);
+                    }
                 } catch (error) {
-                    console.error('Error initializing map:', error);
-                    return;
+                    console.error('Error inicializando mapa:', error);
                 }
-            }
-
-            // Refrescar mapa cuando se hace visible
-            if (isNowVisible && (mapInstance || mapDiv._mlMap)) {
-                const map = mapInstance || mapDiv._mlMap;
-                console.log('Refreshing map for:', targetId);
-
-                // Usar múltiples timeouts para asegurar el refresh
+            } else if (isVisible && mapDiv._mlMap) {
+                console.log('Refrescando mapa existente');
                 setTimeout(() => {
-                    if (map && !mapDiv.classList.contains('hidden')) {
-                        map.invalidateSize();
-                        console.log('Map refreshed for:', targetId);
+                    if (mapDiv._mlMap && !mapDiv.classList.contains('hidden')) {
+                        mapDiv._mlMap.invalidateSize();
+                        console.log('Mapa refrescado');
                     }
-                }, 100);
-
-                setTimeout(() => {
-                    if (map && !mapDiv.classList.contains('hidden')) {
-                        map.invalidateSize();
-                    }
-                }, 300);
-
-                setTimeout(() => {
-                    if (map && !mapDiv.classList.contains('hidden')) {
-                        map.invalidateSize();
-                    }
-                }, 500);
+                }, 200);
             }
         });
     });
 
-    console.log('Map toggle initialization complete');
+    console.log('Inicialización de toggle de mapas completada');
 });
 </script>
 @endpush
