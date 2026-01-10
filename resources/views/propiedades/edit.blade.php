@@ -326,7 +326,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Inicializar estados
     toggleOtros();
     if (riego && riegoDiv) toggle(riego, riegoDiv);
-    if (rut && rutDiv) toggle(rut, rutDiv);
+    if (rut && rutDiv && rutArchivoDiv) {
+        toggle(rut, rutDiv);
+        toggle(rut, rutArchivoDiv);
+    }
     if (rutValorInput && rut) rutValorInput.required = rut.checked;
     if (malla && mallaDiv) toggle(malla, mallaDiv);
 
