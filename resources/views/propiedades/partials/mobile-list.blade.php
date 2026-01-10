@@ -84,8 +84,8 @@
         </a>
 
         <div id="ml-map-{{ $propiedad->id }}"
-             class="hidden mt-2 rounded border"
-             style="height: 220px;"
+             class="hidden mt-2 rounded border bg-white"
+             style="height: 220px; width: 100%;"
              data-lat="{{ $propiedad->lat }}"
              data-lng="{{ $propiedad->lng }}">
         </div>
@@ -276,9 +276,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             console.log('Contenedor encontrado, toggling visibility');
-            mapDiv.classList.toggle('hidden');
+            console.log('Antes del toggle - tiene clase hidden:', mapDiv.classList.contains('hidden'));
+            console.log('Antes del toggle - display:', mapDiv.style.display);
+            console.log('Antes del toggle - visibility:', mapDiv.style.visibility);
 
+            mapDiv.classList.toggle('hidden');
             const isVisible = !mapDiv.classList.contains('hidden');
+
+            console.log('Después del toggle - tiene clase hidden:', mapDiv.classList.contains('hidden'));
+            console.log('Después del toggle - display:', mapDiv.style.display);
+            console.log('Después del toggle - visibility:', mapDiv.style.visibility);
             console.log('Mapa ahora visible:', isVisible);
 
             // Inicializar mapa si es necesario
@@ -294,6 +301,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 try {
+                    console.log('Creando instancia de mapa para:', targetId);
+
+                    // Asegurarse de que el contenedor sea visible antes de inicializar
+                    mapDiv.style.display = 'block';
+                    mapDiv.style.visibility = 'visible';
+
                     const map = L.map(targetId, {
                         zoomControl: false,
                         dragging: false,
@@ -305,19 +318,29 @@ document.addEventListener('DOMContentLoaded', function () {
                         touchZoom: false
                     }).setView([lat, lng], 15);
 
+                    console.log('Mapa creado, agregando tile layer');
+
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; OpenStreetMap contributors'
                     }).addTo(map);
+
+                    console.log('Tile layer agregado, agregando marker');
 
                     L.marker([lat, lng]).addTo(map);
 
                     mapDiv._mlMap = map;
                     mapDiv.dataset.initialized = '1';
 
-                    console.log('Mapa inicializado exitosamente para:', targetId);
+                    console.log('Mapa inicializado exitosamente para:', targetId, 'isVisible:', isVisible);
 
                     if (isVisible) {
-                        setTimeout(() => map.invalidateSize(), 200);
+                        console.log('Refrescando mapa después de inicialización');
+                        setTimeout(() => {
+                            if (mapDiv._mlMap) {
+                                mapDiv._mlMap.invalidateSize();
+                                console.log('Mapa refrescado después de inicialización');
+                            }
+                        }, 200);
                     }
                 } catch (error) {
                     console.error('Error inicializando mapa:', error);
