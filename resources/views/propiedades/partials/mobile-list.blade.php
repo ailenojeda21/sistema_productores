@@ -41,19 +41,20 @@
 
         <!-- Mapa inline -->
         @if($propiedad->lat && $propiedad->lng)
-        <div class="mb-4">
-            <div class="text-xs text-gray-500 mb-1 flex items-center gap-1 cursor-pointer" 
-                 id="coord-{{ $propiedad->id }}"
-                 data-map-id="map-{{ $propiedad->id }}"
-                 data-lat="{{ $propiedad->lat }}"
-                 data-lng="{{ $propiedad->lng }}">
-                <span class="material-symbols-outlined text-sm">location_on</span>
-                <span>{{ number_format($propiedad->lat, 7) }}, {{ number_format($propiedad->lng, 7) }}</span>
-            </div>
-            <div id="map-{{ $propiedad->id }}" class="w-full h-40 rounded-lg border border-gray-300 shadow-sm" 
-                 data-lat="{{ $propiedad->lat }}" 
-                 data-lng="{{ $propiedad->lng }}"></div>
+        <a href="#"
+           class="ml-toggle-map text-blue-600 underline hover:text-blue-800"
+           data-target="ml-map-{{ $propiedad->id }}">
+            Ver mapa
+        </a>
+
+        <div id="ml-map-{{ $propiedad->id }}"
+             class="hidden mt-2 rounded border"
+             style="height: 220px;"
+             data-lat="{{ $propiedad->lat }}"
+             data-lng="{{ $propiedad->lng }}">
         </div>
+        @else
+        <span class="text-gray-500 text-sm">Sin ubicación</span>
         @endif
 
         <!-- Acciones -->
@@ -120,19 +121,20 @@
 
                 <!-- Mapa inline -->
                 @if($propiedad->lat && $propiedad->lng)
-                <div class="mb-4">
-                    <div class="text-xs text-gray-500 mb-1 flex items-center gap-1 cursor-pointer"
-                         id="coord-{{ $propiedad->id }}-exp"
-                         data-map-id="map-{{ $propiedad->id }}-exp"
-                         data-lat="{{ $propiedad->lat }}"
-                         data-lng="{{ $propiedad->lng }}">
-                        <span class="material-symbols-outlined text-sm">location_on</span>
-                        <span>{{ number_format($propiedad->lat, 7) }}, {{ number_format($propiedad->lng, 7) }}</span>
-                    </div>
-                    <div id="map-{{ $propiedad->id }}-exp" class="w-full h-40 rounded-lg border border-gray-300 shadow-sm"
-                         data-lat="{{ $propiedad->lat }}" 
-                         data-lng="{{ $propiedad->lng }}"></div>
+                <a href="#"
+                   class="ml-toggle-map text-blue-600 underline hover:text-blue-800"
+                   data-target="ml-map-{{ $propiedad->id }}-exp">
+                    Ver mapa
+                </a>
+
+                <div id="ml-map-{{ $propiedad->id }}-exp"
+                     class="hidden mt-2 rounded border"
+                     style="height: 220px;"
+                     data-lat="{{ $propiedad->lat }}"
+                     data-lng="{{ $propiedad->lng }}">
                 </div>
+                @else
+                <span class="text-gray-500 text-sm">Sin ubicación</span>
                 @endif
 
                 <div class="flex gap-2 pt-3 border-t border-gray-200">
@@ -167,3 +169,55 @@
     </script>
     @endif
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof L === 'undefined') return;
+
+    document.querySelectorAll('.ml-toggle-map').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.dataset.target;
+            const mapDiv = document.getElementById(targetId);
+            if (!mapDiv) return;
+
+            const isHidden = mapDiv.classList.contains('hidden');
+            mapDiv.classList.toggle('hidden');
+
+            // Inicializar mapa sólo la primera vez
+            if (!mapDiv.dataset.initialized) {
+                const lat = parseFloat(mapDiv.dataset.lat);
+                const lng = parseFloat(mapDiv.dataset.lng);
+                if (isNaN(lat) || isNaN(lng)) return;
+
+                const map = L.map(targetId, {
+                    zoomControl: false,
+                    dragging: false,
+                    scrollWheelZoom: false,
+                    doubleClickZoom: false,
+                    boxZoom: false,
+                    keyboard: false,
+                    tap: false,
+                    touchZoom: false
+                }).setView([lat, lng], 15);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(map);
+
+                L.marker([lat, lng]).addTo(map);
+
+                // Guardar instancia para futuros invalidateSize
+                mapDiv._mlMap = map;
+                mapDiv.dataset.initialized = '1';
+                setTimeout(() => map.invalidateSize(), 150);
+            } else if (!isHidden && mapDiv._mlMap) {
+                // Al mostrar nuevamente, refrescar tamaño
+                setTimeout(() => mapDiv._mlMap.invalidateSize(), 150);
+            }
+        });
+    });
+});
+</script>
+@endpush
