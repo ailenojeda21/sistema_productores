@@ -79,21 +79,24 @@
         @endif
     </div>
 
-    <!-- Paginación -->
+    <!-- Paginación - solo mostrar si hay más de 3 filas -->
+    @if($cultivos->count() > 3)
     <div class="px-4 py-3 flex items-center justify-center space-x-4" role="navigation" aria-label="Paginación tabla">
         <button id="cult-prev" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Página anterior">◀</button>
         <span id="cult-page-info" class="text-sm text-gray-700">Página 1</span>
         <button id="cult-next" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Siguiente página">▶</button>
     </div>
+    @endif
 
     <!-- Script de paginación -->
+    @if($cultivos->count() > 3)
     @push('scripts')
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const rows = Array.from(document.querySelectorAll('#cultivos-tbody tr'));
         const perPage = 3; // 3 filas por página
         let currentPage = 1;
-        const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+        const totalPages = Math.ceil(rows.length / perPage); // Sin Math.max(1, ...) para evitar páginas vacías
 
         const prevBtn = document.getElementById('cult-prev');
         const nextBtn = document.getElementById('cult-next');
@@ -102,22 +105,25 @@
         function renderPage(page) {
             currentPage = Math.min(Math.max(1, page), totalPages);
             const start = (currentPage - 1) * perPage;
-            const end = start + perPage;
+            const end = Math.min(start + perPage, rows.length); // Asegurar que no exceda el total de filas
+
             rows.forEach((r, i) => {
                 r.style.display = (i >= start && i < end) ? '' : 'none';
             });
+
             info.textContent = `Página ${currentPage} de ${totalPages}`;
-            prevBtn.disabled = currentPage === 1;
-            nextBtn.disabled = currentPage === totalPages;
+            if (prevBtn) prevBtn.disabled = currentPage === 1;
+            if (nextBtn) nextBtn.disabled = currentPage === totalPages;
         }
 
-        prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
-        nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
+        if (prevBtn) prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
+        if (nextBtn) nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
 
         renderPage(1);
     });
     </script>
     @endpush
+    @endif
 
 </div>
 
