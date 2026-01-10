@@ -245,51 +245,108 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    if (typeof L === 'undefined') return;
+    if (typeof L === 'undefined') {
+        console.warn('Leaflet no está cargado, mapas no disponibles');
+        return;
+    }
+
+    console.log('Inicializando toggle de mapas móviles');
 
     document.querySelectorAll('.ml-toggle-map').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.dataset.target;
             const mapDiv = document.getElementById(targetId);
-            if (!mapDiv) return;
 
-            const isHidden = mapDiv.classList.contains('hidden');
+            if (!mapDiv) {
+                console.error('Map container not found:', targetId);
+                return;
+            }
+
+            const wasHidden = mapDiv.classList.contains('hidden');
             mapDiv.classList.toggle('hidden');
+            const isNowVisible = !mapDiv.classList.contains('hidden');
 
-            // Inicializar mapa sólo la primera vez
-            if (!mapDiv.dataset.initialized) {
+            console.log('Toggle map:', targetId, 'was hidden:', wasHidden, 'now visible:', isNowVisible);
+
+            // Verificar si el mapa ya fue inicializado por el script global
+            let mapInstance = null;
+            if (mapDiv._leaflet_id) {
+                // El mapa ya fue inicializado por el script global, buscar la instancia
+                mapInstance = Object.values(window).find(obj =>
+                    obj && obj._leaflet_id === mapDiv._leaflet_id
+                );
+            }
+
+            // Si no hay instancia guardada, intentar inicializar
+            if (!mapInstance && !mapDiv.dataset.initialized) {
+                console.log('Initializing map for:', targetId);
                 const lat = parseFloat(mapDiv.dataset.lat);
                 const lng = parseFloat(mapDiv.dataset.lng);
-                if (isNaN(lat) || isNaN(lng)) return;
 
-                const map = L.map(targetId, {
-                    zoomControl: false,
-                    dragging: false,
-                    scrollWheelZoom: false,
-                    doubleClickZoom: false,
-                    boxZoom: false,
-                    keyboard: false,
-                    tap: false,
-                    touchZoom: false
-                }).setView([lat, lng], 15);
+                if (isNaN(lat) || isNaN(lng)) {
+                    console.error('Invalid coordinates for map:', targetId, lat, lng);
+                    return;
+                }
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap'
-                }).addTo(map);
+                try {
+                    mapInstance = L.map(targetId, {
+                        zoomControl: false,
+                        dragging: false,
+                        scrollWheelZoom: false,
+                        doubleClickZoom: false,
+                        boxZoom: false,
+                        keyboard: false,
+                        tap: false,
+                        touchZoom: false
+                    }).setView([lat, lng], 15);
 
-                L.marker([lat, lng]).addTo(map);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(mapInstance);
 
-                // Guardar instancia para futuros invalidateSize
-                mapDiv._mlMap = map;
-                mapDiv.dataset.initialized = '1';
-                setTimeout(() => map.invalidateSize(), 150);
-            } else if (!isHidden && mapDiv._mlMap) {
-                // Al mostrar nuevamente, refrescar tamaño
-                setTimeout(() => mapDiv._mlMap.invalidateSize(), 150);
+                    L.marker([lat, lng]).addTo(mapInstance);
+
+                    // Guardar instancia
+                    mapDiv._mlMap = mapInstance;
+                    mapDiv.dataset.initialized = '1';
+
+                    console.log('Map initialized for:', targetId);
+                } catch (error) {
+                    console.error('Error initializing map:', error);
+                    return;
+                }
+            }
+
+            // Refrescar mapa cuando se hace visible
+            if (isNowVisible && (mapInstance || mapDiv._mlMap)) {
+                const map = mapInstance || mapDiv._mlMap;
+                console.log('Refreshing map for:', targetId);
+
+                // Usar múltiples timeouts para asegurar el refresh
+                setTimeout(() => {
+                    if (map && !mapDiv.classList.contains('hidden')) {
+                        map.invalidateSize();
+                        console.log('Map refreshed for:', targetId);
+                    }
+                }, 100);
+
+                setTimeout(() => {
+                    if (map && !mapDiv.classList.contains('hidden')) {
+                        map.invalidateSize();
+                    }
+                }, 300);
+
+                setTimeout(() => {
+                    if (map && !mapDiv.classList.contains('hidden')) {
+                        map.invalidateSize();
+                    }
+                }, 500);
             }
         });
     });
+
+    console.log('Map toggle initialization complete');
 });
 </script>
 @endpush
