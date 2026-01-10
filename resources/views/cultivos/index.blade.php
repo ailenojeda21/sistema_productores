@@ -79,45 +79,7 @@
         @endif
     </div>
 
-    <!-- Paginación -->
-    <div class="px-4 py-3 flex items-center justify-center space-x-4" role="navigation" aria-label="Paginación tabla">
-        <button id="cult-prev" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Página anterior">◀</button>
-        <span id="cult-page-info" class="text-sm text-gray-700">Página 1</span>
-        <button id="cult-next" class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50" aria-label="Siguiente página">▶</button>
-    </div>
-    
-    <!-- Script de paginación -->
-    @push('scripts')
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const rows = Array.from(document.querySelectorAll('#cultivos-tbody tr'));
-        const perPage = 3; // antes: 2
-        let currentPage = 1;
-        const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
 
-        const prevBtn = document.getElementById('cult-prev');
-        const nextBtn = document.getElementById('cult-next');
-        const info = document.getElementById('cult-page-info');
-
-        function renderPage(page) {
-            currentPage = Math.min(Math.max(1, page), totalPages);
-            const start = (currentPage - 1) * perPage;
-            const end = start + perPage;
-            rows.forEach((r, i) => {
-                r.style.display = (i >= start && i < end) ? '' : 'none';
-            });
-            info.textContent = `Página ${currentPage} de ${totalPages}`;
-            prevBtn.disabled = currentPage === 1;
-            nextBtn.disabled = currentPage === totalPages;
-        }
-
-        prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
-        nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
-
-        renderPage(1);
-    });
-    </script>
-    @endpush
 </div>
 
 <!-- Mobile View -->
