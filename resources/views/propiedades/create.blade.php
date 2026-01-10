@@ -196,6 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('Inicializando toggles del formulario de propiedades');
+
     // Elementos para checkboxes y toggles
     const tenenciaRadios = document.querySelectorAll('.tenencia-radio');
     const otrosContainer = document.getElementById('otros-tenencia-container');
@@ -207,6 +209,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const mallaFields = document.getElementById('malla-fields');
     const hectareasInput = document.getElementById('hectareas');
     const hectareasMallaInput = document.getElementById('hectareas_malla');
+
+    console.log('Elementos encontrados:', {
+        riego: !!riego,
+        riegoDiv: !!riegoDiv,
+        rut: !!rut,
+        rutFields: !!rutFields,
+        malla: !!malla,
+        mallaFields: !!mallaFields
+    });
 
     // Función toggle reutilizable
     const toggle = (check, div) => div.classList.toggle('hidden', !check.checked);
@@ -257,15 +268,25 @@ document.addEventListener('DOMContentLoaded', function () {
     tenenciaRadios.forEach(radio => radio.addEventListener('change', toggleOtros));
 
     if (riego && riegoDiv) {
-        riego.addEventListener('change', () => toggle(riego, riegoDiv));
+        console.log('Configurando listener para derecho_riego');
+        riego.addEventListener('change', () => {
+            console.log('Toggle derecho_riego ejecutado, checked:', riego.checked);
+            toggle(riego, riegoDiv);
+        });
     }
 
     if (rut && rutFields) {
-        rut.addEventListener('change', () => toggle(rut, rutFields));
+        console.log('Configurando listener para rut');
+        rut.addEventListener('change', () => {
+            console.log('Toggle rut ejecutado, checked:', rut.checked);
+            toggle(rut, rutFields);
+        });
     }
 
     if (malla && mallaFields) {
+        console.log('Configurando listener para malla');
         malla.addEventListener('change', function() {
+            console.log('Toggle malla ejecutado, checked:', malla.checked);
             toggle(malla, mallaFields);
             if (malla.checked) {
                 syncHectareasMallaMax();
@@ -285,18 +306,32 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Inicializar estados
+    console.log('Inicializando estados...');
     toggleOtros();
-    if (riego && riegoDiv) toggle(riego, riegoDiv);
-    if (rut && rutFields) toggle(rut, rutFields);
-    if (malla && mallaFields) toggle(malla, mallaFields);
+    if (riego && riegoDiv) {
+        console.log('Inicializando derecho_riego, checked:', riego.checked);
+        toggle(riego, riegoDiv);
+    }
+    if (rut && rutFields) {
+        console.log('Inicializando rut, checked:', rut.checked);
+        toggle(rut, rutFields);
+    }
+    if (malla && mallaFields) {
+        console.log('Inicializando malla, checked:', malla.checked);
+        toggle(malla, mallaFields);
+    }
 
     // Inicializar validación de hectáreas con malla si el checkbox está marcado
     if (malla && malla.checked) {
+        console.log('Inicializando validación de malla (checked)');
         syncHectareasMallaMax();
     }
 
     // Inicializar validación general
+    console.log('Inicializando validación general');
     syncHectareasMallaMax();
+
+    console.log('Inicialización completa');
 });
 </script>
 
