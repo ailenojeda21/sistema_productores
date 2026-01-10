@@ -192,11 +192,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// Script adicional para inicializar toggles con delay
+setTimeout(() => {
+    if (typeof initializePropertyForm === 'function' && !window.propertyFormInitialized) {
+        console.log('Inicializando toggles con delay para asegurar elementos en móvil');
+        initializePropertyForm();
+    }
+}, 300);
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+// Función principal de inicialización
+// Script adicional para inicializar con delay
+setTimeout(() => {
+    if (typeof initializePropertyForm === 'function' && !window.propertyFormInitialized) {
+        console.log('Inicializando toggles con delay para móvil');
+        initializePropertyForm();
+    }
+}, 300);
+
+function initializePropertyForm() {
     console.log('Inicializando toggles del formulario de propiedades');
+
+    // Verificar si ya se inicializó
+    if (window.propertyFormInitialized) {
+        console.log('Ya inicializado, saliendo');
+        return;
+    }
+    window.propertyFormInitialized = true;
 
     // Elementos para checkboxes y toggles
     const tenenciaRadios = document.querySelectorAll('.tenencia-radio');
@@ -210,14 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const hectareasInput = document.getElementById('hectareas');
     const hectareasMallaInput = document.getElementById('hectareas_malla');
 
-    console.log('Elementos encontrados:', {
-        riego: !!riego,
-        riegoDiv: !!riegoDiv,
-        rut: !!rut,
-        rutFields: !!rutFields,
-        malla: !!malla,
-        mallaFields: !!mallaFields
-    });
+
 
     // Función toggle reutilizable
     const toggle = (check, div) => div.classList.toggle('hidden', !check.checked);
@@ -412,5 +429,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+</script>
+
+<script>
+// Inicialización adicional con delay para móvil
+setTimeout(() => {
+    if (typeof initializePropertyForm === 'function' && !window.propertyFormInitialized) {
+        console.log('Inicializando toggles con delay adicional para móvil');
+        initializePropertyForm();
+    }
+}, 500);
 </script>
 @endpush
