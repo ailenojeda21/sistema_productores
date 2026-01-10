@@ -80,11 +80,11 @@
         <div class="mt-3">
             <div class="text-sm font-medium text-gray-600 mb-2">Ubicación:</div>
             <div id="map-preview-{{ $propiedad->id }}"
-                 class="rounded border bg-gray-100"
-                 style="height: 120px; width: 100%;"
+                 class="rounded border overflow-hidden"
+                 style="height: 120px; width: 100%; position: relative;"
                  data-lat="{{ $propiedad->lat }}"
                  data-lng="{{ $propiedad->lng }}">
-                <div class="flex items-center justify-center h-full text-gray-500 text-sm">
+                <div class="loading-state flex items-center justify-center h-full text-gray-500 text-sm bg-gray-50">
                     <div class="text-center">
                         <div class="material-symbols-outlined text-2xl mb-1">location_on</div>
                         <div>Cargando mapa...</div>
@@ -207,11 +207,11 @@
                 <div class="mt-3">
                     <div class="text-sm font-medium text-gray-600 mb-2">Ubicación:</div>
                     <div id="map-preview-{{ $propiedad->id }}-exp"
-                         class="rounded border bg-gray-100"
-                         style="height: 120px; width: 100%;"
+                         class="rounded border overflow-hidden"
+                         style="height: 120px; width: 100%; position: relative;"
                          data-lat="{{ $propiedad->lat }}"
                          data-lng="{{ $propiedad->lng }}">
-                        <div class="flex items-center justify-center h-full text-gray-500 text-sm">
+                        <div class="loading-state flex items-center justify-center h-full text-gray-500 text-sm bg-gray-50">
                             <div class="text-center">
                                 <div class="material-symbols-outlined text-2xl mb-1">location_on</div>
                                 <div>Cargando mapa...</div>
@@ -308,9 +308,6 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Inicializando mapa preview:', mapId, 'con coordenadas válidas:', lat, lng);
 
         try {
-            // Limpiar contenido anterior
-            mapDiv.innerHTML = '';
-
             // Verificar que el contenedor tenga dimensiones
             const rect = mapDiv.getBoundingClientRect();
             console.log('Dimensiones del contenedor:', mapId, 'width:', rect.width, 'height:', rect.height);
@@ -320,6 +317,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 setTimeout(() => initializeMapPreview(mapDiv), 500);
                 return;
             }
+
+            // Limpiar contenido anterior (remover loading state)
+            mapDiv.innerHTML = '';
 
             // Crear el mapa con opciones optimizadas para preview
             console.log('Creando instancia de mapa para:', mapId);
@@ -340,12 +340,23 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('Mapa creado, configurando vista para:', mapId);
             map.setView([lat, lng], 16);
 
-            // Agregar tile layer
+            // Agregar tile layer con manejo de errores
             console.log('Agregando tile layer para:', mapId);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: false,
-                maxZoom: 18
-            }).addTo(map);
+                maxZoom: 18,
+                errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+            });
+
+            tileLayer.on('tileerror', function(e) {
+                console.warn('Error cargando tile para mapa:', mapId, e);
+            });
+
+            tileLayer.on('tileload', function() {
+                console.log('Tile cargado exitosamente para mapa:', mapId);
+            });
+
+            tileLayer.addTo(map);
 
             // Agregar marker
             console.log('Agregando marker para:', mapId);
@@ -364,12 +375,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
             console.log('Mapa preview inicializado exitosamente:', mapId);
 
-            // Refrescar después de un breve delay
+            // Forzar refresh inmediato y después de un delay
+            map.invalidateSize();
+
+            // Ocultar loading state después de inicialización
+            const loadingState = mapDiv.querySelector('.loading-state');
+            if (loadingState) {
+                loadingState.style.display = 'none';
+                console.log('Estado de carga ocultado para mapa:', mapId);
+            }
+
             setTimeout(() => {
                 if (mapDiv._previewMap) {
                     console.log('Refrescando mapa preview:', mapId);
                     mapDiv._previewMap.invalidateSize();
-                    console.log('Mapa preview refrescado exitosamente:', mapId);
+
+                    // Verificar si el mapa se renderizó correctamente
+                    setTimeout(() => {
+                        const mapContainer = mapDiv.querySelector('.leaflet-container');
+                        if (mapContainer) {
+                            console.log('Mapa renderizado correctamente:', mapId);
+                        } else {
+                            console.warn('Mapa no se renderizó correctamente:', mapId);
+                        }
+                    }, 500);
                 }
             }, 100);
 
@@ -429,6 +458,28 @@ document.addEventListener('DOMContentLoaded', function () {
 <style>
 .custom-marker {
     pointer-events: none;
+}
+
+/* Estilos específicos para mapas preview */
+[id^="map-preview-"] {
+    background: #f8f9fa;
+}
+
+[id^="map-preview-"] .leaflet-container {
+    background: #f8f9fa !important;
+}
+
+[id^="map-preview-"] .loading-state {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+[id^="map-preview-"] .leaflet-container {
+    z-index: 1;
 }
 </style>
 @endpush
