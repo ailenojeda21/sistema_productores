@@ -75,22 +75,33 @@
             </div>
         </div>
 
-        <!-- Mapa inline -->
+        <!-- Mapa preview -->
         @if($propiedad->lat && $propiedad->lng)
-        <a href="#"
-           class="ml-toggle-map text-blue-600 underline hover:text-blue-800"
-           data-target="ml-map-{{ $propiedad->id }}">
-            Ver mapa
-        </a>
-
-        <div id="ml-map-{{ $propiedad->id }}"
-             class="hidden mt-2 rounded border bg-white"
-             style="height: 220px; width: 100%;"
-             data-lat="{{ $propiedad->lat }}"
-             data-lng="{{ $propiedad->lng }}">
+        <div class="mt-3">
+            <div class="text-sm font-medium text-gray-600 mb-2">Ubicación:</div>
+            <div id="map-preview-{{ $propiedad->id }}"
+                 class="rounded border bg-gray-100"
+                 style="height: 120px; width: 100%;"
+                 data-lat="{{ $propiedad->lat }}"
+                 data-lng="{{ $propiedad->lng }}">
+                <div class="flex items-center justify-center h-full text-gray-500 text-sm">
+                    <div class="text-center">
+                        <div class="material-symbols-outlined text-2xl mb-1">location_on</div>
+                        <div>Cargando mapa...</div>
+                    </div>
+                </div>
+            </div>
         </div>
         @else
-        <span class="text-gray-500 text-sm">Sin ubicación</span>
+        <div class="mt-3">
+            <div class="text-sm font-medium text-gray-600 mb-2">Ubicación:</div>
+            <div class="rounded border bg-gray-200 flex items-center justify-center" style="height: 120px;">
+                <div class="text-center text-gray-500 text-sm">
+                    <div class="material-symbols-outlined text-2xl mb-1">location_off</div>
+                    <div>Sin ubicación</div>
+                </div>
+            </div>
+        </div>
         @endif
 
         <!-- Acciones -->
@@ -191,22 +202,33 @@
                     </div>
                 </div>
 
-                <!-- Mapa inline -->
+                <!-- Mapa preview -->
                 @if($propiedad->lat && $propiedad->lng)
-                <a href="#"
-                   class="ml-toggle-map text-blue-600 underline hover:text-blue-800"
-                   data-target="ml-map-{{ $propiedad->id }}-exp">
-                    Ver mapa
-                </a>
-
-                <div id="ml-map-{{ $propiedad->id }}-exp"
-                     class="hidden mt-2 rounded border"
-                     style="height: 220px;"
-                     data-lat="{{ $propiedad->lat }}"
-                     data-lng="{{ $propiedad->lng }}">
+                <div class="mt-3">
+                    <div class="text-sm font-medium text-gray-600 mb-2">Ubicación:</div>
+                    <div id="map-preview-{{ $propiedad->id }}-exp"
+                         class="rounded border bg-gray-100"
+                         style="height: 120px; width: 100%;"
+                         data-lat="{{ $propiedad->lat }}"
+                         data-lng="{{ $propiedad->lng }}">
+                        <div class="flex items-center justify-center h-full text-gray-500 text-sm">
+                            <div class="text-center">
+                                <div class="material-symbols-outlined text-2xl mb-1">location_on</div>
+                                <div>Cargando mapa...</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 @else
-                <span class="text-gray-500 text-sm">Sin ubicación</span>
+                <div class="mt-3">
+                    <div class="text-sm font-medium text-gray-600 mb-2">Ubicación:</div>
+                    <div class="rounded border bg-gray-200 flex items-center justify-center" style="height: 120px;">
+                        <div class="text-center text-gray-500 text-sm">
+                            <div class="material-symbols-outlined text-2xl mb-1">location_off</div>
+                            <div>Sin ubicación</div>
+                        </div>
+                    </div>
+                </div>
                 @endif
 
                 <div class="flex gap-2 pt-3 border-t border-gray-200">
@@ -245,7 +267,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('Script de mapas móviles cargado');
+    console.log('Script de mapas preview móviles cargado');
 
     // Verificar que Leaflet esté disponible
     if (typeof L === 'undefined') {
@@ -253,111 +275,118 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    console.log('Leaflet disponible, inicializando toggle de mapas');
+    console.log('Leaflet disponible, inicializando mapas preview');
 
-    // Buscar todos los enlaces de toggle
-    const toggleLinks = document.querySelectorAll('.ml-toggle-map');
-    console.log('Encontrados', toggleLinks.length, 'enlaces de toggle');
+    // Función para inicializar un mapa preview
+    function initializeMapPreview(mapDiv) {
+        if (!mapDiv || mapDiv.dataset.initialized) return;
 
-    toggleLinks.forEach((link, index) => {
-        console.log('Configurando enlace', index, 'con target:', link.dataset.target);
+        const lat = parseFloat(mapDiv.dataset.lat);
+        const lng = parseFloat(mapDiv.dataset.lng);
+        const mapId = mapDiv.id;
 
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            console.log('Click en enlace de mapa');
+        if (isNaN(lat) || isNaN(lng)) {
+            console.error('Coordenadas inválidas para mapa:', mapId, lat, lng);
+            return;
+        }
 
-            const targetId = this.dataset.target;
-            console.log('Target ID:', targetId);
+        console.log('Inicializando mapa preview:', mapId, 'con coordenadas:', lat, lng);
 
-            const mapDiv = document.getElementById(targetId);
-            if (!mapDiv) {
-                console.error('Contenedor de mapa no encontrado:', targetId);
-                return;
-            }
+        try {
+            // Crear el mapa con opciones optimizadas para preview
+            const map = L.map(mapId, {
+                zoomControl: false,
+                dragging: false,
+                scrollWheelZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false,
+                keyboard: false,
+                tap: false,
+                touchZoom: false,
+                attributionControl: false // Ocultar atribución para preview más limpio
+            }).setView([lat, lng], 16); // Zoom más cercano para preview
 
-            console.log('Contenedor encontrado, toggling visibility');
-            console.log('Antes del toggle - tiene clase hidden:', mapDiv.classList.contains('hidden'));
-            console.log('Antes del toggle - display:', mapDiv.style.display);
-            console.log('Antes del toggle - visibility:', mapDiv.style.visibility);
+            // Agregar tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: false // Sin atribución para preview
+            }).addTo(map);
 
-            mapDiv.classList.toggle('hidden');
-            const isVisible = !mapDiv.classList.contains('hidden');
+            // Agregar marker
+            L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'custom-marker',
+                    html: '<div class="w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>',
+                    iconSize: [12, 12],
+                    iconAnchor: [6, 6]
+                })
+            }).addTo(map);
 
-            console.log('Después del toggle - tiene clase hidden:', mapDiv.classList.contains('hidden'));
-            console.log('Después del toggle - display:', mapDiv.style.display);
-            console.log('Después del toggle - visibility:', mapDiv.style.visibility);
-            console.log('Mapa ahora visible:', isVisible);
+            // Guardar referencia
+            mapDiv._previewMap = map;
+            mapDiv.dataset.initialized = '1';
 
-            // Inicializar mapa si es necesario
-            if (!mapDiv.dataset.initialized) {
-                console.log('Inicializando mapa para:', targetId);
+            console.log('Mapa preview inicializado:', mapId);
 
-                const lat = parseFloat(mapDiv.dataset.lat);
-                const lng = parseFloat(mapDiv.dataset.lng);
-
-                if (isNaN(lat) || isNaN(lng)) {
-                    console.error('Coordenadas inválidas:', lat, lng);
-                    return;
+            // Refrescar después de un breve delay
+            setTimeout(() => {
+                if (mapDiv._previewMap) {
+                    mapDiv._previewMap.invalidateSize();
+                    console.log('Mapa preview refrescado:', mapId);
                 }
+            }, 100);
 
-                try {
-                    console.log('Creando instancia de mapa para:', targetId);
+        } catch (error) {
+            console.error('Error inicializando mapa preview:', mapId, error);
+            // Mostrar mensaje de error en el contenedor
+            mapDiv.innerHTML = `
+                <div class="flex items-center justify-center h-full text-red-500 text-xs">
+                    <div class="text-center">
+                        <div class="material-symbols-outlined text-lg mb-1">error</div>
+                        <div>Error cargando mapa</div>
+                    </div>
+                </div>
+            `;
+        }
+    }
 
-                    // Asegurarse de que el contenedor sea visible antes de inicializar
-                    mapDiv.style.display = 'block';
-                    mapDiv.style.visibility = 'visible';
-
-                    const map = L.map(targetId, {
-                        zoomControl: false,
-                        dragging: false,
-                        scrollWheelZoom: false,
-                        doubleClickZoom: false,
-                        boxZoom: false,
-                        keyboard: false,
-                        tap: false,
-                        touchZoom: false
-                    }).setView([lat, lng], 15);
-
-                    console.log('Mapa creado, agregando tile layer');
-
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap contributors'
-                    }).addTo(map);
-
-                    console.log('Tile layer agregado, agregando marker');
-
-                    L.marker([lat, lng]).addTo(map);
-
-                    mapDiv._mlMap = map;
-                    mapDiv.dataset.initialized = '1';
-
-                    console.log('Mapa inicializado exitosamente para:', targetId, 'isVisible:', isVisible);
-
-                    if (isVisible) {
-                        console.log('Refrescando mapa después de inicialización');
-                        setTimeout(() => {
-                            if (mapDiv._mlMap) {
-                                mapDiv._mlMap.invalidateSize();
-                                console.log('Mapa refrescado después de inicialización');
-                            }
-                        }, 200);
-                    }
-                } catch (error) {
-                    console.error('Error inicializando mapa:', error);
+    // Usar Intersection Observer para inicializar mapas cuando sean visibles
+    if ('IntersectionObserver' in window) {
+        const mapObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const mapDiv = entry.target;
+                    initializeMapPreview(mapDiv);
+                    // Dejar de observar una vez inicializado
+                    mapObserver.unobserve(mapDiv);
                 }
-            } else if (isVisible && mapDiv._mlMap) {
-                console.log('Refrescando mapa existente');
-                setTimeout(() => {
-                    if (mapDiv._mlMap && !mapDiv.classList.contains('hidden')) {
-                        mapDiv._mlMap.invalidateSize();
-                        console.log('Mapa refrescado');
-                    }
-                }, 200);
-            }
+            });
+        }, {
+            rootMargin: '50px' // Inicializar 50px antes de que sea visible
         });
-    });
 
-    console.log('Inicialización de toggle de mapas completada');
+        // Observar todos los contenedores de mapa preview
+        document.querySelectorAll('[id^="map-preview-"]').forEach(mapDiv => {
+            mapObserver.observe(mapDiv);
+        });
+
+        console.log('Intersection Observer configurado para mapas preview');
+    } else {
+        // Fallback para navegadores sin Intersection Observer
+        console.log('Intersection Observer no disponible, inicializando todos los mapas');
+
+        // Inicializar todos los mapas inmediatamente con delay escalonado
+        document.querySelectorAll('[id^="map-preview-"]').forEach((mapDiv, index) => {
+            setTimeout(() => initializeMapPreview(mapDiv), index * 200);
+        });
+    }
+
+    console.log('Inicialización de mapas preview completada');
 });
 </script>
+
+<style>
+.custom-marker {
+    pointer-events: none;
+}
+</style>
 @endpush
