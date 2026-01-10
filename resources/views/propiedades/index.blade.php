@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             const mapInstances = {};
             
-            document.querySelectorAll('[id^="map-"]').forEach(mapDiv => {
+            document.querySelectorAll('[id^="map-"]:not([id^="ml-map-"])').forEach(mapDiv => {
                 if (mapDiv.dataset.lat && mapDiv.dataset.lng) {
                     const lat = parseFloat(mapDiv.dataset.lat);
                     const lng = parseFloat(mapDiv.dataset.lng);
