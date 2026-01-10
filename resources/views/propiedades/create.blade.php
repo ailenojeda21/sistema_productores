@@ -83,12 +83,13 @@
                     <input type="checkbox" name="malla" id="malla" class="mr-2 rounded-full custom-checkbox">
                     <label for="malla">¿Tiene malla antigranizo?</label>
                 </div>
-                <div id="malla-fields" class="hidden md:col-span-2">
-                    <div class="mt-2">
-                        <label class="block text-gray-700 font-semibold mb-1" for="hectareas_malla">Hectáreas con malla</label>
-                        <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded">
-                    </div>
-                </div>
+                 <div id="malla-fields" class="hidden md:col-span-2">
+                     <div class="mt-2">
+                         <label class="block text-gray-700 font-semibold mb-1" for="hectareas_malla">Hectáreas con malla</label>
+                         <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded transition-colors" required>
+                         <p id="hectareas-malla-hint" class="text-sm text-gray-500 mt-1">Ingrese las hectáreas totales primero</p>
+                     </div>
+                 </div>
                 <div class="flex items-center mt-6">
                     <input type="checkbox" name="cierre_perimetral" id="cierre_perimetral" class="mr-2 rounded-full custom-checkbox">
                     <label for="cierre_perimetral">¿Tiene cierre perimetral?</label>
@@ -215,18 +216,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         function syncHectareasMallaMax() {
             const total = parseFloat(hectareasInput.value) || 0;
+            const current = parseFloat(hectareasMallaInput.value) || 0;
+            const hint = document.getElementById('hectareas-malla-hint');
+
             hectareasMallaInput.max = total > 0 ? total : '';
-            hectareasMallaInput.placeholder = total > 0 ? ('Máx ' + total) : '';
-            if (hectareasMallaInput.value) {
-                const val = parseFloat(hectareasMallaInput.value) || 0;
-                if (total && val > total) hectareasMallaInput.value = total;
+            hectareasMallaInput.placeholder = total > 0 ? `Máximo ${total.toFixed(2)} ha` : '';
+            hectareasMallaInput.classList.remove('border-green-500', 'border-red-500', 'border-gray-300');
+
+            if (total === 0) {
+                hint.className = 'text-sm text-gray-500 mt-1';
+                hint.textContent = 'Ingrese las hectáreas totales primero';
+                hectareasMallaInput.classList.add('border-gray-300');
+            } else if (current > total) {
+                hectareasMallaInput.classList.add('border-red-500');
+                hint.className = 'text-sm text-red-600 mt-1 font-semibold';
+                hint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">error</span> El valor (${current} ha) excede las hectáreas totales (${total.toFixed(2)} ha)`;
+                hectareasMallaInput.value = total;
+            } else if (current > 0) {
+                hectareasMallaInput.classList.add('border-green-500');
+                hint.className = 'text-sm text-green-600 mt-1 font-semibold';
+                hint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">check_circle</span> Válido: ${current} ha de ${total.toFixed(2)} ha disponibles`;
+            } else {
+                hint.className = 'text-sm text-blue-600 mt-1 font-semibold';
+                hint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">info</span> Máximo disponible: ${total.toFixed(2)} ha`;
+                hectareasMallaInput.classList.add('border-gray-300');
             }
         }
 
         hectareasInput.addEventListener('input', syncHectareasMallaMax);
         hectareasMallaInput.addEventListener('input', syncHectareasMallaMax);
         rutCheckbox.addEventListener('change', toggleRutFields);
-        mallaCheckbox.addEventListener('change', toggleMallaFields);
+        mallaCheckbox.addEventListener('change', function() {
+            toggleMallaFields();
+            syncHectareasMallaMax();
+        });
         // Inicializar estado
         toggleRutFields();
         toggleMallaFields();
