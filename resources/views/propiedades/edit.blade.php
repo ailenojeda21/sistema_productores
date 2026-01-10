@@ -182,7 +182,7 @@
                              class="w-full p-2 border border-gray-300 rounded transition-colors" required
                              value="{{ old('hectareas_malla', $propiedad->hectareas_malla) }}"
                              placeholder="Max: {{ number_format($propiedad->hectareas ?? 0, 2) }}">
-                         <p id="hectareas-malla-hint" class="text-sm text-gray-500 mt-1">Ingrese las hectáreas totales primero</p>
+                         <p id="hectareas-malla-hint" class="text-sm text-gray-500 mt-1">Seleccione "tiene malla antigranizo" primero</p>
                      </div>
                 </div>
 
@@ -265,6 +265,11 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle(malla, mallaDiv);
     // Inicializar required para Nº RUT
     rutValorInput.required = rut.checked;
+
+    // Inicializar validación de hectáreas con malla si el checkbox está marcado
+    if (malla.checked) {
+        syncHectareasMallaMax();
+    }
 });
 </script>
 <script>
@@ -307,7 +312,15 @@ document.addEventListener('DOMContentLoaded', function () {
     hectareasMallaInput.addEventListener('input', syncHectareasMallaMax);
     malla.addEventListener('change', function() {
         toggle(malla, mallaDiv);
-        syncHectareasMallaMax();
+        if (malla.checked) {
+            syncHectareasMallaMax();
+        } else {
+            const hint = document.getElementById('hectareas-malla-hint');
+            if (hint) {
+                hint.className = 'text-sm text-gray-500 mt-1';
+                hint.textContent = 'Seleccione "tiene malla antigranizo" primero';
+            }
+        }
     });
 
     // Inicializar al cargar EDIT
