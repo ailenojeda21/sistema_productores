@@ -77,7 +77,7 @@
     <div id="drawer-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
     
     <!-- Mobile Menu Button -->
-    <button id="mobile-menu-btn" class="fixed top-4 left-4 z-50 bg-azul-marino text-white p-2 rounded-md shadow-lg">
+    <button id="mobile-menu-btn" class="fixed top-4 left-4 z-50 bg-azul-marino text-white w-10 h-10 rounded-md shadow-lg flex items-center justify-center hover:bg-amarillo-claro hover:text-azul-marino transition-colors">
         <span class="material-symbols-outlined">menu</span>
     </button>
 
