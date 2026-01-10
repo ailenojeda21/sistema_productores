@@ -1,15 +1,15 @@
 <?php
 
+use App\Http\Controllers\ComercioController;
 use App\Http\Controllers\CultivoController;
 use App\Http\Controllers\MaquinariaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropiedadController;
-use App\Http\Controllers\ComercioController;
 use App\Models\User;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
 
 // Página de inicio
 Route::get('/', function () {
@@ -55,6 +55,7 @@ Route::middleware('web')->group(function () {
 
         Auth::login($user);
         $request->session()->regenerate();
+
         return redirect('/dashboard');
     });
 });
@@ -71,12 +72,13 @@ Route::middleware('auth')->group(function () {
     // NUEVA RUTA → Actualizar avatar
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])
         ->name('profile.updateAvatar');
-        
-    Route::get('/profile/avatar', [ProfileController::class, 'editAvatar'])
-    ->name('profile.avatar');
 
+    Route::get('/profile/avatar', [ProfileController::class, 'editAvatar'])
+        ->name('profile.avatar');
 
     // Cultivos
+    Route::get('/cultivos/hectareas-disponibles', [CultivoController::class, 'hectareasDisponibles'])
+        ->name('cultivos.hectareas-disponibles');
     Route::resource('cultivos', CultivoController::class);
 
     // Propiedades
