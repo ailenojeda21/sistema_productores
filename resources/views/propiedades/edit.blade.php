@@ -177,12 +177,13 @@
                         <label>¿Tiene malla antigranizo?</label>
                     </div>
 
-                    <div id="mallaFields" class="hidden ml-7 mt-2">
-                        <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01"
-                            class="w-full p-2 border border-gray-300 rounded"
-                            value="{{ old('hectareas_malla', $propiedad->hectareas_malla) }}"
-                            placeholder="Max: {{ number_format($propiedad->hectareas ?? 0, 2) }}">
-                    </div>
+                     <div id="mallaFields" class="hidden ml-7 mt-2">
+                         <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01"
+                             class="w-full p-2 border border-gray-300 rounded transition-colors" required
+                             value="{{ old('hectareas_malla', $propiedad->hectareas_malla) }}"
+                             placeholder="Max: {{ number_format($propiedad->hectareas ?? 0, 2) }}">
+                         <p id="hectareas-malla-hint" class="text-sm text-gray-500 mt-1">Ingrese las hectáreas totales primero</p>
+                     </div>
                 </div>
 
                 {{-- Cierre --}}
@@ -257,7 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hacer obligatorio el Nº RUT cuando el checkbox esté tildado
         rutValorInput.required = rut.checked;
     });
-    malla.addEventListener('change', () => toggle(malla, mallaDiv));
 
     toggleOtros();
     toggle(riego, riegoDiv);
@@ -276,24 +276,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function syncHectareasMallaMax() {
         const total = parseFloat(hectareasInput.value) || 0;
-        const malla = parseFloat(hectareasMallaInput.value) || 0;
+        const current = parseFloat(hectareasMallaInput.value) || 0;
+        const hint = document.getElementById('hectareas-malla-hint');
 
-        // Setear máximo
         hectareasMallaInput.max = total > 0 ? total : '';
+        hectareasMallaInput.placeholder = total > 0 ? `Máximo ${total.toFixed(2)} ha` : '';
+        hectareasMallaInput.classList.remove('border-green-500', 'border-red-500', 'border-gray-300');
 
-        // Placeholder informativo
-        hectareasMallaInput.placeholder = total > 0
-            ? `Máx: ${total}`
-            : 'Ingrese hectáreas totales';
-
-        // Corregir valor si se pasa
-        if (total > 0 && malla > total) {
+        if (total === 0) {
+            hint.className = 'text-sm text-gray-500 mt-1';
+            hint.textContent = 'Ingrese las hectáreas totales primero';
+            hectareasMallaInput.classList.add('border-gray-300');
+        } else if (current > total) {
+            hectareasMallaInput.classList.add('border-red-500');
+            hint.className = 'text-sm text-red-600 mt-1 font-semibold';
+            hint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">error</span> El valor (${current} ha) excede las hectáreas totales (${total.toFixed(2)} ha)`;
             hectareasMallaInput.value = total;
+        } else if (current > 0) {
+            hectareasMallaInput.classList.add('border-green-500');
+            hint.className = 'text-sm text-green-600 mt-1 font-semibold';
+            hint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">check_circle</span> Válido: ${current} ha de ${total.toFixed(2)} ha disponibles`;
+        } else {
+            hint.className = 'text-sm text-blue-600 mt-1 font-semibold';
+            hint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">info</span> Máximo disponible: ${total.toFixed(2)} ha`;
+            hectareasMallaInput.classList.add('border-gray-300');
         }
     }
 
     hectareasInput.addEventListener('input', syncHectareasMallaMax);
     hectareasMallaInput.addEventListener('input', syncHectareasMallaMax);
+    malla.addEventListener('change', function() {
+        toggle(malla, mallaDiv);
+        syncHectareasMallaMax();
+    });
 
     // Inicializar al cargar EDIT
     syncHectareasMallaMax();
