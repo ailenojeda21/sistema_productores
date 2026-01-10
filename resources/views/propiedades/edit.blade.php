@@ -222,7 +222,8 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
+    // Elementos para checkboxes y toggles
     const tenenciaRadios = document.querySelectorAll('.tenencia-radio');
     const inputOtro = document.querySelector('input[name="especificar_tenencia"]');
     const riego = document.getElementById('derecho_riego');
@@ -234,55 +235,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const mallaDiv = document.getElementById('mallaFields');
     const rutArchivoDiv = document.getElementById('rutArchivoDiv');
 
-    const toggle = (check, div) => div.classList.toggle('hidden', !check.checked);
-    const toggleOtros = () => {
-    const sel = document.querySelector('.tenencia-radio:checked');
-
-    if (!sel || sel.value !== 'otros') {
-        // Ocultar y borrar el valor
-        inputOtro.classList.add('hidden');
-        inputOtro.value = '';
-    } else {
-        // Mostrar si es "otros"
-        inputOtro.classList.remove('hidden');
-        inputOtro.focus();
-    }
-};
-
-
-    tenenciaRadios.forEach(r => r.addEventListener('change', toggleOtros));
-    riego.addEventListener('change', () => toggle(riego, riegoDiv));
-    rut.addEventListener('change', () => {
-        toggle(rut, rutDiv);
-        toggle(rut, rutArchivoDiv);
-        // Hacer obligatorio el Nº RUT cuando el checkbox esté tildado
-        rutValorInput.required = rut.checked;
-    });
-
-    toggleOtros();
-    toggle(riego, riegoDiv);
-    toggle(rut, rutDiv);
-    toggle(malla, mallaDiv);
-    // Inicializar required para Nº RUT
-    rutValorInput.required = rut.checked;
-
-    // Inicializar validación de hectáreas con malla si el checkbox está marcado
-    if (malla.checked) {
-        syncHectareasMallaMax();
-    }
-});
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    // Elementos para validación de hectáreas
     const hectareasInput = document.getElementById('hectareas');
     const hectareasMallaInput = document.getElementById('hectareas_malla');
 
-    if (!hectareasInput || !hectareasMallaInput) return;
+    // Función toggle reutilizable
+    const toggle = (check, div) => div.classList.toggle('hidden', !check.checked);
 
+    // Función para toggle del campo "otros" en tenencia
+    const toggleOtros = () => {
+        const sel = document.querySelector('.tenencia-radio:checked');
+        if (!sel || sel.value !== 'otros') {
+            inputOtro.classList.add('hidden');
+            inputOtro.value = '';
+        } else {
+            inputOtro.classList.remove('hidden');
+            inputOtro.focus();
+        }
+    };
+
+    // Función para validación de hectáreas con malla
     function syncHectareasMallaMax() {
-        const total = parseFloat(hectareasInput.value) || 0;
+        if (!hectareasMallaInput) return;
+
+        const total = parseFloat(hectareasInput?.value) || 0;
         const current = parseFloat(hectareasMallaInput.value) || 0;
         const hint = document.getElementById('hectareas-malla-hint');
+
+        if (!hint) return;
 
         hectareasMallaInput.max = total > 0 ? total : '';
         hectareasMallaInput.placeholder = total > 0 ? `Máximo ${total.toFixed(2)} ha` : '';
@@ -308,22 +288,54 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    hectareasInput.addEventListener('input', syncHectareasMallaMax);
-    hectareasMallaInput.addEventListener('input', syncHectareasMallaMax);
-    malla.addEventListener('change', function() {
-        toggle(malla, mallaDiv);
-        if (malla.checked) {
-            syncHectareasMallaMax();
-        } else {
-            const hint = document.getElementById('hectareas-malla-hint');
-            if (hint) {
-                hint.className = 'text-sm text-gray-500 mt-1';
-                hint.textContent = 'Seleccione "tiene malla antigranizo" primero';
-            }
-        }
-    });
+    // Configurar listeners
+    tenenciaRadios.forEach(r => r.addEventListener('change', toggleOtros));
 
-    // Inicializar al cargar EDIT
+    if (riego && riegoDiv) {
+        riego.addEventListener('change', () => toggle(riego, riegoDiv));
+    }
+
+    if (rut && rutDiv && rutArchivoDiv && rutValorInput) {
+        rut.addEventListener('change', () => {
+            toggle(rut, rutDiv);
+            toggle(rut, rutArchivoDiv);
+            rutValorInput.required = rut.checked;
+        });
+    }
+
+    if (malla && mallaDiv) {
+        malla.addEventListener('change', function() {
+            toggle(malla, mallaDiv);
+            if (malla.checked) {
+                syncHectareasMallaMax();
+            } else {
+                const hint = document.getElementById('hectareas-malla-hint');
+                if (hint) {
+                    hint.className = 'text-sm text-gray-500 mt-1';
+                    hint.textContent = 'Seleccione "tiene malla antigranizo" primero';
+                }
+            }
+        });
+    }
+
+    if (hectareasInput && hectareasMallaInput) {
+        hectareasInput.addEventListener('input', syncHectareasMallaMax);
+        hectareasMallaInput.addEventListener('input', syncHectareasMallaMax);
+    }
+
+    // Inicializar estados
+    toggleOtros();
+    if (riego && riegoDiv) toggle(riego, riegoDiv);
+    if (rut && rutDiv) toggle(rut, rutDiv);
+    if (rutValorInput && rut) rutValorInput.required = rut.checked;
+    if (malla && mallaDiv) toggle(malla, mallaDiv);
+
+    // Inicializar validación de hectáreas con malla si el checkbox está marcado
+    if (malla && malla.checked) {
+        syncHectareasMallaMax();
+    }
+
+    // Inicializar validación general
     syncHectareasMallaMax();
 });
 </script>
