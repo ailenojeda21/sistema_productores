@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User; // Importar el modelo User
 
 class Propiedad extends Model
 {
-    protected $table = "propiedades";
+    protected $table = 'propiedades';
 
     // Permitir asignación masiva de todos los campos de la tabla
     protected $fillable = [
@@ -74,5 +73,15 @@ class Propiedad extends Model
     public function cultivos()
     {
         return $this->hasMany(Cultivo::class, 'propiedad_id');
+    }
+
+    /**
+     * Obtener hectáreas disponibles (total - utilizadas por cultivos existentes)
+     */
+    public function getHectareasDisponiblesAttribute(): float
+    {
+        $hectareasUsadas = $this->cultivos()->sum('hectareas');
+
+        return max(0, $this->hectareas - $hectareasUsadas);
     }
 }
