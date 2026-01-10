@@ -192,36 +192,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-
-// Script adicional para inicializar toggles con delay
-setTimeout(() => {
-    if (typeof initializePropertyForm === 'function' && !window.propertyFormInitialized) {
-        console.log('Inicializando toggles con delay para asegurar elementos en móvil');
-        initializePropertyForm();
-    }
-}, 300);
 </script>
 
 <script>
-// Función principal de inicialización
-// Script adicional para inicializar con delay
-setTimeout(() => {
-    if (typeof initializePropertyForm === 'function' && !window.propertyFormInitialized) {
-        console.log('Inicializando toggles con delay para móvil');
-        initializePropertyForm();
-    }
-}, 300);
-
-function initializePropertyForm() {
-    console.log('Inicializando toggles del formulario de propiedades');
-
-    // Verificar si ya se inicializó
-    if (window.propertyFormInitialized) {
-        console.log('Ya inicializado, saliendo');
-        return;
-    }
-    window.propertyFormInitialized = true;
-
+document.addEventListener('DOMContentLoaded', function () {
     // Elementos para checkboxes y toggles
     const tenenciaRadios = document.querySelectorAll('.tenencia-radio');
     const otrosContainer = document.getElementById('otros-tenencia-container');
@@ -233,8 +207,6 @@ function initializePropertyForm() {
     const mallaFields = document.getElementById('malla-fields');
     const hectareasInput = document.getElementById('hectareas');
     const hectareasMallaInput = document.getElementById('hectareas_malla');
-
-
 
     // Función toggle reutilizable
     const toggle = (check, div) => div.classList.toggle('hidden', !check.checked);
@@ -285,25 +257,15 @@ function initializePropertyForm() {
     tenenciaRadios.forEach(radio => radio.addEventListener('change', toggleOtros));
 
     if (riego && riegoDiv) {
-        console.log('Configurando listener para derecho_riego');
-        riego.addEventListener('change', () => {
-            console.log('Toggle derecho_riego ejecutado, checked:', riego.checked);
-            toggle(riego, riegoDiv);
-        });
+        riego.addEventListener('change', () => toggle(riego, riegoDiv));
     }
 
     if (rut && rutFields) {
-        console.log('Configurando listener para rut');
-        rut.addEventListener('change', () => {
-            console.log('Toggle rut ejecutado, checked:', rut.checked);
-            toggle(rut, rutFields);
-        });
+        rut.addEventListener('change', () => toggle(rut, rutFields));
     }
 
     if (malla && mallaFields) {
-        console.log('Configurando listener para malla');
         malla.addEventListener('change', function() {
-            console.log('Toggle malla ejecutado, checked:', malla.checked);
             toggle(malla, mallaFields);
             if (malla.checked) {
                 syncHectareasMallaMax();
@@ -323,32 +285,27 @@ function initializePropertyForm() {
     }
 
     // Inicializar estados
-    console.log('Inicializando estados...');
     toggleOtros();
-    if (riego && riegoDiv) {
-        console.log('Inicializando derecho_riego, checked:', riego.checked);
-        toggle(riego, riegoDiv);
-    }
-    if (rut && rutFields) {
-        console.log('Inicializando rut, checked:', rut.checked);
-        toggle(rut, rutFields);
-    }
-    if (malla && mallaFields) {
-        console.log('Inicializando malla, checked:', malla.checked);
-        toggle(malla, mallaFields);
-    }
+    if (riego && riegoDiv) toggle(riego, riegoDiv);
+    if (rut && rutFields) toggle(rut, rutFields);
+    if (malla && mallaFields) toggle(malla, mallaFields);
 
     // Inicializar validación de hectáreas con malla si el checkbox está marcado
     if (malla && malla.checked) {
-        console.log('Inicializando validación de malla (checked)');
         syncHectareasMallaMax();
     }
 
     // Inicializar validación general
-    console.log('Inicializando validación general');
     syncHectareasMallaMax();
 
-    console.log('Inicialización completa');
+    // Delay adicional para móvil - reintentar inicialización
+    setTimeout(() => {
+        console.log('Reintentando inicialización con delay para móvil');
+        if (riego && riegoDiv) toggle(riego, riegoDiv);
+        if (rut && rutFields) toggle(rut, rutFields);
+        if (malla && mallaFields) toggle(malla, mallaFields);
+        syncHectareasMallaMax();
+    }, 500);
 });
 </script>
 
@@ -429,15 +386,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-</script>
-
-<script>
-// Inicialización adicional con delay para móvil
-setTimeout(() => {
-    if (typeof initializePropertyForm === 'function' && !window.propertyFormInitialized) {
-        console.log('Inicializando toggles con delay adicional para móvil');
-        initializePropertyForm();
-    }
-}, 500);
 </script>
 @endpush
