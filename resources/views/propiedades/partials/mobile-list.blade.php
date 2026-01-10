@@ -20,22 +20,54 @@
         <!-- Detalles -->
         <div class="space-y-2 mb-4">
             <div class="flex items-center text-sm">
-                <span class="font-medium text-gray-600 w-32">Propietario:</span>
-                <span class="text-gray-800">{{ $propiedad->es_propietario ? 'Sí' : 'No' }}</span>
+                <span class="font-medium text-gray-600 w-32">Tenencia:</span>
+                <span class="text-gray-800">{{ $propiedad->tipo_tenencia ? str_replace('_', ' ', $propiedad->tipo_tenencia) : 'No especificado' }}</span>
             </div>
+            @if($propiedad->especificar_tenencia)
+            <div class="flex items-center text-sm">
+                <span class="font-medium text-gray-600 w-32">Detalle:</span>
+                <span class="text-gray-800">{{ $propiedad->especificar_tenencia }}</span>
+            </div>
+            @endif
             <div class="flex items-center text-sm">
                 <span class="font-medium text-gray-600 w-32">Derecho riego:</span>
                 <span class="text-gray-800">{{ $propiedad->derecho_riego ? 'Sí' : 'No' }}</span>
             </div>
             @if($propiedad->tipo_derecho_riego)
             <div class="flex items-center text-sm">
-                <span class="font-medium text-gray-600 w-32">Tipo:</span>
+                <span class="font-medium text-gray-600 w-32">Tipo riego:</span>
                 <span class="text-gray-800">{{ $propiedad->tipo_derecho_riego }}</span>
+            </div>
+            @endif
+            <div class="flex items-center text-sm">
+                <span class="font-medium text-gray-600 w-32">RUT:</span>
+                <span class="text-gray-800">{{ $propiedad->rut ? 'Sí' : 'No' }}</span>
+            </div>
+            @if($propiedad->rut_valor)
+            <div class="flex items-center text-sm">
+                <span class="font-medium text-gray-600 w-32">Nº RUT:</span>
+                <span class="text-gray-800">{{ number_format($propiedad->rut_valor, 0, '', '') }}</span>
+            </div>
+            @endif
+            @if($propiedad->rut_archivo)
+            <div class="flex items-center text-sm">
+                <span class="font-medium text-gray-600 w-32">Adjunto RUT:</span>
+                <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Ver archivo</a>
             </div>
             @endif
             <div class="flex items-center text-sm">
                 <span class="font-medium text-gray-600 w-32">Malla:</span>
                 <span class="text-gray-800">{{ $propiedad->malla ? 'Sí' : 'No' }}</span>
+            </div>
+            @if($propiedad->hectareas_malla)
+            <div class="flex items-center text-sm">
+                <span class="font-medium text-gray-600 w-32">Ha. con malla:</span>
+                <span class="text-gray-800">{{ number_format($propiedad->hectareas_malla, 2, ',', '.') }}</span>
+            </div>
+            @endif
+            <div class="flex items-center text-sm">
+                <span class="font-medium text-gray-600 w-32">Cierre perimetral:</span>
+                <span class="text-gray-800">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</span>
             </div>
         </div>
 
@@ -100,22 +132,54 @@
 
                 <div class="space-y-2 mb-4">
                     <div class="flex items-center text-sm">
-                        <span class="font-medium text-gray-600 w-32">Propietario:</span>
-                        <span class="text-gray-800">{{ $propiedad->es_propietario ? 'Sí' : 'No' }}</span>
+                        <span class="font-medium text-gray-600 w-32">Tenencia:</span>
+                        <span class="text-gray-800">{{ $propiedad->tipo_tenencia ? str_replace('_', ' ', $propiedad->tipo_tenencia) : 'No especificado' }}</span>
                     </div>
+                    @if($propiedad->especificar_tenencia)
+                    <div class="flex items-center text-sm">
+                        <span class="font-medium text-gray-600 w-32">Detalle:</span>
+                        <span class="text-gray-800">{{ $propiedad->especificar_tenencia }}</span>
+                    </div>
+                    @endif
                     <div class="flex items-center text-sm">
                         <span class="font-medium text-gray-600 w-32">Derecho riego:</span>
                         <span class="text-gray-800">{{ $propiedad->derecho_riego ? 'Sí' : 'No' }}</span>
                     </div>
                     @if($propiedad->tipo_derecho_riego)
                     <div class="flex items-center text-sm">
-                        <span class="font-medium text-gray-600 w-32">Tipo:</span>
+                        <span class="font-medium text-gray-600 w-32">Tipo riego:</span>
                         <span class="text-gray-800">{{ $propiedad->tipo_derecho_riego }}</span>
+                    </div>
+                    @endif
+                    <div class="flex items-center text-sm">
+                        <span class="font-medium text-gray-600 w-32">RUT:</span>
+                        <span class="text-gray-800">{{ $propiedad->rut ? 'Sí' : 'No' }}</span>
+                    </div>
+                    @if($propiedad->rut_valor)
+                    <div class="flex items-center text-sm">
+                        <span class="font-medium text-gray-600 w-32">Nº RUT:</span>
+                        <span class="text-gray-800">{{ number_format($propiedad->rut_valor, 0, '', '') }}</span>
+                    </div>
+                    @endif
+                    @if($propiedad->rut_archivo)
+                    <div class="flex items-center text-sm">
+                        <span class="font-medium text-gray-600 w-32">Adjunto RUT:</span>
+                        <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Ver archivo</a>
                     </div>
                     @endif
                     <div class="flex items-center text-sm">
                         <span class="font-medium text-gray-600 w-32">Malla:</span>
                         <span class="text-gray-800">{{ $propiedad->malla ? 'Sí' : 'No' }}</span>
+                    </div>
+                    @if($propiedad->hectareas_malla)
+                    <div class="flex items-center text-sm">
+                        <span class="font-medium text-gray-600 w-32">Ha. con malla:</span>
+                        <span class="text-gray-800">{{ number_format($propiedad->hectareas_malla, 2, ',', '.') }}</span>
+                    </div>
+                    @endif
+                    <div class="flex items-center text-sm">
+                        <span class="font-medium text-gray-600 w-32">Cierre perimetral:</span>
+                        <span class="text-gray-800">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</span>
                     </div>
                 </div>
 
