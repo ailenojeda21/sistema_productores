@@ -13,61 +13,46 @@
         </div>
 
         <!-- Detalles -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="space-y-2">
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">Tenencia:</span>
-                    <span class="text-gray-800">{{ $propiedad->tipo_tenencia ? str_replace('_', ' ', $propiedad->tipo_tenencia) : 'No especificado' }}</span>
-                </div>
-                @if($propiedad->especificar_tenencia)
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">Detalle:</span>
-                    <span class="text-gray-800 text-xs">{{ $propiedad->especificar_tenencia }}</span>
-                </div>
-                @endif
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">Derecho riego:</span>
-                    <span class="text-gray-800">{{ $propiedad->derecho_riego ? 'Sí' : 'No' }}</span>
-                </div>
-                @if($propiedad->tipo_derecho_riego)
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">Tipo riego:</span>
-                    <span class="text-gray-800">{{ $propiedad->tipo_derecho_riego }}</span>
-                </div>
-                @endif
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">RUT:</span>
-                    <span class="text-gray-800">{{ $propiedad->rut ? 'Sí' : 'No' }}</span>
-                </div>
-            </div>
-            <div class="space-y-2">
-                @if($propiedad->rut_valor)
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">Nº RUT:</span>
-                    <span class="text-gray-800">{{ number_format($propiedad->rut_valor, 0, '', '') }}</span>
-                </div>
-                @endif
-                @if($propiedad->rut_archivo)
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">Adjunto RUT:</span>
-                    <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline text-xs">Ver archivo</a>
-                </div>
-                @endif
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">Malla:</span>
-                    <span class="text-gray-800">{{ $propiedad->malla ? 'Sí' : 'No' }}</span>
-                </div>
-                @if($propiedad->hectareas_malla)
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">Ha. con malla:</span>
-                    <span class="text-gray-800">{{ number_format($propiedad->hectareas_malla, 2, ',', '.') }}</span>
-                </div>
-                @endif
-                <div class="flex flex-col text-sm">
-                    <span class="font-medium text-gray-600 text-xs">Cierre perimetral:</span>
-                    <span class="text-gray-800">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</span>
-                </div>
-            </div>
+        <div class="property-details-grid mb-4">
+            <span class="font-medium text-gray-600 text-xs">Tenencia:</span>
+            <span class="text-gray-800">{{ $propiedad->tipo_tenencia ? str_replace('_', ' ', $propiedad->tipo_tenencia) : 'No especificado' }}</span>
+
+            @if($propiedad->especificar_tenencia)
+            <span class="font-medium text-gray-600 text-xs">Detalle:</span>
+            <span class="text-gray-800 text-xs">{{ $propiedad->especificar_tenencia }}</span>
+            @endif
+
+            <span class="font-medium text-gray-600 text-xs">Derecho riego:</span>
+            <span class="text-gray-800">{{ $propiedad->derecho_riego ? 'Sí' : 'No' }}</span>
+
+            @if($propiedad->tipo_derecho_riego)
+            <span class="font-medium text-gray-600 text-xs">Tipo riego:</span>
+            <span class="text-gray-800">{{ $propiedad->tipo_derecho_riego }}</span>
+            @endif
+
+            <span class="font-medium text-gray-600 text-xs">RUT:</span>
+            <span class="text-gray-800">{{ $propiedad->rut ? 'Sí' : 'No' }}</span>
+
+            @if($propiedad->rut_valor)
+            <span class="font-medium text-gray-600 text-xs">Nº RUT:</span>
+            <span class="text-gray-800">{{ number_format($propiedad->rut_valor, 0, '', '') }}</span>
+            @endif
+
+            @if($propiedad->rut_archivo)
+            <span class="font-medium text-gray-600 text-xs">Adjunto RUT:</span>
+            <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline text-xs">Ver archivo</a>
+            @endif
+
+            <span class="font-medium text-gray-600 text-xs">Malla:</span>
+            <span class="text-gray-800">{{ $propiedad->malla ? 'Sí' : 'No' }}</span>
+
+            @if($propiedad->hectareas_malla)
+            <span class="font-medium text-gray-600 text-xs">Ha. con malla:</span>
+            <span class="text-gray-800">{{ number_format($propiedad->hectareas_malla, 2, ',', '.') }}</span>
+            @endif
+
+            <span class="font-medium text-gray-600 text-xs">Cierre perimetral:</span>
+            <span class="text-gray-800">{{ $propiedad->cierre_perimetral ? 'Sí' : 'No' }}</span>
         </div>
 
         <!-- Mapa preview -->
@@ -337,6 +322,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
 [id^="map-preview-"] .leaflet-container {
     z-index: 1;
+}
+
+/* Estilos para alineación de detalles */
+.property-details-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem 1rem;
+    align-items: start;
+}
+
+.property-details-grid > .contents {
+    display: contents;
+}
+
+.property-details-grid > .contents > span:first-child {
+    font-weight: 500;
+    color: #4b5563;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    padding-right: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.property-details-grid > .contents > span:last-child,
+.property-details-grid > .contents > a {
+    color: #1f2937;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    word-break: break-word;
 }
 </style>
 @endpush
