@@ -40,10 +40,7 @@
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
                     <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" required>
                 </div>
-                <div class="flex items-center mt-6">
-                    <input type="checkbox" name="es_propietario" id="es_propietario" class="mr-2 rounded-full custom-checkbox">
-                    <label for="es_propietario">¿Es propietario?</label>
-                </div>
+
                 <div class="flex items-center mt-6">
                     <input type="checkbox" name="derecho_riego" id="derecho_riego" class="mr-2 rounded-full custom-checkbox">
                     <label for="derecho_riego">¿Tiene derecho de riego?</label>
