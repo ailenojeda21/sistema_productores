@@ -6,17 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::table('comercios', function (Blueprint $table) {
-            $table->boolean('comercializa_cooperativas')->default(false)->after('infraestructura_empaque');
+            $table->json('mercados')->nullable()->change();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::table('comercios', function (Blueprint $table) {
-            $table->dropColumn('comercializa_cooperativas');
+            $table->string('mercados')->nullable()->change();
         });
     }
 };
