@@ -55,6 +55,26 @@
                 </div>
             </div>
             @endif
+
+            @php
+                $cooperativas = isset($comercio->cooperativas)
+                    ? (is_array($comercio->cooperativas)
+                        ? $comercio->cooperativas
+                        : json_decode($comercio->cooperativas, true))
+                    : [];
+                $cooperativas = array_filter($cooperativas);
+            @endphp
+
+            @if(count($cooperativas) > 0)
+            <div class="text-sm">
+                <span class="font-medium text-gray-600">Cooperativas:</span>
+                <div class="mt-1 flex flex-wrap gap-1">
+                    @foreach($cooperativas as $cooperativa)
+                    <span class="bg-green-50 text-green-700 px-2 py-1 rounded text-xs">{{ $cooperativa }}</span>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
 
         <!-- Acciones -->
@@ -131,6 +151,26 @@
                         <div class="mt-1 flex flex-wrap gap-1">
                             @foreach($mercados as $mercado)
                             <span class="bg-green-50 text-green-700 px-2 py-1 rounded text-xs">{{ $mercado }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    @php
+                        $cooperativas = isset($comercio->cooperativas)
+                            ? (is_array($comercio->cooperativas)
+                                ? $comercio->cooperativas
+                                : json_decode($comercio->cooperativas, true))
+                            : [];
+                        $cooperativas = array_filter($cooperativas);
+                    @endphp
+
+                    @if(count($cooperativas) > 0)
+                    <div class="text-sm">
+                        <span class="font-medium text-gray-600">Cooperativas:</span>
+                        <div class="mt-1 flex flex-wrap gap-1">
+                            @foreach($cooperativas as $cooperativa)
+                            <span class="bg-green-50 text-green-700 px-2 py-1 rounded text-xs">{{ $cooperativa }}</span>
                             @endforeach
                         </div>
                     </div>

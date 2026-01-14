@@ -19,38 +19,77 @@
                     <input type="checkbox" name="infraestructura_empaque" id="infraestructura_empaque" class="mr-2 rounded-full custom-checkbox">
                     <label for="infraestructura_empaque">¿Tiene infraestructura de empaque?</label>
                 </div>
-                <div class="flex items-center mt-6">
-                    <input type="checkbox" name="comercio_mercado" id="comercio_mercado" class="mr-2 rounded-full custom-checkbox">
-                    <label for="comercio_mercado">¿Vende en mercados?¿Cuál? </label>
+                <div class="flex items-center mt-6 md:col-span-2">
+                    <input type="checkbox" name="tiene_mercados" id="tiene_mercados" class="mr-2 rounded-full custom-checkbox">
+                    <label for="tiene_mercados">¿Vende en mercados?¿Cuál?</label>
                 </div>
-                <div class="flex items-center mt-6">
-                    <input type="checkbox" name="comercializa_cooperativas" id="comercializa_cooperativas" class="mr-2 rounded-full custom-checkbox">
-                    <label for="comercializa_cooperativas">¿Comercializa en cooperativas?</label>
+            </div>
+
+            <div id="mercado-fields" class="hidden mt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Seleccione el mercado</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
+                    @php
+                        $mercados = [
+                            'mercado_guaymallen' => 'Mercado Cooperativo Guaymallen',
+                            'mercado_acceso_este' => 'Mercado Cooperativo Acceso Este',
+                            'mercado_las_heras' => 'Mercado Cooperativo Las Heras',
+                            'mercado_godoy_cruz' => 'Mercado Concentrador de Godoy Cruz',
+                            'mercado_colonia_bombal' => 'Mercado Cooperativo Colonia Bombal',
+                            'mercados_nacionales_internacionales' => 'Mercados Nacionales o Internacionales',
+                        ];
+                    @endphp
+
+                    @foreach($mercados as $field => $label)
+                        <label class="flex items-center space-x-1">
+                            <input type="checkbox" name="mercados[]" id="{{ $field }}" value="{{ $label }}" class="custom-checkbox"
+                                {{ is_array(old('mercados')) && in_array($label, old('mercados')) ? 'checked' : '' }}>
+                            <span>{{ $label }}</span>
+                        </label>
+                    @endforeach
                 </div>
+            </div>
 
-                <!-- Mercados -->
-                <div id="mercado-fields" class="hidden md:col-span-2 mt-8">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Seleccione el mercado</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        @php
-                            $mercados = [
-                                'mercado_guaymallen' => 'Mercado Cooperativo Guaymallen',
-                                'mercado_acceso_este' => 'Mercado Cooperativo Acceso Este',
-                                'mercado_las_heras' => 'Mercado Cooperativo Las Heras',
-                                'mercado_godoy_cruz' => 'Mercado Concentrador de Godoy Cruz',
-                                'mercado_colonia_bombal' => 'Mercado Cooperativo Colonia Bombal',
-                                'mercados_nacionales_internacionales' => 'Mercados Nacionales o Internacionales',
-                            ];
-                        @endphp
+            <div class="flex items-center mt-8 md:col-span-2">
+                <input type="checkbox" name="tiene_cooperativas" id="tiene_cooperativas" class="mr-2 rounded-full custom-checkbox">
+                <label for="tiene_cooperativas">¿Comercializa en cooperativas?¿Cuál?</label>
+            </div>
 
-                        @foreach($mercados as $field => $label)
-                            <label class="flex items-center space-x-2">
-                                <input type="checkbox" name="mercados[]" id="{{ $field }}" value="{{ $label }}" class="custom-checkbox"
-                                    {{ is_array(old('mercados')) && in_array($label, old('mercados')) ? 'checked' : '' }}>
-                                <span>{{ $label }}</span>
-                            </label>
-                        @endforeach
-                    </div>
+            <div id="cooperativa-fields" class="hidden mt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Seleccione la cooperativa</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
+                    @php
+                        $cooperativas = [
+                            'cooperativa_nueva_california' => 'Coop. Nueva California',
+                            'cooperativa_tulumaya' => 'Coop. Tulumaya',
+                            'cooperativa_norte_mendocino' => 'Coop. Norte Mendocino',
+                            'cooperativa_tres_de_mayo' => 'Coop. Tres de Mayo',
+                            'cooperativa_altas_cumbres' => 'Coop. Altas Cumbres',
+                            'cooperativa_tres_portenas' => 'Coop. Tres Porteñas',
+                            'cooperativa_el_poniente' => 'Coop. El Poniente',
+                            'cooperativa_pampanos_mendocinos' => 'Coop. Pámpanos Mendocinos',
+                            'cooperativa_ingeniero_giagnoni' => 'Coop. Ingeniero Giagnoni',
+                            'cooperativa_las_trincheras' => 'Coop. Las Trincheras',
+                            'cooperativa_agricola_beltran' => 'Coop. Agrícola Beltrán',
+                            'cooperativa_la_dormida' => 'Coop. La Dormida',
+                            'cooperativa_del_algarrobal' => 'Coop. Del Algarrobal',
+                            'cooperativa_el_libertador' => 'Coop. El Libertador',
+                            'cooperativa_brindis' => 'Coop. Brindis',
+                            'cooperativa_productores_junin' => 'Coop. Productores de Junín',
+                            'cooperativa_colonia_california' => 'Coop. Colonia California',
+                            'cooperativa_mendoza' => 'Coop. Mendoza',
+                            'cooperativa_norte_lavallino' => 'Coop. Norte Lavallino',
+                            'cooperativa_maipu' => 'Coop. Maipú',
+                            'cooperativa_lacofut' => 'Coop. LACOFUT',
+                        ];
+                    @endphp
+
+                    @foreach($cooperativas as $field => $label)
+                        <label class="flex items-center space-x-1">
+                            <input type="checkbox" name="cooperativas[]" id="{{ $field }}" value="{{ $label }}" class="custom-checkbox"
+                                {{ is_array(old('cooperativas')) && in_array($label, old('cooperativas')) ? 'checked' : '' }}>
+                            <span>{{ $label }}</span>
+                        </label>
+                    @endforeach
                 </div>
             </div>
 
@@ -82,13 +121,24 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const mercadoCheckbox = document.getElementById('comercio_mercado');
+        const mercadoCheckbox = document.getElementById('tiene_mercados');
         const mercadoFields = document.getElementById('mercado-fields');
+        const cooperativaCheckbox = document.getElementById('tiene_cooperativas');
+        const cooperativaFields = document.getElementById('cooperativa-fields');
+
         function toggleMercadoFields() {
             mercadoFields.classList.toggle('hidden', !mercadoCheckbox.checked);
         }
+
+        function toggleCooperativaFields() {
+            cooperativaFields.classList.toggle('hidden', !cooperativaCheckbox.checked);
+        }
+
         mercadoCheckbox.addEventListener('change', toggleMercadoFields);
+        cooperativaCheckbox.addEventListener('change', toggleCooperativaFields);
+
         toggleMercadoFields();
+        toggleCooperativaFields();
     });
 </script>
 @endsection

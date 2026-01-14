@@ -41,26 +41,18 @@ class ComercioController extends Controller
     {
         $validated = $request->validate([
             'infraestructura_empaque' => 'nullable',
-            'comercio_mercado' => 'nullable',
-            'nombre_mercado' => 'nullable|string|max:255',
+            'vende_en_finca' => 'nullable',
+            'tiene_mercados' => 'nullable',
             'mercados' => 'nullable|array',
+            'tiene_cooperativas' => 'nullable',
+            'cooperativas' => 'nullable|array',
         ]);
 
-        // Forzar booleanos
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
-        $validated['comercio_mercado'] = $request->has('comercio_mercado') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
-        $validated['comercializa_cooperativas'] = $request->has('comercializa_cooperativas') ? 1 : 0;
+        $validated['mercados'] = $request->has('tiene_mercados') ? $request->input('mercados', []) : [];
+        $validated['cooperativas'] = $request->has('tiene_cooperativas') ? $request->input('cooperativas', []) : [];
 
-        // Si no vende en mercado, nombre_mercado y mercados deben ser null
-        if (!$validated['comercio_mercado']) {
-            $validated['nombre_mercado'] = null;
-            $validated['mercados'] = null;
-        } else {
-            $validated['mercados'] = $request->input('mercados', []);
-        }
-
-        // Asignar el usuario autenticado
         $validated['usuario_id'] = Auth::id();
 
         Comercio::create($validated);
@@ -94,24 +86,17 @@ class ComercioController extends Controller
 
         $validated = $request->validate([
             'infraestructura_empaque' => 'nullable',
-            'comercio_mercado' => 'nullable',
-            'nombre_mercado' => 'nullable|string|max:255',
+            'vende_en_finca' => 'nullable',
+            'tiene_mercados' => 'nullable',
             'mercados' => 'nullable|array',
+            'tiene_cooperativas' => 'nullable',
+            'cooperativas' => 'nullable|array',
         ]);
 
-        // Forzar booleanos
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
-        $validated['comercio_mercado'] = $request->has('comercio_mercado') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
-        $validated['comercializa_cooperativas'] = $request->has('comercializa_cooperativas') ? 1 : 0;
-
-        // Si no vende en mercado, nombre_mercado y mercados deben ser null
-        if (!$validated['comercio_mercado']) {
-            $validated['nombre_mercado'] = null;
-            $validated['mercados'] = null;
-        } else {
-            $validated['mercados'] = $request->input('mercados', []);
-        }
+        $validated['mercados'] = $request->has('tiene_mercados') ? $request->input('mercados', []) : [];
+        $validated['cooperativas'] = $request->has('tiene_cooperativas') ? $request->input('cooperativas', []) : [];
 
         $comercio->update($validated);
         return redirect()->route('comercios.index')->with('success', 'Comercio actualizado correctamente');

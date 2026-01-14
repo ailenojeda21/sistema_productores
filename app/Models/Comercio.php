@@ -9,16 +9,14 @@ class Comercio extends Model
     protected $fillable = [
         'usuario_id',
         'infraestructura_empaque',
-        'comercio_mercado',
         'vende_en_finca',
-        'nombre_mercado',
         'mercados',
-        'comercializa_cooperativas',
+        'cooperativas',
     ];
 
     protected $casts = [
         'mercados' => 'array',
-        'comercializa_cooperativas' => 'boolean',
+        'cooperativas' => 'array',
     ];
 
     public function usuario()
