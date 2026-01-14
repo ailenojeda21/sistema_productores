@@ -15,99 +15,99 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Direccion</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[100px]">Ubicación</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    <th class="px-8 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Direccion</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[100px]">Ubicación</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                         Tenencia
                     </th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                         Detalle tenencia
                     </th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Derecho de riego</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo derecho de riego</th>
-                    <th class="px-6 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider min-w-[90px]">RUT</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nº RUT</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[120px]">Adjunto RUT</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Malla antigranizo</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas con malla</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Cierre perimetral</th>
-                    <th class="px-4 py-2"></th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Derecho de riego</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo derecho riego</th>
+                    <th class="px-3 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider min-w-[90px]">RUT</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nº RUT</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[120px]">Adj RUT</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Malla antigranizo</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas malla</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Cierre perimetral</th>
+                    <th class="px-2 py-2"></th>
                 </tr>
             </thead>
             <tbody id="propiedades-tbody" class="bg-white divide-y divide-gray-200">
                 @foreach($propiedades as $propiedad)
                 <tr>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->direccion }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700 whitespace-nowrap">
+                    <td class="px-2 py-2 text-base text-gray-700">{{ $propiedad->direccion }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700 whitespace-nowrap">
                         @if($propiedad->lat && $propiedad->lng)
-                            <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})" 
+                            <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})"
                                     class="text-blue-600 hover:text-blue-800 underline">Ver Mapa</button>
                         @else
                             Sin ubicación
                         @endif
                     </td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ number_format($propiedad->hectareas, 2, ',', '.') }}</td>
-                   <td class="px-4 py-2 text-base text-gray-700">
-    @if($propiedad->tipo_tenencia)
-        <span class="font-medium capitalize">
-            {{ str_replace('_', ' ', $propiedad->tipo_tenencia) }}
-        </span>
-    @else
-        -
-    @endif
-</td>
+                    <td class="px-2 py-2 text-base text-gray-700">{{ number_format($propiedad->hectareas, 2, ',', '.') }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700">
+     @if($propiedad->tipo_tenencia)
+         <span class="font-medium capitalize">
+             {{ str_replace('_', ' ', $propiedad->tipo_tenencia) }}
+         </span>
+     @else
+         -
+     @endif
+ </td>
 
-<td class="px-4 py-2 text-base text-gray-700">
+<td class="px-2 py-2 text-base text-gray-700">
     {{ $propiedad->especificar_tenencia ?? '-' }}
 </td>
 
-                    <td class="px-4 py-2 text-base text-gray-700 text-center">
+                    <td class="px-2 py-2 text-base text-gray-700 text-center">
                         @if($propiedad->derecho_riego)
                             <span class="text-green-600 font-semibold">✓ Sí</span>
                         @else
                             <span class="text-red-600 font-semibold">✗ No</span>
                         @endif
                     </td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->tipo_derecho_riego ? $propiedad->tipo_derecho_riego : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700 text-center">
+                    <td class="px-2 py-2 text-base text-gray-700">{{ $propiedad->tipo_derecho_riego ? $propiedad->tipo_derecho_riego : '-' }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700 text-center">
                         @if($propiedad->rut)
                             <span class="text-green-600 font-semibold">✓ Sí</span>
                         @else
                             <span class="text-red-600 font-semibold">✗ No</span>
                         @endif
                     </td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->rut_valor ? number_format($propiedad->rut_valor, 0, '', '') : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700 whitespace-nowrap">
+                    <td class="px-2 py-2 text-base text-gray-700">{{ $propiedad->rut_valor ? number_format($propiedad->rut_valor, 0, '', '') : '-' }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700 whitespace-nowrap">
                         @if($propiedad->rut_archivo)
-                            <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Archivo RUT</a>
+                            <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">RUT</a>
                         @else
                             -
                         @endif
                     </td>
-                    <td class="px-4 py-2 text-base text-gray-700 text-center">
+                    <td class="px-2 py-2 text-base text-gray-700 text-center">
                         @if($propiedad->malla)
                             <span class="text-green-600 font-semibold">✓ Sí</span>
                         @else
                             <span class="text-red-600 font-semibold">✗ No</span>
                         @endif
                     </td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $propiedad->hectareas_malla ? number_format($propiedad->hectareas_malla, 2, ',', '.') : '-' }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700 text-center">
+                    <td class="px-2 py-2 text-base text-gray-700">{{ $propiedad->hectareas_malla ? number_format($propiedad->hectareas_malla, 2, ',', '.') : '-' }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700 text-center">
                         @if($propiedad->cierre_perimetral)
                             <span class="text-green-600 font-semibold">✓ Sí</span>
                         @else
                             <span class="text-red-600 font-semibold">✗ No</span>
                         @endif
                     </td>
-                    <td class="px-4 py-2">
+                    <td class="px-2 py-2">
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">Editar</a>
+                            <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">Editar</a>
 
                             <form action="{{ route('propiedades.destroy', $propiedad) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta propiedad?');" class="m-0 p-0">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">Eliminar</button>
+                                <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">Eliminar</button>
                             </form>
                         </div>
                     </td>

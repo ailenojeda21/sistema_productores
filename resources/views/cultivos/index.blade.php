@@ -21,50 +21,50 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                     <!-- Nueva columna: Propiedad -->
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Propiedad</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Estación</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas Totales</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Manejo de cultivos</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tecnología de riego</th>
-                    <th class="px-4 py-2"></th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Propiedad</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Estación</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Hectáreas Totales</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Manejo de cultivos</th>
+                    <th class="px-2 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tecnología de riego</th>
+                    <th class="px-2 py-2"></th>
                 </tr>
             </thead>
             <tbody id="cultivos-tbody" class="bg-white divide-y divide-gray-200">
                 @foreach($cultivos as $cultivo)
                 <tr>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $cultivo->nombre }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700">{{ $cultivo->nombre }}</td>
 
                     <!-- Celda nueva: mostrar propiedad asociada -->
-                    <td class="px-4 py-2 text-base text-gray-700"> @if(isset($cultivo->propiedad) && $cultivo->propiedad) {{ $cultivo->propiedad->ubicacion ?? '' }}@if(!empty($cultivo->propiedad->direccion))  {{ $cultivo->propiedad->direccion }}@endif
+                    <td class="px-2 py-2 text-base text-gray-700"> @if(isset($cultivo->propiedad) && $cultivo->propiedad) {{ $cultivo->propiedad->ubicacion ?? '' }}@if(!empty($cultivo->propiedad->direccion))  {{ $cultivo->propiedad->direccion }}@endif
                         @else
                         @endif
                     </td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $cultivo->tipo }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $cultivo->estacion }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ number_format($cultivo->hectareas, 2, '.', ',') }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $cultivo->manejo_cultivo }}</td>
-                    <td class="px-4 py-2 text-base text-gray-700">{{ $cultivo->tecnologia_riego ?? '-' }}</td>
-                    
+                    <td class="px-2 py-2 text-base text-gray-700">{{ $cultivo->tipo }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700">{{ $cultivo->estacion }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700">{{ number_format($cultivo->hectareas, 2, '.', ',') }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700">{{ $cultivo->manejo_cultivo }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700">{{ $cultivo->tecnologia_riego ?? '-' }}</td>
+
                     <!-- Botones Editar / Eliminar -->
-                    <td class="px-4 py-2">
+                    <td class="px-2 py-2">
                         <div class="flex items-center gap-2">
                             <!-- Editar -->
-                            <a href="{{ route('cultivos.edit', $cultivo) }}" 
-                               class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">
+                            <a href="{{ route('cultivos.edit', $cultivo) }}"
+                               class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">
                                 Editar
                             </a>
 
                             <!-- Eliminar -->
-                            <form action="{{ route('cultivos.destroy', $cultivo) }}" method="POST" 
-                                  onsubmit="return confirm('¿Seguro que deseas eliminar este cultivo?');" 
+                            <form action="{{ route('cultivos.destroy', $cultivo) }}" method="POST"
+                                  onsubmit="return confirm('¿Seguro que deseas eliminar este cultivo?');"
                                   class="m-0 p-0">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" 
-                                        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">
+                                <button type="submit"
+                                        class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">
                                     Eliminar
                                 </button>
                             </form>
@@ -91,7 +91,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const rows = Array.from(document.querySelectorAll('#cultivos-tbody tr'));
-        const perPage = 4; // 4 filas por página
+        const perPage = 3; // 3 filas por página
         let currentPage = 1;
         const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
 
