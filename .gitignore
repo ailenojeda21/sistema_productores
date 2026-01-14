@@ -58,3 +58,4 @@ yarn-error.log
 *.lock
 *-lock*
 database/database.sqlite
+caps/nueva propidad mobile.png
