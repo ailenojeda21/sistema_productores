@@ -1,10 +1,12 @@
 @props([
     'user' => null,
-    'size' => 'md', // sm, md, lg, xl
+    'size' => 'md', // sm, md, lg, xl, xl2
     'editable' => false,
     'showName' => true,
     'showEmail' => false,
-    'gradient' => true
+    'gradient' => true,
+    'thinBorder' => false,
+    'yellowOnly' => false
 ])
 
 @php
@@ -13,6 +15,7 @@
     $sizes = [
         'sm' => 'h-12 w-12',
         'md' => 'h-24 w-24',
+        'xl2' => 'h-28 w-28',
         'lg' => 'h-32 w-32',
         'xl' => 'h-40 w-40'
     ];
@@ -44,7 +47,7 @@
     @endif
     
     <div class="relative">
-        <div class="bg-white rounded-full p-1 shadow-lg border-4 border-amarillo-claro">
+        <div class="bg-white rounded-full {{ $thinBorder ? 'p-0.5 border border-gray-200' : 'p-1 shadow-lg border-4 border-amarillo-claro' }}">
             <div class="bg-blue-50 rounded-full overflow-hidden {{ $sizeClass }}">
                 <img
                     id="avatar-preview-{{ uniqid() }}"

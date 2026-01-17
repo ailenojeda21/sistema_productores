@@ -25,50 +25,55 @@
         <form method="POST" action="{{ route('profile.updateAvatar') }}" class="p-6">
             @csrf
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
-                @php
-                    $avatars = [
-                        'uno.png',
-                        'dos.png',
-                        'tres.png',
-                        'cuatro.png',
-                        'cinco.png'
-                    ];
-                    $names = ['Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco'];
-                @endphp
+            @php
+                $avatars = ['uno.png', 'dos.png', 'tres.png', 'cuatro.png', 'cinco.png'];
+                $names = ['Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco'];
+            @endphp
 
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
                 @foreach ($avatars as $index => $avatar)
-                    <label class="cursor-pointer group block">
-                        <input type="radio"
-                               name="avatar"
-                               value="{{ $avatar }}"
-                               class="sr-only"
-                               {{ $user->avatar === $avatar ? 'checked' : '' }}>
+                    <label class="block cursor-pointer">
+                        {{-- INPUT --}}
+                        <input
+                            type="radio"
+                            name="avatar"
+                            value="{{ $avatar }}"
+                            class="sr-only avatar-radio"
+                            {{ $user->avatar === $avatar ? 'checked' : '' }}
+                        >
 
-                        <div class="relative">
-                            <div class="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-2xl overflow-hidden bg-gray-50 border-2 transition-all duration-300
-                                {{ $user->avatar === $avatar ? 'border-azul-marino ring-4 ring-azul-marino/20 shadow-lg shadow-azul-marino/20' : 'border-gray-200 group-hover:border-azul-marino group-hover:shadow-md' }}">
-                                <img src="{{ asset('images/avatars/' . $avatar) }}"
-                                     alt="Avatar {{ $names[$index] }}"
-                                     class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110">
-                            </div>
+                        {{-- AVATAR --}}
+                        <div class="avatar-card relative w-24 h-24 sm:w-28 sm:h-28 mx-auto
+                                    rounded-2xl overflow-hidden bg-gray-50
+                                    border-2 border-gray-200
+                                    transition-all duration-300">
+                            <img
+                                src="{{ asset('images/avatars/' . $avatar) }}"
+                                alt="Avatar {{ $names[$index] }}"
+                                class="object-cover w-full h-full"
+                            >
 
-                            @if($user->avatar === $avatar)
-                            <div class="absolute top-1 right-1 bg-azul-marino text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md pointer-events-none">
+                            {{-- CHECK --}}
+                            <div class="avatar-check absolute top-1 right-1
+                                        bg-azul-marino text-white rounded-full
+                                        w-6 h-6 flex items-center justify-center
+                                        shadow-md opacity-0 scale-75
+                                        transition pointer-events-none">
                                 <span class="material-symbols-outlined text-sm">check</span>
                             </div>
-                            @endif
-
-                            <div class="absolute top-0 left-0 w-full h-full rounded-2xl transition-all duration-300 pointer-events-none
-                                {{ $user->avatar === $avatar ? '' : 'bg-black/0 group-hover:bg-black/5' }}"></div>
                         </div>
                     </label>
                 @endforeach
             </div>
 
             <div class="mt-8 pt-6 border-t border-gray-100">
-                <button type="submit"
-                    class="w-full sm:w-auto px-8 py-3 bg-azul-marino text-white font-semibold rounded-xl hover:bg-blue-800 transition-all duration-300 shadow-lg shadow-azul-marino/20 hover:shadow-xl hover:shadow-azul-marino/30 flex items-center justify-center gap-2 mx-auto">
+                <button
+                    type="submit"
+                    class="w-full sm:w-auto px-8 py-3 bg-azul-marino text-white font-semibold rounded-xl
+                           hover:bg-blue-800 transition-all duration-300
+                           shadow-lg shadow-azul-marino/20
+                           hover:shadow-xl hover:shadow-azul-marino/30
+                           flex items-center justify-center gap-2 mx-auto">
                     <span class="material-symbols-outlined">save</span>
                     Guardar Cambios
                 </button>
@@ -85,3 +90,22 @@
     </div>
 </div>
 @endsection
+<style>
+    /* Avatar seleccionado */
+.avatar-radio:checked + .avatar-card {
+    border-color: #0f2a44; /* azul-marino */
+    box-shadow: 0 0 0 4px rgba(15, 42, 68, 0.25);
+}
+
+/* Mostrar check */
+.avatar-radio:checked + .avatar-card .avatar-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Hover */
+.avatar-card:hover {
+    border-color: #0f2a44;
+}
+
+</style>

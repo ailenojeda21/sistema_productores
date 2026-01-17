@@ -6,15 +6,9 @@
 <div class="h-full flex bg-gray-100">
     <!-- Sidebar -->
     <aside class="w-64 bg-azul-marino text-white flex flex-col py-6 px-3 shadow-lg h-screen overflow-y-hidden">
-       <x-user-avatar 
-    :user="Auth::user()" 
-    size="md" 
-    :gradient="false" 
-    :showName="false" 
-    class="mb-0"
-/>
+       <x-user-avatar :user="Auth::user()" size="md" :gradient="false" :showName="false" :thin-border="true" class="mb-0" />
 
-<p class="text-white text-sm text-center mt-1 mb-4 leading-tight">
+<p class="text-white text-sm text-center mt-2 mb-4 leading-tight font-semibold">
     {{ Auth::user()->name }}
 </p>
 
@@ -83,8 +77,8 @@
 
     <!-- Sidebar Drawer -->
     <aside id="drawer" class="fixed w-64 bg-azul-marino text-white flex flex-col py-6 px-3 shadow-lg h-screen z-50 transition-transform duration-300 -translate-x-full overflow-y-hidden">
-        <x-user-avatar :user="Auth::user()" size="md" :gradient="false" :showName="true" class="mb-0.3" />
-        <p class="text-white text-sm text-center mt-0 mb-4">{{ Auth::user()->name }}</p>
+        <x-user-avatar :user="Auth::user()" size="xl2" :gradient="false" :showName="true" :thin-border="true" class="mb-3" />
+        <p class="text-white text-sm text-center mt-2 mb-4 font-semibold">{{ Auth::user()->name }}</p>
 
         <nav class="flex flex-col space-y-1">
             <!-- Dashboard -->
