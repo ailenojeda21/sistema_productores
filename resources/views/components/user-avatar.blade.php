@@ -47,7 +47,7 @@
     @endif
     
     <div class="relative">
-        <div class="bg-white rounded-full {{ $thinBorder ? 'p-0.5 border border-gray-200' : 'p-1 shadow-lg border-4 border-amarillo-claro' }}">
+        <div class="rounded-full {{ $yellowOnly ? 'border-4 border-amarillo-claro' : ($thinBorder ? 'bg-white p-0.5 border border-gray-200' : 'bg-white p-1 shadow-lg border-4 border-amarillo-claro') }}">
             <div class="bg-blue-50 rounded-full overflow-hidden {{ $sizeClass }}">
                 <img
                     id="avatar-preview-{{ uniqid() }}"
