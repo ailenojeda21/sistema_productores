@@ -38,8 +38,8 @@ class User extends Authenticatable
         'password',
         'dni',
         'telefono',
-        'avatar', 
-        // <<--- AGREGADO
+        'avatar',
+        'cooperativas',
     ];
 
     /**
@@ -58,6 +58,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'cooperativas' => 'array',
         ];
     }
 

@@ -9,83 +9,131 @@
         <h1 class="text-3xl font-bold text-azul-marino">Perfil de Usuario</h1>
     </div>
 
-    <div class="flex flex-col md:flex-row md:items-stretch md:space-x-4">
+    <div class="bg-white rounded-lg shadow p-6">
 
-        {{-- Contenedor blanco SOLO para la tabla --}}
-        <div class="w-full md:w-2/3 bg-white rounded-lg shadow p-6 overflow-x-auto min-h-72">
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+            {{-- Información del usuario --}}
+            <div class="flex-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-gray-500 shrink-0">badge</span>
+                        <div>
+                            <span class="text-xs text-gray-500">Nombre:</span>
+                            <p class="text-sm text-gray-700 font-medium">{{ $user->name }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-gray-500 shrink-0">mail</span>
+                        <div>
+                            <span class="text-xs text-gray-500">Email:</span>
+                            <p class="text-sm text-gray-700 font-medium">{{ $user->email }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-gray-500 shrink-0">credit_card</span>
+                        <div>
+                            <span class="text-xs text-gray-500">DNI:</span>
+                            <p class="text-sm text-gray-700 font-medium">{{ $user->dni ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-gray-500 shrink-0">phone</span>
+                        <div>
+                            <span class="text-xs text-gray-500">Teléfono:</span>
+                            <p class="text-sm text-gray-700 font-medium">{{ $user->telefono ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-gray-500 shrink-0">calendar_today</span>
+                        <div>
+                            <span class="text-xs text-gray-500">Creado:</span>
+                            <p class="text-sm text-gray-700 font-medium">{{ $user->created_at->format('d/m/Y H:i') }}</p>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="mt-6">
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-gray-500 shrink-0">groups</span>
+                        <div class="flex-1">
+                            <span class="text-xs text-gray-500 block mb-2">Cooperativas a las que pertenece:</span>
+                            @if(is_array($user->cooperativas) && count($user->cooperativas) > 0)
+                                <div id="cooperativas-container" class="flex flex-wrap gap-2 items-center">
+                                    @php
+                                        $displayLimit = 6;
+                                        $cooperativas = $user->cooperativas;
+                                        $hasMore = count($cooperativas) > $displayLimit;
+                                        $remaining = count($cooperativas) - $displayLimit;
+                                    @endphp
+                                    @foreach($cooperativas as $index => $cooperativa)
+                                        @if($index < $displayLimit)
+                                            <span class="inline-flex items-center px-3 py-0.5 bg-azul-marino text-white text-xs rounded-full font-medium">
+                                                {{ $cooperativa }}
+                                            </span>
+                                        @elseif($index === $displayLimit)
+                                            <button id="toggle-cooperativas-btn" onclick="toggleCooperativas()" class="inline-flex items-center px-3 py-0.5 bg-gray-200 text-gray-700 text-xs rounded-full font-medium hover:bg-gray-300 cursor-pointer">
+                                                +{{ $remaining }}
+                                            </button>
+                                            <span class="hidden cooperativa-extra inline-flex items-center px-3 py-0.5 bg-azul-marino text-white text-xs rounded-full font-medium">
+                                                {{ $cooperativa }}
+                                            </span>
+                                        @else
+                                            <span class="hidden cooperativa-extra inline-flex items-center px-3 py-0.5 bg-azul-marino text-white text-xs rounded-full font-medium">
+                                                {{ $cooperativa }}
+                                            </span>
+                                        @endif
+                                    @endforeach
+                                    <button id="show-less-btn" onclick="toggleCooperativas()" class="hidden text-xs text-azul-marino font-medium hover:underline cursor-pointer ml-1">
+                                        Ver menos
+                                    </button>
+                                </div>
+                            @else
+                                <span class="text-gray-500 text-sm">No pertenece a ninguna cooperativa</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <table class="min-w-full divide-y divide-gray-200 text-base">
-                <tbody class="divide-y divide-gray-200">
-                    <tr>
-                        <td class="px-4 py-3 text-base text-gray-700 font-semibold flex items-center gap-2">
-                            <span class="material-symbols-outlined text-gray-500">badge</span>
-                            Nombre:
-                        </td>
-                        <td class="px-4 py-3 text-base text-gray-700">{{ $user->name }}</td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3 text-base text-gray-700 font-semibold flex items-center gap-2">
-                            <span class="material-symbols-outlined text-gray-500">mail</span>
-                            Email:
-                        </td>
-                        <td class="px-4 py-3 text-base text-gray-700">{{ $user->email }}</td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3 text-base text-gray-700 font-semibold flex items-center gap-2">
-                            <span class="material-symbols-outlined text-gray-500">credit_card</span>
-                            DNI:
-                        </td>
-                        <td class="px-4 py-3 text-base text-gray-700">{{ $user->dni ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3 text-base text-gray-700 font-semibold flex items-center gap-2">
-                            <span class="material-symbols-outlined text-gray-500">phone</span>
-                            Teléfono:
-                        </td>
-                        <td class="px-4 py-3 text-base text-gray-700">{{ $user->telefono ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3 text-base text-gray-700 font-semibold flex items-center gap-2">
-                            <span class="material-symbols-outlined text-gray-500">calendar_today</span>
-                            Creado:
-                        </td>
-                        <td class="px-4 py-3 text-base text-gray-700">{{ $user->created_at->format('d/m/Y H:i') }}</td>
-                    </tr>
-    
-    
-                </tbody>
-            </table>
-
-              {{-- Botón dentro del cuadro --}}
-            <div class="flex justify-end mb-4">
-                <a href="{{ route('profile.edit') }}" 
-                   class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow flex items-center gap-2">
-                    <span class="material-symbols-outlined">edit</span>
-                    Editar perfil
-                </a>
+            {{-- Avatar --}}
+            <div class="flex flex-col items-center lg:w-48 shrink-0">
+                <div class="bg-gray-50 rounded-lg p-6 w-full flex flex-col items-center">
+                    <x-user-avatar :user="$user" size="lg" :gradient="false" :showName="false" />
+                    <div class="mt-4 text-lg font-semibold text-gray-800">Avatar</div>
+                    <a href="{{ route('profile.avatar') }}"
+                       class="mt-3 px-3 py-1.5 text-gray-600 text-sm border border-gray-600 rounded hover:text-azul-marino hover:border-azul-marino transition-colors flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm">photo_camera</span>
+                        Editar avatar
+                    </a>
+                </div>
             </div>
         </div>
-{{-- Contenedor blanco cuadrado para el avatar --}}
-<div class="w-full md:w-1/3 flex justify-center md:justify-end mt-4 md:mt-0">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-72 h-auto flex flex-col items-center">
 
-        {{-- Usa el mismo componente de avatar que en dashboard --}}
-        <x-user-avatar :user="$user" size="lg" :gradient="false" :showName="false"  />
-
-        <div class="mt-4 text-xl font-semibold text-gray-700">Avatar</div>
-
-        {{-- Botón de editar avatar --}}
-        <a href="{{ route('profile.avatar') }}"
-           class="mt-3 px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow flex items-center gap-2">
-            <span class="material-symbols-outlined">photo_camera</span>
-            Editar avatar
-        </a>
-
+        {{-- Botón editar perfil --}}
+        <div class="flex justify-center mt-8 pt-4 border-t">
+            <a href="{{ route('profile.edit') }}"
+               class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">edit</span>
+                Editar perfil
+            </a>
+        </div>
     </div>
-</div>
 
+    <script>
+        function toggleCooperativas() {
+            const extras = document.querySelectorAll('.cooperativa-extra');
+            const toggleBtn = document.getElementById('toggle-cooperativas-btn');
+            const showLessBtn = document.getElementById('show-less-btn');
 
-    </div>
+            extras.forEach(el => {
+                el.classList.toggle('hidden');
+            });
+
+            if (toggleBtn && showLessBtn) {
+                toggleBtn.classList.toggle('hidden');
+                showLessBtn.classList.toggle('hidden');
+            }
+        }
+    </script>
 </div>
 @endsection
