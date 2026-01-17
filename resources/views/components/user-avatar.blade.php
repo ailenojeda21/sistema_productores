@@ -44,26 +44,26 @@
     @endif
     
     <div class="relative">
-        <div class="bg-white rounded-full p-1 shadow-lg">
+        <div class="bg-white rounded-full p-1 shadow-lg border-4 border-amarillo-claro">
             <div class="bg-blue-50 rounded-full overflow-hidden {{ $sizeClass }}">
-                <img 
+                <img
                     id="avatar-preview-{{ uniqid() }}"
-                    src="{{ $avatarSrc }}" 
-                    alt="Avatar de {{ $user->name ?? 'Usuario' }}" 
+                    src="{{ $avatarSrc }}"
+                    alt="Avatar de {{ $user->name ?? 'Usuario' }}"
                     class="h-full w-full object-cover"
                     onerror="this.onerror=null; this.src='{{ $defaultAvatar }}';"
                 >
             </div>
         </div>
-        
+
         @if($editable)
-        <label for="avatar-upload" 
-               class="absolute bottom-0 right-0 bg-azul-marino text-white rounded-full p-2 shadow-lg cursor-pointer hover:bg-blue-800 transition">
+        <label for="avatar-upload"
+               class="absolute bottom-0 right-0 bg-white text-azul-marino rounded-full p-2 shadow-md cursor-pointer hover:bg-amber-100 transition border border-azul-marino">
             <span class="material-symbols-outlined text-sm">photo_camera</span>
-            <input type="file" 
-                   id="avatar-upload" 
-                   name="avatar" 
-                   accept="image/*" 
+            <input type="file"
+                   id="avatar-upload"
+                   name="avatar"
+                   accept="image/*"
                    class="hidden"
                    onchange="previewAvatar(event)">
         </label>

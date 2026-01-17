@@ -28,6 +28,8 @@ class ProfileController extends Controller
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . auth()->id()],
             'dni'      => ['nullable', 'string', 'max:20'],
             'telefono' => ['nullable', 'string', 'max:20'],
+            'cooperativas' => ['nullable', 'array'],
+            'cooperativas.*' => ['string'],
         ]);
 
         $user = auth()->user();
