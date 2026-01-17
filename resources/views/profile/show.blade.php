@@ -98,7 +98,7 @@
             {{-- Avatar --}}
             <div class="flex flex-col items-center lg:w-48 shrink-0">
                 <div class="bg-gray-50 rounded-lg p-6 w-full flex flex-col items-center">
-                    <x-user-avatar :user="$user" size="lg" :gradient="false" :showName="false" />
+                    <x-user-avatar :user="$user" size="lg" :gradient="false" :showName="false" :yellow-only="true" />
                     <div class="mt-4 text-lg font-semibold text-gray-800">Avatar</div>
                     <a href="{{ route('profile.avatar') }}"
                        class="mt-3 px-3 py-1.5 text-gray-600 text-sm border border-gray-600 rounded hover:text-azul-marino hover:border-azul-marino transition-colors flex items-center gap-1.5">
