@@ -9,6 +9,22 @@ use Illuminate\Http\Request;
 class CultivoController extends Controller
 {
     /**
+     * Normaliza el tipo de cultivo para evitar duplicados por mayúsculas/espacios.
+     * Ej: "  SOJA  " -> "Soja"
+     */
+    private function normalizarTipo(?string $tipo): ?string
+    {
+        if ($tipo === null) return null;
+
+        $tipo = trim($tipo);
+        $tipo = preg_replace('/\s+/', ' ', $tipo); // colapsa espacios múltiples
+        $tipo = mb_strtolower($tipo, 'UTF-8');
+        $tipo = mb_convert_case($tipo, MB_CASE_TITLE, 'UTF-8'); // Title Case
+
+        return $tipo;
+    }
+
+    /**
      * Listado de cultivos.
      */
     public function index()
@@ -79,13 +95,17 @@ class CultivoController extends Controller
             'propiedad_id' => 'required|exists:propiedades,id',
             'nombre' => 'required|string|max:255',
             'estacion' => 'required|string|max:255',
-            'tipo' => 'required|string|max:255',
+            'tipo' => ['required', 'string', 'max:255', 'regex:/^[\pL\pM0-9\s\-\.\,\/]+$/u'],
             'hectareas' => "required|numeric|min:0|max:$hectareasDisponibles",
             'manejo_cultivo' => 'required|in:Convencional,Agroecologico,Organico',
             'tecnologia_riego' => 'required|in:Surco,Inundación,Cimalco,Manga,Goteo,Aspersión',
         ], [
             'hectareas.max' => "Las hectáreas del cultivo no pueden exceder las disponibles ($hectareasDisponibles ha).",
+            'tipo.regex' => 'El tipo contiene caracteres no permitidos.',
         ]);
+
+        // Normalizar tipo
+        $validated['tipo'] = $this->normalizarTipo($validated['tipo'] ?? null);
 
         Cultivo::create($validated);
 
@@ -128,19 +148,26 @@ class CultivoController extends Controller
         $hectareasUsadas = $propiedad->cultivos()
             ->where('id', '!=', $id)
             ->sum('hectareas');
+
         $hectareasDisponibles = max(0, $propiedad->hectareas - $hectareasUsadas);
 
         $validated = $request->validate([
             'propiedad_id' => 'sometimes|exists:propiedades,id',
             'nombre' => 'sometimes|string|max:255',
             'estacion' => 'sometimes|string|max:255',
-            'tipo' => 'sometimes|string|max:255',
+            'tipo' => ['sometimes', 'string', 'max:255', 'regex:/^[\pL\pM0-9\s\-\.\,\/]+$/u'],
             'hectareas' => "sometimes|numeric|min:0|max:$hectareasDisponibles",
             'manejo_cultivo' => 'sometimes|in:Convencional,Agroecologico,Organico',
             'tecnologia_riego' => 'sometimes|in:Surco,Inundación,Cimalco,Manga,Goteo,Aspersión',
         ], [
             'hectareas.max' => "Las hectáreas del cultivo no pueden exceder las disponibles ($hectareasDisponibles ha).",
+            'tipo.regex' => 'El tipo contiene caracteres no permitidos.',
         ]);
+
+        // Normalizar tipo si viene en el request
+        if (array_key_exists('tipo', $validated)) {
+            $validated['tipo'] = $this->normalizarTipo($validated['tipo']);
+        }
 
         $cultivo->update($validated);
 
