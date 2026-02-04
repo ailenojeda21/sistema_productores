@@ -100,7 +100,7 @@
         <div class="px-6 py-6">
           <div class="flex flex-col items-center gap-2">
             <img src="/images/logo.png" alt="Logo RUPAL" class="h-32 w-32 object-contain rounded-3xl" />
-            <p class="text-base font-semibold text-white">Sistema Integrado de RUPAL</p>
+            <p class="text-base font-semibold text-white">Sistema Integrado RUPAL</p>
           </div>
         </div>
 
