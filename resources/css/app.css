@@ -20,3 +20,19 @@
 .field input {
     @apply w-32 flex-1;
 }
+
+.nav-button {
+  @apply w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200;
+}
+
+.nav-button:hover {
+  @apply bg-blue-600 text-white;
+}
+
+.nav-button-red {
+  @apply bg-slate-800 text-white font-semibold shadow-md;
+}
+
+.nav-button-red:hover {
+  @apply bg-red-600 shadow-lg;
+}
