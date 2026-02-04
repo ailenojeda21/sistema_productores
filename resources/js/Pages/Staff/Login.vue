@@ -40,7 +40,7 @@ const submit = async (e) => {
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
     <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
       <header class="mb-6 text-center">
-        <img src="/images/encabezado-azul.png" alt="RUPAL Logo" class="mx-auto mb-4 h-16 w-16 rounded-full shadow" />
+        <img src="/images/encabezado-azul.png" alt="RUPAL Logo" class="mx-auto mb-4 w-full max-w-md h-auto rounded-xl shadow" />
         <h1 class="text-2xl font-bold text-gray-900 mb-2">
           Bienvenido al Administrador del Sistema RUPAL
         </h1>

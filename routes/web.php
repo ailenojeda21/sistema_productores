@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropiedadController;
 use App\Http\Controllers\StaffAuthController;
 use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\StaffUserController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -147,11 +148,18 @@ Route::prefix('staff')->group(function () {
             ->name('staff.dashboard');
 
         /*
-        |--------------------------------------------------------------------------
-        | SOLO ADMIN
-        |--------------------------------------------------------------------------
-        */
+         |--------------------------------------------------------------------------
+         | SOLO ADMIN
+         |--------------------------------------------------------------------------
+         */
         Route::middleware('staff.role:admin')->group(function () {
+
+            // Gestión de Usuarios Staff
+            Route::get('/users/create', [StaffUserController::class, 'create'])
+                ->name('staff.users.create');
+            
+            Route::post('/users', [StaffUserController::class, 'store'])
+                ->name('staff.users.store');
 
             Route::get('/auditors', function () {
                 return inertia('Staff/Auditors/Index');
