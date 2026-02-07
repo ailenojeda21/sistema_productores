@@ -78,7 +78,7 @@
                  <div id="malla-fields" class="hidden md:col-span-2">
                      <div class="mt-2">
                          <label class="block text-gray-700 font-semibold mb-1" for="hectareas_malla">Hectáreas con malla</label>
-                         <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded transition-colors" required>
+                         <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded transition-colors">
                          <p id="hectareas-malla-hint" class="text-sm text-gray-500 mt-1">Ingrese las hectáreas totales primero</p>
                      </div>
                  </div>
@@ -211,8 +211,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // Función para toggle del campo "otros" en tenencia
     const toggleOtros = () => {
         const sel = document.querySelector('.tenencia-radio:checked');
-        if (otrosContainer) {
-            otrosContainer.classList.toggle('hidden', !sel || sel.value !== 'otros');
+        const inputOtro = document.querySelector('input[name="especificar_tenencia"]');
+        if (inputOtro) {
+            if (sel && sel.value === 'otros') {
+                inputOtro.classList.remove('hidden');
+            } else {
+                inputOtro.classList.add('hidden');
+                inputOtro.value = '';
+            }
         }
     };
 

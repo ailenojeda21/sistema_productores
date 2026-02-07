@@ -32,6 +32,11 @@ class ProfileController extends Controller
             'cooperativas.*' => ['string'],
         ]);
 
+        // Si el checkbox "tiene_cooperativas" no está marcado, limpiar las cooperativas
+        if (!$request->has('tiene_cooperativas')) {
+            $validated['cooperativas'] = null;
+        }
+
         $user = auth()->user();
         $user->update($validated);
 

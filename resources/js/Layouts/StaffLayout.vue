@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50">
+  <div class="h-screen bg-slate-50 overflow-hidden">
     <!-- Mobile Header -->
     <header class="lg:hidden sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-200">
       <div class="px-4 sm:px-6 h-14 flex items-center justify-between">
@@ -94,9 +94,9 @@
       </aside>
     </div>
 
-    <div class="flex min-h-screen">
+    <div class="flex h-[calc(100vh-3.5rem)] lg:h-screen">
       <!-- Desktop Sidebar -->
-      <aside class="hidden lg:flex w-64 shrink-0 min-h-screen flex-col bg-black text-white">
+      <aside class="hidden lg:flex w-64 shrink-0 h-full flex-col bg-black text-white overflow-y-auto">
         <div class="px-6 py-6">
           <div class="flex flex-col items-center gap-2">
             <img src="/images/logo.png" alt="Logo RUPAL" class="h-32 w-32 object-contain rounded-3xl" />
@@ -154,20 +154,22 @@
       </aside>
 
       <!-- Content -->
-      <div class="flex-1 min-w-0">
+      <div class="flex-1 min-w-0 h-full overflow-y-auto">
         <header class="hidden lg:block sticky top-0 z-10 bg-white/70 backdrop-blur border-b border-slate-200">
-          <div class="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-end">
-            <div class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white">
-              <div class="h-7 w-7 rounded-lg bg-slate-100 grid place-items-center text-slate-700 text-xs font-semibold">
+          <div class="max-w-6xl mx-auto px-6 lg:px-8 h-12 flex items-center justify-end">
+            <div class="flex items-center gap-2 px-2 py-1 rounded-lg border border-slate-200 bg-white">
+              <div class="h-6 w-6 rounded-md bg-slate-100 grid place-items-center text-slate-700 text-[11px] font-semibold">
                 {{ (user?.name || 'U').slice(0, 1).toUpperCase() }}
               </div>
-              <span class="text-sm text-slate-700">{{ user?.name }}</span>
+              <span class="text-xs text-slate-700 leading-none">
+                {{ user?.name }}
+              </span>
             </div>
           </div>
         </header>
 
         <!-- ✅ Slot: acá va el contenido de cada vista -->
-        <main class="px-4 sm:px-6 lg:px-8 py-8">
+        <main class="px-4 sm:px-6 lg:px-8 pt-4 pb-8">
           <div class="max-w-6xl mx-auto">
             <slot />
           </div>
