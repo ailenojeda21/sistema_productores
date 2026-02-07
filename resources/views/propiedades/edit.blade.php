@@ -179,7 +179,7 @@
 
                      <div id="mallaFields" class="hidden ml-7 mt-2">
                          <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01"
-                             class="w-full p-2 border border-gray-300 rounded transition-colors" required
+                             class="w-full p-2 border border-gray-300 rounded transition-colors"
                              value="{{ old('hectareas_malla', $propiedad->hectareas_malla) }}"
                              placeholder="Max: {{ number_format($propiedad->hectareas ?? 0, 2) }}">
                          <p id="hectareas-malla-hint" class="text-sm text-gray-500 mt-1">Seleccione "tiene malla antigranizo" primero</p>
@@ -303,9 +303,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    if (malla && mallaDiv) {
+    if (malla && mallaDiv && hectareasMallaInput) {
         malla.addEventListener('change', function() {
             toggle(malla, mallaDiv);
+            hectareasMallaInput.required = malla.checked;
             if (malla.checked) {
                 syncHectareasMallaMax();
             } else {
@@ -332,6 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (rutValorInput && rut) rutValorInput.required = rut.checked;
     if (malla && mallaDiv) toggle(malla, mallaDiv);
+    if (hectareasMallaInput && malla) hectareasMallaInput.required = malla.checked;
 
     // Inicializar validación de hectáreas con malla si el checkbox está marcado
     if (malla && malla.checked) {

@@ -1,173 +1,180 @@
 @extends('layouts.app')
 
-@section('desktop-content')
+@section('content')
+<div class="min-h-dvh bg-gray-100">
+    <!-- Overlay (solo mobile) -->
+    <div id="drawer-overlay"
+         class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
 
+    <!-- Mobile header -->
+    <header class="lg:hidden sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-gray-200">
+        <div class="h-14 px-4 flex items-center justify-between">
+            <button id="mobile-menu-btn"
+                    type="button"
+                    class="bg-azul-marino text-white w-10 h-10 rounded-md shadow flex items-center justify-center
+                           hover:bg-amarillo-claro hover:text-azul-marino transition-colors"
+                    aria-label="Abrir menú">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
 
-<div class="h-full flex bg-gray-100">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-azul-marino text-white flex flex-col py-6 px-3 shadow-lg h-screen overflow-y-hidden">
-       <x-user-avatar :user="Auth::user()" size="md" :gradient="false" :showName="false" :thin-border="true" class="mb-0" />
+            <div class="text-sm font-semibold text-gray-700 truncate">
+                {{ Auth::user()->name }}
+            </div>
 
-<p class="text-white text-sm text-center mt-2 mb-4 leading-tight font-semibold">
-    {{ Auth::user()->name }}
-</p>
-
-        <nav class="flex flex-col space-y-1">
-            <!-- Dashboard -->
-            <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
-                <span class="material-symbols-outlined mr-2">dashboard</span>
-                Inicio
-            </a>
-            <!-- Perfil -->
-            <a href="{{ route('profile') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
-                <span class="material-symbols-outlined mr-2">person</span>
-                Perfil
-            </a>
-            <!-- Propiedades -->
-            <a href="{{ route('propiedades.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
-                <span class="material-symbols-outlined mr-2">home</span>
-                Propiedades
-            </a>
-            <!-- Cultivos -->
-            <a href="{{ route('cultivos.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
-                 <span class="material-symbols-outlined mr-3">spa</span>
-                Cultivos
-            </a>
-            <!-- Maquinarias -->
-            <a href="{{ route('maquinaria.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
-               <span class="material-symbols-outlined mr-2">agriculture</span>
-                Maquinarias
-            </a>
-            <!-- Comercios -->
-            <a href="{{ route('comercios.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
-                <span class="material-symbols-outlined mr-2">shopping_cart</span>
-                Comercialización
-            </a>
-
-            <!-- Cerrar sesión -->
-            <form method="POST" action="{{ route('logout') }}" class="mt-2">
-                @csrf
-                <button type="submit" 
-                    class="w-full flex items-center px-3 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-400 text-base">
-                    <span class="material-symbols-outlined mr-2">logout</span>
-                    Cerrar sesión
-                </button>
-            </form>
-        </nav>
-    </aside>
-
-    <!-- Main Panel -->
-    <main class="flex-1 p-8 overflow-y-auto text-base">
-        <div class="w-full max-w-7xl mx-auto">
-            @yield('dashboard-content')
+            <div class="w-10 h-10"></div>
         </div>
-    </main>
-</div>
-@endsection
+    </header>
 
-@section('mobile-content')
-<div class="h-full flex flex-col bg-gray-100">
-    <!-- Overlay for mobile -->
-    <div id="drawer-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
-    
-    <!-- Mobile Menu Button -->
-    <button id="mobile-menu-btn" class="fixed top-4 left-4 z-50 bg-azul-marino text-white w-10 h-10 rounded-md shadow-lg flex items-center justify-center hover:bg-amarillo-claro hover:text-azul-marino transition-colors">
-        <span class="material-symbols-outlined">menu</span>
-    </button>
+    <div class="flex min-h-dvh">
+        <!-- Sidebar (desktop) -->
+        <aside class="hidden lg:flex w-64 bg-azul-marino text-white flex-col py-6 px-3 shadow-lg
+                      sticky top-0 h-dvh">
+            <div class="flex-shrink-0">
+                <x-user-avatar :user="Auth::user()" size="md" :gradient="false" :showName="false" :thin-border="true" class="mb-0" />
+                <p class="text-white text-sm text-center mt-2 mb-4 leading-tight font-semibold">
+                    {{ Auth::user()->name }}
+                </p>
+            </div>
 
-    <!-- Sidebar Drawer -->
-    <aside id="drawer" class="fixed w-64 bg-azul-marino text-white flex flex-col py-6 px-3 shadow-lg h-screen z-50 transition-transform duration-300 -translate-x-full overflow-y-hidden">
-        <x-user-avatar :user="Auth::user()" size="xl2" :gradient="false" :showName="true" :thin-border="true" class="mb-3" />
-        <p class="text-white text-sm text-center mt-2 mb-4 font-semibold">{{ Auth::user()->name }}</p>
+            <nav class="flex-1 space-y-1 pr-1">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span> Inicio
+                </a>
+                <a href="{{ route('profile') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                    <span class="material-symbols-outlined mr-2">person</span> Perfil
+                </a>
+                <a href="{{ route('propiedades.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                    <span class="material-symbols-outlined mr-2">home</span> Propiedades
+                </a>
+                <a href="{{ route('cultivos.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                    <span class="material-symbols-outlined mr-3">spa</span> Cultivos
+                </a>
+                <a href="{{ route('maquinaria.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                    <span class="material-symbols-outlined mr-2">agriculture</span> Maquinarias
+                </a>
+                <a href="{{ route('comercios.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                    <span class="material-symbols-outlined mr-2">shopping_cart</span> Comercialización
+                </a>
+            </nav>
 
-        <nav class="flex flex-col space-y-1">
-            <!-- Dashboard -->
-            <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <span class="material-symbols-outlined mr-3">dashboard</span>
-                Inicio
-            </a>
-
-            <!-- Perfil -->
-            <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <span class="material-symbols-outlined mr-3">person</span>
-                Perfil
-            </a>
-
-            <!-- Propiedades -->
-            <a href="{{ route('propiedades.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <span class="material-symbols-outlined mr-3">home</span>
-                Propiedades
-            </a>
-
-            <!-- Cultivos -->
-            <a href="{{ route('cultivos.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <span class="material-symbols-outlined mr-3">spa</span>
-                Cultivos
-            </a>
-
-            <!-- Maquinarias -->
-            <a href="{{ route('maquinaria.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <span class="material-symbols-outlined mr-3">agriculture</span>
-                Maquinarias
-            </a>
-
-            <!-- Comercios -->
-            <a href="{{ route('comercios.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-lg">
-                <span class="material-symbols-outlined mr-3">shopping_cart</span>
-                Comercialización
-            </a>
-
-            <!-- Cerrar sesión -->
-            <form method="POST" action="{{ route('logout') }}" class="mt-auto">
+            <form method="POST" action="{{ route('logout') }}" class="pt-3 flex-shrink-0">
                 @csrf
-                <button type="submit" 
-                    class="w-full flex items-center px-3 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-400">
-                    <span class="material-symbols-outlined mr-3">logout</span>
-                    Cerrar sesión
+                <button type="submit"
+                        class="w-full flex items-center px-3 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-300 text-base">
+                    <span class="material-symbols-outlined mr-2">logout</span> Cerrar sesión
                 </button>
             </form>
-        </nav>
-    </aside>
-    
-    <!-- Main Panel -->
-    <main class="flex-1 pt-16 p-4 overflow-y-auto text-base">
-        @yield('dashboard-content')
-    </main>
+        </aside>
+
+        <!-- Drawer (mobile) -->
+        <aside id="drawer"
+               class="fixed lg:hidden inset-y-0 left-0 z-50 bg-azul-marino text-white shadow-lg
+                      w-[85vw] max-w-xs transform -translate-x-full transition-transform duration-300
+                      h-dvh flex flex-col py-4 px-3">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-between">
+                    <div class="w-10"></div>
+                    <x-user-avatar :user="Auth::user()" size="lg" :gradient="false" :showName="false" :thin-border="true" class="mx-auto" />
+                    <button id="drawer-close"
+                            type="button"
+                            class="w-10 h-10 rounded-md grid place-items-center hover:bg-white/10"
+                            aria-label="Cerrar menú">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <p class="text-white text-sm text-center mt-2 mb-3 font-semibold truncate">
+                    {{ Auth::user()->name }}
+                </p>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto space-y-1 pr-1 scrollbar-hide">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                    <span class="material-symbols-outlined mr-2 text-xl">dashboard</span> Inicio
+                </a>
+                <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                    <span class="material-symbols-outlined mr-2 text-xl">person</span> Perfil
+                </a>
+                <a href="{{ route('propiedades.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                    <span class="material-symbols-outlined mr-2 text-xl">home</span> Propiedades
+                </a>
+                <a href="{{ route('cultivos.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                    <span class="material-symbols-outlined mr-2 text-xl">spa</span> Cultivos
+                </a>
+                <a href="{{ route('maquinaria.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                    <span class="material-symbols-outlined mr-2 text-xl">agriculture</span> Maquinarias
+                </a>
+                <a href="{{ route('comercios.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                    <span class="material-symbols-outlined mr-2 text-xl">shopping_cart</span> Comercialización
+                </a>
+            </nav>
+
+            <form method="POST" action="{{ route('logout') }}" class="pt-2 flex-shrink-0">
+                @csrf
+                <button type="submit"
+                        class="w-full flex items-center px-3 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-300">
+                    <span class="material-symbols-outlined mr-2 text-xl">logout</span> Cerrar sesión
+                </button>
+            </form>
+        </aside>
+
+        <!-- Main -->
+        <main class="flex-1 min-w-0">
+            <div class="p-4 lg:p-8">
+                <div class="w-full max-w-7xl mx-auto">
+                    @yield('dashboard-content')
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
 
 <script>
     const drawer = document.getElementById('drawer');
     const overlay = document.getElementById('drawer-overlay');
     const menuBtn = document.getElementById('mobile-menu-btn');
+    const closeBtn = document.getElementById('drawer-close');
 
-    menuBtn.addEventListener('click', () => {
-        drawer.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
-    });
+    function openDrawer() {
+        drawer.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        document.documentElement.classList.add('overflow-hidden');
+        document.body.classList.add('overflow-hidden');
+    }
 
-    overlay.addEventListener('click', () => {
+    function closeDrawer() {
         drawer.classList.add('-translate-x-full');
         overlay.classList.add('hidden');
+        document.documentElement.classList.remove('overflow-hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    menuBtn?.addEventListener('click', openDrawer);
+    closeBtn?.addEventListener('click', closeDrawer);
+    overlay?.addEventListener('click', closeDrawer);
+
+    // Cerrar con ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeDrawer();
     });
+
+    // Cierra al navegar (mejora UX)
+    drawer?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
 </script>
 @endsection
 
 @section('styles')
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-td, th {
-  word-wrap: break-word;
-  white-space: normal;
-}
+  table { border-collapse: collapse; width: 100%; }
+  td, th { word-wrap: break-word; white-space: normal; }
+  
+  /* Ocultar scrollbar pero mantener funcionalidad */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
 </style>
 @endsection
