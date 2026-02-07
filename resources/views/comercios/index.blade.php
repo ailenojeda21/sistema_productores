@@ -119,11 +119,11 @@
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold text-azul-marino">Comercialización</h1>
         @if($comercios->isEmpty())
-            <a href="{{ route('comercios.create') }}" class="p-2 bg-naranja-oscuro text-white rounded-full shadow-lg">
+            <a href="{{ route('comercios.create') }}" class="w-12 h-12 flex items-center justify-center bg-naranja-oscuro text-white rounded-full shadow-lg">
                 <span class="material-symbols-outlined">add</span>
             </a>
         @else
-            <a href="{{ route('comercios.edit', $comercios->first()->id) }}" class="p-2 bg-azul-marino text-white rounded-full shadow-lg">
+            <a href="{{ route('comercios.edit', $comercios->first()->id) }}" class="w-12 h-12 flex items-center justify-center bg-azul-marino text-white rounded-full shadow-lg">
                 <span class="material-symbols-outlined">edit</span>
             </a>
         @endif
