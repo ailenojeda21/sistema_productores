@@ -59,9 +59,9 @@
         @if($propiedad->lat && $propiedad->lng)
         <div class="mt-3">
             <div class="text-sm font-medium text-gray-600 mb-2">Ubicación:</div>
-            <div id="map-preview-{{ $propiedad->id }}-mobile"
-                 class="rounded border overflow-hidden"
-                 style="height: 120px; width: 100%; position: relative;"
+             <div id="map-preview-{{ $propiedad->id }}-mobile"
+                  class="rounded border overflow-hidden"
+                  style="height: 120px; width: 100%; position: relative; z-index: 1;"
                  data-lat="{{ $propiedad->lat }}"
                  data-lng="{{ $propiedad->lng }}">
                 <div class="loading-state flex items-center justify-center h-full text-gray-500 text-sm bg-gray-50">

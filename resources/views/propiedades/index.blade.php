@@ -302,7 +302,13 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             const mapInstances = {};
             
-            document.querySelectorAll('[id^="map-"]:not([id^="ml-map-"])').forEach(mapDiv => {
+            document.querySelectorAll('[id^="map-"]:not([id^="ml-map-"]):not([id$="-mobile"])').forEach(mapDiv => {
+                // Verificar si el mapa ya fue inicializado
+                if (mapDiv.dataset.initialized || mapDiv._previewMap) {
+                    console.log('Mapa ya inicializado, saltando:', mapDiv.id);
+                    return;
+                }
+                
                 if (mapDiv.dataset.lat && mapDiv.dataset.lng) {
                     const lat = parseFloat(mapDiv.dataset.lat);
                     const lng = parseFloat(mapDiv.dataset.lng);
