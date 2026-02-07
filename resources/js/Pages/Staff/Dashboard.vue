@@ -66,19 +66,11 @@ const hectareasChartData = computed(() => ({
 
 const hectareasChartOptions = {
   responsive: true,
-  maintainAspectRatio: true,
+  maintainAspectRatio: false,
   cutout: '65%',
   plugins: {
     legend: {
-      position: 'bottom',
-      labels: {
-        usePointStyle: true,
-        padding: 16,
-        font: {
-          size: 12,
-          family: 'Inter, system-ui, sans-serif',
-        },
-      },
+      display: false,
     },
     tooltip: {
       callbacks: {
@@ -116,7 +108,7 @@ const usuariosChartData = computed(() => ({
 
 const usuariosChartOptions = {
   responsive: true,
-  maintainAspectRatio: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       display: false,
@@ -163,11 +155,11 @@ const formatNumber = (num) => {
 
 <template>
   <StaffLayout :user="user">
-    <div class="space-y-6">
+    <div class="space-y-6 overflow-x-hidden min-w-0">
       <!-- KPI Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
         <!-- KPI: Usuarios Totales -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 min-w-0">
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm font-medium text-slate-500">Usuarios registrados</p>
@@ -193,7 +185,7 @@ const formatNumber = (num) => {
         </div>
 
         <!-- KPI: Hectáreas Cultivadas -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 min-w-0">
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm font-medium text-slate-500">Hectáreas cultivadas</p>
@@ -227,17 +219,47 @@ const formatNumber = (num) => {
       </div>
 
       <!-- Charts Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 min-w-0">
+        <!-- Gráfico: Crecimiento de Usuarios -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 min-w-0">
+          <div class="mb-4">
+            <h3 class="text-lg font-semibold text-slate-900">Crecimiento de usuarios</h3>
+            <p class="text-sm text-slate-500">Nuevos registros por mes (últimos 6 meses)</p>
+          </div>
+          <div class="h-64 w-full min-w-0">
+            <Line 
+              :data="usuariosChartData" 
+              :options="usuariosChartOptions"
+              class="h-full w-full"
+            />
+          </div>
+          <div class="mt-4 flex items-center justify-between bg-blue-50 rounded-lg p-3">
+            <div>
+              <p class="text-xs text-slate-500">Total nuevos (últimos 6 meses)</p>
+              <p class="text-xl font-bold text-blue-600">
+                {{ formatNumber(kpiData.usuarios.nuevosPorMes.data.reduce((a, b) => a + b, 0)) }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-slate-500">Promedio mensual</p>
+              <p class="text-xl font-bold text-slate-700">
+                {{ formatNumber(Math.round(kpiData.usuarios.nuevosPorMes.data.reduce((a, b) => a + b, 0) / 6)) }}
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- Gráfico: Hectáreas -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 min-w-0">
           <div class="mb-4">
             <h3 class="text-lg font-semibold text-slate-900">Uso de hectáreas</h3>
             <p class="text-sm text-slate-500">Distribución del área cultivada en Lavalle</p>
           </div>
-          <div class="relative h-64">
+          <div class="relative h-64 w-full min-w-0">
             <Doughnut 
               :data="hectareasChartData" 
-              :options="hectareasChartOptions" 
+              :options="hectareasChartOptions"
+              class="h-full w-full"
             />
             <!-- Porcentaje en el centro -->
             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -253,34 +275,6 @@ const formatNumber = (num) => {
             <div class="bg-slate-50 rounded-lg p-3">
               <p class="text-2xl font-bold text-slate-400">{{ formatNumber(kpiData.hectareas.restantes) }}</p>
               <p class="text-xs text-slate-500">ha disponibles</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Gráfico: Crecimiento de Usuarios -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-          <div class="mb-4">
-            <h3 class="text-lg font-semibold text-slate-900">Crecimiento de usuarios</h3>
-            <p class="text-sm text-slate-500">Nuevos registros por mes (últimos 6 meses)</p>
-          </div>
-          <div class="h-64">
-            <Line 
-              :data="usuariosChartData" 
-              :options="usuariosChartOptions" 
-            />
-          </div>
-          <div class="mt-4 flex items-center justify-between bg-blue-50 rounded-lg p-3">
-            <div>
-              <p class="text-xs text-slate-500">Total nuevos (últimos 6 meses)</p>
-              <p class="text-xl font-bold text-blue-600">
-                {{ formatNumber(kpiData.usuarios.nuevosPorMes.data.reduce((a, b) => a + b, 0)) }}
-              </p>
-            </div>
-            <div class="text-right">
-              <p class="text-xs text-slate-500">Promedio mensual</p>
-              <p class="text-xl font-bold text-slate-700">
-                {{ formatNumber(Math.round(kpiData.usuarios.nuevosPorMes.data.reduce((a, b) => a + b, 0) / 6)) }}
-              </p>
             </div>
           </div>
         </div>

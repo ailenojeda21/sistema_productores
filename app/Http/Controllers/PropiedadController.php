@@ -153,6 +153,22 @@ class PropiedadController extends Controller
     $validated['cierre_perimetral'] = $request->has('cierre_perimetral');
 
     // =========================
+    // MANEJO DE DERECHO DE RIEGO
+    // =========================
+    if (!$validated['derecho_riego']) {
+        // Si se desmarca derecho de riego → limpiar tipo
+        $validated['tipo_derecho_riego'] = null;
+    }
+
+    // =========================
+    // MANEJO DE MALLA
+    // =========================
+    if (!$validated['malla']) {
+        // Si se desmarca malla → limpiar hectáreas
+        $validated['hectareas_malla'] = null;
+    }
+
+    // =========================
     // MANEJO DE RUT Y ARCHIVO
     // =========================
     if ($validated['rut']) {
