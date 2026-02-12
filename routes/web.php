@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StaffProducerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -176,18 +177,14 @@ Route::prefix('staff')->group(function () {
 
         /*
         |--------------------------------------------------------------------------
-        | ADMIN + AUDITOR
+        | STAFF PRODUCERS (ADMIN + AUDITOR)
         |--------------------------------------------------------------------------
         */
-        Route::get('/producers', function () {
-            return inertia('Staff/Producers/Index');
-        })->name('staff.producers.index');
+        Route::get('/producers', [StaffProducerController::class, 'index'])
+            ->name('staff.producers.index');
 
-        Route::get('/producers/{id}', function ($id) {
-            return inertia('Staff/Producers/Show', [
-                'producerId' => $id
-            ]);
-        })->name('staff.producers.show');
+        Route::get('/producers/{id}', [StaffProducerController::class, 'show'])
+            ->name('staff.producers.show');
 
         // Logout Staff
         Route::post('/logout', [StaffAuthController::class, 'logout'])
