@@ -156,8 +156,17 @@ Route::prefix('staff')->group(function () {
         Route::middleware('staff.role:admin')->group(function () {
 
             // Gestión de Usuarios Staff
+            Route::get('/users', [StaffUserController::class, 'index'])
+                ->name('staff.users.index');
+
             Route::get('/users/create', [StaffUserController::class, 'create'])
                 ->name('staff.users.create');
+
+            Route::get('/users/{id}/edit', [StaffUserController::class, 'edit'])
+                ->name('staff.users.edit');
+
+            Route::patch('/users/{id}', [StaffUserController::class, 'update'])
+                ->name('staff.users.update');
             
             Route::post('/users', [StaffUserController::class, 'store'])
                 ->name('staff.users.store');

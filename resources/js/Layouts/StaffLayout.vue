@@ -69,12 +69,12 @@
             class="mt-2 w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-200/90 transition-all duration-200"
             :class="isAdmin ? 'hover:bg-blue-600 hover:text-white cursor-pointer' : 'opacity-50 cursor-not-allowed bg-slate-800/50'"
             :disabled="!isAdmin"
-            @click="isAdmin && navigate('/staff/users/create')"
+            @click="isAdmin && navigate('/staff/users')"
           >
             <svg class="w-5 h-5 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M8.5 7a4 4 0 118 0 4 4 0 01-8 0zM20 8v6m3-3h-6" />
             </svg>
-            Agregar usuario
+            Usuarios
           </button>
 
           <div class="mt-auto pt-8 pb-4">
@@ -129,12 +129,12 @@
             class="mt-2 w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-200/90 transition-all duration-200"
             :class="isAdmin ? 'hover:bg-blue-600 hover:text-white cursor-pointer' : 'opacity-50 cursor-not-allowed bg-slate-800/50'"
             :disabled="!isAdmin"
-            @click="isAdmin && navigate('/staff/users/create')"
+            @click="isAdmin && navigate('/staff/users')"
           >
             <svg class="w-5 h-5 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M8.5 7a4 4 0 118 0 4 4 0 01-8 0zM20 8v6m3-3h-6" />
             </svg>
-            Agregar usuario
+            Usuarios
           </button>
 
           <div class="mt-auto pt-8 pb-4">
