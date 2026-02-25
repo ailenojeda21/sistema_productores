@@ -19,6 +19,20 @@ class StaffAuthController extends Controller
             'password' => ['required'],
         ]);
 
+        $staffUser = \App\Models\StaffUser::where('email', strtolower($credentials['email']))->first();
+
+        if (!$staffUser) {
+            return back()->withErrors([
+                'email' => 'Credenciales incorrectas',
+            ]);
+        }
+
+        if (!$staffUser->active) {
+            return back()->withErrors([
+                'email' => 'Usuario inactivo. Contacte al administrador.',
+            ]);
+        }
+
         if (Auth::guard('staff')->attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('staff.dashboard');

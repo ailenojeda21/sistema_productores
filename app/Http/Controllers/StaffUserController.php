@@ -104,17 +104,35 @@ class StaffUserController extends Controller
                 Rule::unique('staff_users', 'email')->ignore($staffUser->id),
             ],
             'role' => ['required', 'in:admin,auditor'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $staffUser->update([
+        $updateData = [
             'name' => $validated['name'],
             'email' => strtolower($validated['email']),
             'role' => $validated['role'],
-        ]);
+        ];
+
+        if (!empty($validated['password'])) {
+            $updateData['password'] = Hash::make($validated['password']);
+        }
+
+        $staffUser->update($updateData);
 
         return redirect()
             ->route('staff.users.index')
             ->with('success', 'Usuario actualizado exitosamente');
+    }
+
+    /**
+     * Elimina (soft delete) un usuario staff (solo admin)
+     */
+    public function destroy($id)
+    {
+        $staffUser = StaffUser::findOrFail($id);
+        $staffUser->delete();
+
+        return back()->with('success', 'Usuario eliminado');
     }
 
     /**
