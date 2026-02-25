@@ -81,6 +81,18 @@ const openDeleteModal = (staffUser) => {
   isDeleteModalOpen.value = true
 }
 
+const deactivateUser = (staffUser) => {
+  if (!staffUser?.id) return
+
+  togglingUserId.value = staffUser.id
+  router.delete(`/staff/users/${staffUser.id}`, {
+    preserveScroll: true,
+    onFinish: () => {
+      togglingUserId.value = null
+    },
+  })
+}
+
 const closeDeleteModal = () => {
   if (isDeleting.value) return
   isDeleteModalOpen.value = false
@@ -218,7 +230,9 @@ const toggleUserStatus = (staffUser) => {
                     </button>
                     <button
                       class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
-                      @click="openDeleteModal(staffUser)"
+                      :disabled="togglingUserId === staffUser.id"
+                      :class="togglingUserId === staffUser.id ? 'opacity-50 cursor-not-allowed' : ''"
+                      @click="deactivateUser(staffUser)"
                     >
                       Eliminar
                     </button>
@@ -275,7 +289,9 @@ const toggleUserStatus = (staffUser) => {
               </button>
               <button
                 class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
-                @click="openDeleteModal(staffUser)"
+                :disabled="togglingUserId === staffUser.id"
+                :class="togglingUserId === staffUser.id ? 'opacity-50 cursor-not-allowed' : ''"
+                @click="deactivateUser(staffUser)"
               >
                 Eliminar
               </button>

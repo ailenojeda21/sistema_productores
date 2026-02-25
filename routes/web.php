@@ -167,7 +167,10 @@ Route::prefix('staff')->group(function () {
 
             Route::patch('/users/{id}', [StaffUserController::class, 'update'])
                 ->name('staff.users.update');
-            
+
+            Route::delete('/users/{id}', [StaffUserController::class, 'destroy'])
+                ->name('staff.users.destroy');
+
             Route::post('/users', [StaffUserController::class, 'store'])
                 ->name('staff.users.store');
 
