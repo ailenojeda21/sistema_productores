@@ -43,7 +43,7 @@ class PropiedadController extends Controller
             'tipo_derecho_riego' => 'nullable|string|in:Subterráneo,Superficial,Ambos',
 
             'rut' => 'nullable',
-            'rut_valor' => 'nullable|numeric',
+            'rut_valor' => 'nullable|string|digits:10',
             'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240',
 
             'lat' => 'nullable|numeric|between:-90,90',
