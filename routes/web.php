@@ -83,6 +83,9 @@ Route::middleware('web')->group(function () {
 
         return redirect('/dashboard');
     });
+
+    // Rutas de recuperacion de contrasena
+    require __DIR__.'/auth.php';
 });
 
 /*

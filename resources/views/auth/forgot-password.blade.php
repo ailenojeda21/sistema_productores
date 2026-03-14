@@ -1,0 +1,53 @@
+@extends('layouts.app')
+
+@section('no_header', true)
+
+@section('content')
+<div class="min-h-screen flex flex-col md:flex-row">
+    <!-- Mitad Izquierda -->
+    <div class="hidden md:flex md:w-1/2 w-full bg-gray-100 items-center justify-center p-0 overflow-hidden" style="height: 100vh; max-height: 100vh;">
+        <img src="{{ asset('images/rupal.png') }}" alt="Logo Municipalidad de Lavalle" class="w-full h-full" style="max-height: 100vh;">
+    </div>
+    <!-- Mitad Derecha -->
+    <div class="w-full md:w-1/2 flex flex-col justify-center relative p-8 bg-white min-h-screen">
+        <!-- Logo arriba a la derecha -->
+    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="absolute top-8 right-8 h-20">
+
+        <div class="max-w-md w-full mx-auto">
+            <h1 class="text-3xl font-bold text-center text-naranja-oscuro mb-2">Recuperar contrasena</h1>
+            <p class="text-gray-600 text-center mb-8">Ingresa tu correo electronico y te enviaremos un enlace para restablecer tu contrasena.</p>
+            
+            <!-- Mensaje de exito -->
+            @if(session('status'))
+                <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>{{ session('status') }}</span>
+                </div>
+            @endif
+
+            <!-- Errores de validacion -->
+            @if($errors->any())
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <ul class="list-disc list-inside text-sm">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            
+            <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
+                @csrf
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Correo electronico</label>
+                    <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus class="mt-1 block w-full rounded border-gray-300 focus:border-naranja-oscuro focus:ring focus:ring-naranja-oscuro/30">
+                </div>
+                <button type="submit" class="w-full py-2 px-4 bg-naranja-oscuro text-white font-bold rounded hover:bg-amarillo-claro transition">Enviar enlace de recuperacion</button>
+            </form>
+            <div class="mt-6 text-center">
+                <a href="{{ route('login') }}" class="text-gray-500 font-semibold hover:underline hover:text-blue-600 transition">Volver a iniciar sesion</a>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
