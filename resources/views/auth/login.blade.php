@@ -41,12 +41,15 @@
                     @error('email')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
                 </div>
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Contrasena</label>
                     <input id="password" name="password" type="password" required class="mt-1 block w-full rounded border-gray-300 focus:border-naranja-oscuro focus:ring focus:ring-naranja-oscuro/30">
                     @error('password')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
                 </div>
                 <button type="submit" class="w-full py-2 px-4 bg-naranja-oscuro text-white font-bold rounded hover:bg-amarillo-claro transition">Entrar</button>
             </form>
+            <div class="text-center">
+                    <a href="{{ route('password.request') }}" class="text-sm text-naranja-oscuro hover:underline">Olvidaste tu contrasena?</a>
+                </div>
             <div class="mt-8 flex flex-col items-center space-y-2 text-center">
                 <a href="{{ route('register') }}" class="text-azul-marino font-semibold hover:underline hover:text-blue-600 transition">¿No tienes cuenta? Regístrate</a>
                 <a href="{{ url('/') }}" class="text-gray-400 font-semibold hover:underline hover:text-blue-600 transition">Volver al inicio</a>
