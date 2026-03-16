@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -9,7 +8,14 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['tipo_tenencia', 'especificar_tenencia']);
+            // Verificamos si las columnas existen antes de intentar borrarlas
+            if (Schema::hasColumn('users', 'tipo_tenencia')) {
+                $table->dropColumn('tipo_tenencia');
+            }
+            
+            if (Schema::hasColumn('users', 'especificar_tenencia')) {
+                $table->dropColumn('especificar_tenencia');
+            }
         });
     }
 
