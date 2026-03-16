@@ -32,7 +32,7 @@ Thumbs.db
 /storage/logs/*
 
 /public/hot
-/public/build
+#/public/build
 
 # Mantener estructura de storage público
 /public/storage/*
