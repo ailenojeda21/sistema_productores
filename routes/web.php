@@ -68,6 +68,14 @@ Route::middleware('web')->group(function () {
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'email.unique' => 'El correo electronico ya ha sido utilizado.',
+            'email.required' => 'El correo electronico es obligatorio.',
+            'email.email' => 'Ingrese un correo electronico valido.',
+            'password.required' => 'La contrasena es obligatoria.',
+            'password.min' => 'La contrasena debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'La confirmacion de contrasena no coincide.',
+            'name.required' => 'El nombre es obligatorio.',
         ]);
 
         $data['email'] = strtolower($data['email']);
