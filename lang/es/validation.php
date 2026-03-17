@@ -58,4 +58,16 @@ return [
     'digits' => 'El campo :attribute debe tener :digits digitos.',
     'digits_between' => 'El campo :attribute debe tener entre :min y :max digitos.',
     'current_password' => 'La contrasena actual es incorrecta.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Validation Attributes
+    |--------------------------------------------------------------------------
+    */
+    'attributes' => [
+        'name' => 'nombre',
+        'email' => 'correo electronico',
+        'password' => 'contrasena',
+        'password_confirmation' => 'confirmacion de contrasena',
+    ],
 ];
