@@ -34,11 +34,11 @@ class PasswordResetLinkController extends Controller
         );
 
         if ($status == Password::RESET_LINK_SENT) {
-            return back()->with('status', __($status));
+            return back()->with('status', 'Hemos enviado por correo electronico el enlace para restablecer tu contrasena.');
         }
 
         throw ValidationException::withMessages([
-            'email' => [trans($status)],
+            'email' => ['No podemos encontrar un usuario con esa direccion de correo electronico.'],
         ]);
     }
 }
