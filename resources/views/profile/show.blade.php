@@ -2,121 +2,119 @@
 
 @section('dashboard-content')
 <div class="w-full max-w-5xl mx-auto">
-    <x-breadcrumb :items="[
-        ['name' => 'Perfil', 'route' => 'profile']
-    ]" />
+    <x-breadcrumb :items="[ ['name' => 'Perfil', 'route' => 'profile'] ]" />
+    
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-azul-marino">Perfil de Usuario</h1>
+        <h1 class="text-2xl md:text-3xl font-bold text-azul-marino">Perfil de Usuario</h1>
     </div>
 
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white rounded-lg shadow p-4 md:p-6">
 
-        <div class="flex flex-col lg:flex-row gap-8 items-start">
+        {{-- Contenedor Principal: Invertido en mobile (flex-col-reverse) --}}
+        <div class="flex flex-col-reverse lg:flex-row gap-8 items-start">
+            
             {{-- Información del usuario --}}
-            <div class="flex-1">
+            <div class="flex-1 w-full">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-gray-500 shrink-0">badge</span>
+                        <span class="material-symbols-outlined text-gray-400 shrink-0">badge</span>
                         <div>
-                            <span class="text-xs text-gray-500">Nombre:</span>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider">Nombre</span>
                             <p class="text-sm text-gray-700 font-medium">{{ $user->name }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-gray-500 shrink-0">mail</span>
+                        <span class="material-symbols-outlined text-gray-400 shrink-0">mail</span>
                         <div>
-                            <span class="text-xs text-gray-500">Email:</span>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider">Email</span>
                             <p class="text-sm text-gray-700 font-medium">{{ $user->email }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-gray-500 shrink-0">credit_card</span>
+                        <span class="material-symbols-outlined text-gray-400 shrink-0">credit_card</span>
                         <div>
-                            <span class="text-xs text-gray-500">DNI:</span>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider">DNI</span>
                             <p class="text-sm text-gray-700 font-medium">{{ $user->dni ?? '-' }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-gray-500 shrink-0">phone</span>
+                        <span class="material-symbols-outlined text-gray-400 shrink-0">phone</span>
                         <div>
-                            <span class="text-xs text-gray-500">Teléfono:</span>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider">Teléfono</span>
                             <p class="text-sm text-gray-700 font-medium">{{ $user->telefono ?? '-' }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-gray-500 shrink-0">calendar_today</span>
+                        <span class="material-symbols-outlined text-gray-400 shrink-0">calendar_today</span>
                         <div>
-                            <span class="text-xs text-gray-500">Creado:</span>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider">Creado</span>
                             <p class="text-sm text-gray-700 font-medium">{{ $user->created_at->format('d/m/Y H:i') }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-6">
+                <div class="mt-8 border-t pt-4 lg:border-none lg:pt-0">
                     <div class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-gray-500 shrink-0">groups</span>
+                        <span class="material-symbols-outlined text-gray-400 shrink-0">groups</span>
                         <div class="flex-1">
-                            <span class="text-xs text-gray-500 block mb-2">Cooperativas a las que pertenece:</span>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider block mb-2">Cooperativas</span>
                             @if(is_array($user->cooperativas) && count($user->cooperativas) > 0)
                                 <div id="cooperativas-container" class="flex flex-wrap gap-2 items-center">
                                     @php
                                         $displayLimit = 6;
                                         $cooperativas = $user->cooperativas;
-                                        $hasMore = count($cooperativas) > $displayLimit;
                                         $remaining = count($cooperativas) - $displayLimit;
                                     @endphp
                                     @foreach($cooperativas as $index => $cooperativa)
-                                        @if($index < $displayLimit)
-                                            <span class="inline-flex items-center px-3 py-0.5 bg-azul-marino text-white text-xs rounded-full font-medium">
-                                                {{ $cooperativa }}
-                                            </span>
-                                        @elseif($index === $displayLimit)
-                                            <button id="toggle-cooperativas-btn" onclick="toggleCooperativas()" class="inline-flex items-center px-3 py-0.5 bg-gray-200 text-gray-700 text-xs rounded-full font-medium hover:bg-gray-300 cursor-pointer">
-                                                +{{ $remaining }}
-                                            </button>
-                                            <span class="hidden cooperativa-extra inline-flex items-center px-3 py-0.5 bg-azul-marino text-white text-xs rounded-full font-medium">
-                                                {{ $cooperativa }}
-                                            </span>
-                                        @else
-                                            <span class="hidden cooperativa-extra inline-flex items-center px-3 py-0.5 bg-azul-marino text-white text-xs rounded-full font-medium">
-                                                {{ $cooperativa }}
-                                            </span>
-                                        @endif
+                                        <span class="{{ $index >= $displayLimit ? 'hidden cooperativa-extra' : '' }} inline-flex items-center px-3 py-1 bg-azul-marino text-white text-[10px] sm:text-xs rounded-full font-medium">
+                                            {{ $cooperativa }}
+                                        </span>
                                     @endforeach
-                                    <button id="show-less-btn" onclick="toggleCooperativas()" class="hidden text-xs text-azul-marino font-medium hover:underline cursor-pointer ml-1">
-                                        Ver menos
-                                    </button>
+                                    
+                                    @if($remaining > 0)
+                                        <button id="toggle-cooperativas-btn" onclick="toggleCooperativas()" class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full font-medium hover:bg-gray-200">
+                                            +{{ $remaining }}
+                                        </button>
+                                        <button id="show-less-btn" onclick="toggleCooperativas()" class="hidden text-xs text-azul-marino font-semibold hover:underline ml-1">
+                                            Ver menos
+                                        </button>
+                                    @endif
                                 </div>
                             @else
-                                <span class="text-gray-500 text-sm">No pertenece a ninguna cooperativa</span>
+                                <span class="text-gray-400 text-sm italic">No pertenece a ninguna cooperativa</span>
                             @endif
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Avatar --}}
-            <div class="flex flex-col items-center lg:w-48 shrink-0">
-                <div class="bg-gray-50 rounded-lg p-6 w-full flex flex-col items-center">
-                    <x-user-avatar :user="$user" size="lg" :gradient="false" :showName="false" :yellow-only="true" />
-                    <div class="mt-4 text-lg font-semibold text-gray-800">Avatar</div>
+            {{-- Bloque Avatar: Primero en mobile, Lateral en desktop --}}
+            <div class="w-full lg:w-48 shrink-0 flex flex-col items-center">
+                <div class="bg-gradient-to-br from-azul-marino to-blue-600 lg:bg-transparent rounded-xl p-4 lg:p-6 w-full flex flex-col items-center lg:border-none">
+                    <div class="relative group">
+                        <x-user-avatar :user="$user" size="lg" :gradient="false" :showName="false" :yellow-only="true" />
+                        {{-- Icono flotante opcional para mobile (puedes borrar el <a> de abajo si prefieres este) --}}
+                    </div>
+                    
+                    <div class="mt-3 text-base font-bold text-white uppercase tracking-tighter">Avatar</div>
+                    
                     <a href="{{ route('profile.avatar') }}"
-                       class="mt-3 px-3 py-1.5 text-gray-600 text-sm border border-gray-600 rounded hover:text-azul-marino hover:border-azul-marino transition-colors flex items-center gap-1.5">
+                       class="mt-3 px-4 py-2 bg-white lg:bg-gray-100 text-azul-marino lg:text-gray-600 text-xs font-semibold rounded-lg hover:bg-gray-100 lg:hover:bg-azul-marino lg:hover:text-white transition-all duration-300 flex items-center gap-2 shadow-sm">
                         <span class="material-symbols-outlined text-sm">photo_camera</span>
-                        Editar avatar
+                        Editar foto
                     </a>
                 </div>
             </div>
         </div>
 
-        {{-- Botón editar perfil --}}
-        <div class="flex justify-center mt-8 pt-4 border-t">
-            <a href="{{ route('profile.edit') }}"
-               class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow flex items-center gap-2">
-                <span class="material-symbols-outlined text-sm">edit</span>
-                Editar perfil
-            </a>
-        </div>
+        {{-- Botón editar perfil: Acción principal con el nuevo hover --}}
+       <div class="flex justify-center mt-10 pt-6 border-t w-full">
+    <a href="{{ route('profile.edit') }}"
+       class="w-full sm:w-auto justify-center px-8 py-3 bg-naranja-oscuro text-white rounded-lg hover:bg-amarillo-claro transition-all duration-200 font-bold shadow-lg flex items-center gap-2">
+        <span class="material-symbols-outlined">edit</span>
+        Editar perfil
+    </a>
+</div>
     </div>
 
     <script>
@@ -125,10 +123,7 @@
             const toggleBtn = document.getElementById('toggle-cooperativas-btn');
             const showLessBtn = document.getElementById('show-less-btn');
 
-            extras.forEach(el => {
-                el.classList.toggle('hidden');
-            });
-
+            extras.forEach(el => el.classList.toggle('hidden'));
             if (toggleBtn && showLessBtn) {
                 toggleBtn.classList.toggle('hidden');
                 showLessBtn.classList.toggle('hidden');

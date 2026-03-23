@@ -42,9 +42,9 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'flex flex-col items-center']) }}>
-    @if($gradient)
-    <div class="bg-gradient-to-r from-azul-marino to-blue-700 p-6 rounded-lg w-full flex flex-col items-center">
-    @endif
+   @if($gradient)
+<div class="bg-gradient-to-br from-[#1e3a8a] to-[#2563eb] p-6 rounded-xl w-full flex flex-col items-center shadow-lg">
+@endif
     
     <div class="relative">
         <div class="rounded-full {{ $yellowOnly ? 'border-4 border-amarillo-claro' : ($thinBorder ? 'bg-white p-0.5 border border-gray-200' : 'bg-white p-1 shadow-lg border-4 border-amarillo-claro') }}">
