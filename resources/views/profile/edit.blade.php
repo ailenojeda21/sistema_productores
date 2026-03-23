@@ -138,11 +138,13 @@
 
 <!-- Mobile View -->
 <div class="lg:hidden">
+    <x-breadcrumb :items="[
+    ['name' => 'Perfil', 'route' => 'profile'],
+    ['name' => 'Editar']
+]" />
     <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold text-azul-marino">Mi Perfil</h2>
-        <a href="{{ route('profile.avatar') }}" class="p-2 bg-azul-marino text-white rounded-full shadow-lg">
-            <span class="material-symbols-outlined">photo_camera</span>
-        </a>
+        <h2 class="text-2xl font-bold text-azul-marino">Editar Perfil</h2>
+       
     </div>
 
     @if (session('success'))
@@ -157,7 +159,6 @@
             @csrf
             @method('PATCH')
 
-            <x-user-avatar :user="$user" size="lg" :showEmail="true" />
 
             <div class="p-4 space-y-4">
                 <!-- Nombre -->
