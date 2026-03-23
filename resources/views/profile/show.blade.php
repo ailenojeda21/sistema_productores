@@ -57,7 +57,7 @@
                     <div class="flex items-start gap-3">
                         <span class="material-symbols-outlined text-gray-400 shrink-0">groups</span>
                         <div class="flex-1">
-                            <span class="text-xs text-gray-500 uppercase tracking-wider block mb-2">Cooperativas</span>
+                            <span class="text-xs text-gray-500 block mb-2">Cooperativas</span>
                             @if(is_array($user->cooperativas) && count($user->cooperativas) > 0)
                                 <div id="cooperativas-container" class="flex flex-wrap gap-2 items-center">
                                     @php
