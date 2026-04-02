@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * Relación: Un usuario tiene muchas propiedades
@@ -70,9 +70,55 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute()
     {
         if ($this->avatar) {
-            return asset('storage/avatars/' . $this->avatar);
+            return asset('storage/avatars/'.$this->avatar);
         }
 
-        return asset('storage/avatars/uno.png'); // avatar por defecto
+        return asset('storage/avatars/uno.png');
+    }
+
+    public function getProfileCompletenessAttribute(): int
+    {
+        $fields = ['name', 'email', 'dni', 'telefono'];
+        $filled = 0;
+
+        foreach ($fields as $field) {
+            if (! empty($this->$field)) {
+                $filled++;
+            }
+        }
+
+        if (! empty($this->cooperativas) && is_array($this->cooperativas) && count($this->cooperativas) > 0) {
+            $filled++;
+        }
+
+        return round(($filled / 5) * 100);
+    }
+
+    public function getPropiedadesCompletenessAttribute(): int
+    {
+        return $this->propiedades()->exists() ? 100 : 0;
+    }
+
+    public function getCultivosCompletenessAttribute(): int
+    {
+        $hasCultivos = \App\Models\Cultivo::whereHas('propiedad', function ($query) {
+            $query->where('usuario_id', $this->id);
+        })->exists();
+
+        return $hasCultivos ? 100 : 0;
+    }
+
+    public function getMaquinariasCompletenessAttribute(): int
+    {
+        $hasMaquinarias = \App\Models\Maquinaria::whereHas('propiedad', function ($query) {
+            $query->where('usuario_id', $this->id);
+        })->exists();
+
+        return $hasMaquinarias ? 100 : 0;
+    }
+
+    public function getComercializacionCompletenessAttribute(): int
+    {
+        return $this->comercializacion()->exists() ? 100 : 0;
     }
 }
