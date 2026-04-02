@@ -8,13 +8,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropiedadController;
 use App\Http\Controllers\StaffAuthController;
 use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\StaffProducerController;
 use App\Http\Controllers\StaffUserController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StaffProducerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +38,15 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = Auth::user();
+
+    return view('dashboard', [
+        'profileCompleteness' => $user->profile_completeness,
+        'propiedadesCompleteness' => $user->propiedades_completeness,
+        'cultivosCompleteness' => $user->cultivos_completeness,
+        'maquinariasCompleteness' => $user->maquinarias_completeness,
+        'comercializacionCompleteness' => $user->comercializacion_completeness,
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 /*
