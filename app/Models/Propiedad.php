@@ -11,7 +11,9 @@ class Propiedad extends Model
     // Permitir asignación masiva de todos los campos de la tabla
     protected $fillable = [
         'usuario_id',
-        'direccion',
+        'calle',
+        'numeracion',
+        'distrito',
         'hectareas',
         'derecho_riego',
         'tipo_derecho_riego',
