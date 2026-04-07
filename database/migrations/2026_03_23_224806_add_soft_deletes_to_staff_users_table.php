@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('staff_users', function (Blueprint $table) {
-            // Esto agregará la columna 'deleted_at' de tipo timestamp (nullable)
-            $table->softDeletes();
-        });
+        // Verifica si NO existe la columna antes de agregarla
+        if (!Schema::hasColumn('staff_users', 'deleted_at')) {
+            Schema::table('staff_users', function (Blueprint $table) {
+                $table->softDeletes();
+            });
+        }
     }
 
     /**
@@ -22,9 +24,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('staff_users', function (Blueprint $table) {
-            // Esto eliminará la columna si decides revertir la migración
-            $table->dropSoftDeletes();
-        });
+        // Verifica si existe antes de eliminarla
+        if (Schema::hasColumn('staff_users', 'deleted_at')) {
+            Schema::table('staff_users', function (Blueprint $table) {
+                $table->dropSoftDeletes();
+            });
+        }
     }
 };
