@@ -13,8 +13,39 @@
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-gray-700 font-semibold mb-1" for="direccion">Dirección</label>
-                    <input id="direccion" name="direccion" type="text" class="w-full p-2 border border-gray-300 rounded">
+                    <label class="block text-gray-700 font-semibold mb-1" for="distrito">Distrito</label>
+                    <select id="distrito" name="distrito" class="w-full p-2 border border-gray-300 rounded">
+                        <option value="">Seleccione un distrito</option>
+                        <option value="costa-de-araujo">Costa de Araujo</option>
+                        <option value="el-carmen">El Carmen</option>
+                        <option value="el-chilcal">El Chilcal</option>
+                        <option value="el-plumero">El Plumero</option>
+                        <option value="el-vergel">El Vergel</option>
+                        <option value="gustavo-andre">Gustavo André</option>
+                        <option value="jocoli">Jocolí</option>
+                        <option value="jocoli-viejo">Jocolí Viejo</option>
+                        <option value="la-asuncion">La Asunción</option>
+                        <option value="la-holanda">La Holanda</option>
+                        <option value="la-palmera">La Palmera</option>
+                        <option value="la-pega">La Pega</option>
+                        <option value="las-violetas">Las Violetas</option>
+                        <option value="lagunas-del-rosario">Lagunas del Rosario</option>
+                        <option value="paramillo">Paramillo</option>
+                        <option value="san-francisco">San Francisco</option>
+                        <option value="san-jose">San José</option>
+                        <option value="san-miguel">San Miguel</option>
+                        <option value="tres-de-mayo">Tres de Mayo</option>
+                        <option value="villa-tulumaya">Villa Tulumaya</option>
+                        <option value="oscar-mendoza">Oscar Mendoza</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1" for="calle">Calle</label>
+                    <input id="calle" name="calle" type="text" class="w-full p-2 border border-gray-300 rounded">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1" for="numeracion">Numeración</label>
+                    <input id="numeracion" name="numeracion" type="number" class="w-full p-2 border border-gray-300 rounded">
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1">Ubicación</label>

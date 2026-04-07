@@ -38,7 +38,40 @@
             <tbody id="propiedades-tbody" class="bg-white divide-y divide-gray-200">
                 @foreach($propiedades as $propiedad)
                 <tr>
-                    <td class="px-2 py-2 text-base text-gray-700">{{ $propiedad->direccion }}</td>
+                    <td class="px-2 py-2 text-base text-gray-700">
+                        @php
+                            $distritos = [
+                                'costa-de-araujo' => 'Costa de Araujo',
+                                'el-carmen' => 'El Carmen',
+                                'el-chilcal' => 'El Chilcal',
+                                'el-plumero' => 'El Plumero',
+                                'el-vergel' => 'El Vergel',
+                                'gustavo-andre' => 'Gustavo André',
+                                'jocoli' => 'Jocolí',
+                                'jocoli-viejo' => 'Jocolí Viejo',
+                                'la-asuncion' => 'La Asunción',
+                                'la-holanda' => 'La Holanda',
+                                'la-palmera' => 'La Palmera',
+                                'la-pega' => 'La Pega',
+                                'las-violetas' => 'Las Violetas',
+                                'lagunas-del-rosario' => 'Lagunas del Rosario',
+                                'paramillo' => 'Paramillo',
+                                'san-francisco' => 'San Francisco',
+                                'san-jose' => 'San José',
+                                'san-miguel' => 'San Miguel',
+                                'tres-de-mayo' => 'Tres de Mayo',
+                                'villa-tulumaya' => 'Villa Tulumaya',
+                                'oscar-mendoza' => 'Oscar Mendoza',
+                            ];
+                            $distrito = $propiedad->distrito ? ($distritos[$propiedad->distrito] ?? $propiedad->distrito) : null;
+                            $parts = array_filter([
+                                $distrito,
+                                $propiedad->calle,
+                                $propiedad->numeracion
+                            ]);
+                        @endphp
+                        {{ implode(', ', $parts) }}
+                    </td>
                     <td class="px-2 py-2 text-base text-gray-700 whitespace-nowrap">
                         @if($propiedad->lat && $propiedad->lng)
                             <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})"
