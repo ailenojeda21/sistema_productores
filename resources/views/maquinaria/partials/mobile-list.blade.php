@@ -22,7 +22,40 @@
             @if(isset($maq->propiedad))
             <div class="flex items-center text-sm">
                 <span class="font-medium text-gray-600 w-32">Propiedad:</span>
-                <span class="text-gray-800">{{ $maq->propiedad->ubicacion ?? '' }} {{ $maq->propiedad->direccion ?? '' }}</span>
+                <span class="text-gray-800">
+                    @php
+                        $distritos = [
+                            'costa-de-araujo' => 'Costa de Araujo',
+                            'el-carmen' => 'El Carmen',
+                            'el-chilcal' => 'El Chilcal',
+                            'el-plumero' => 'El Plumero',
+                            'el-vergel' => 'El Vergel',
+                            'gustavo-andre' => 'Gustavo André',
+                            'jocoli' => 'Jocolí',
+                            'jocoli-viejo' => 'Jocolí Viejo',
+                            'la-asuncion' => 'La Asunción',
+                            'la-holanda' => 'La Holanda',
+                            'la-palmera' => 'La Palmera',
+                            'la-pega' => 'La Pega',
+                            'las-violetas' => 'Las Violetas',
+                            'lagunas-del-rosario' => 'Lagunas del Rosario',
+                            'paramillo' => 'Paramillo',
+                            'san-francisco' => 'San Francisco',
+                            'san-jose' => 'San José',
+                            'san-miguel' => 'San Miguel',
+                            'tres-de-mayo' => 'Tres de Mayo',
+                            'villa-tulumaya' => 'Villa Tulumaya',
+                            'oscar-mendoza' => 'Oscar Mendoza',
+                        ];
+                        $distrito = $maq->propiedad->distrito ? ($distritos[$maq->propiedad->distrito] ?? $maq->propiedad->distrito) : null;
+                        $parts = array_filter([
+                            $distrito,
+                            $maq->propiedad->calle,
+                            $maq->propiedad->numeracion
+                        ]);
+                    @endphp
+                    {{ implode(', ', $parts) }}
+                </span>
             </div>
             @endif
             
@@ -113,7 +146,40 @@
                     @if(isset($maq->propiedad))
                     <div class="flex items-center text-sm">
                         <span class="font-medium text-gray-600 w-32">Propiedad:</span>
-                        <span class="text-gray-800">{{ $maq->propiedad->ubicacion ?? '' }} {{ $maq->propiedad->direccion ?? '' }}</span>
+                        <span class="text-gray-800">
+                            @php
+                                $distritos = [
+                                    'costa-de-araujo' => 'Costa de Araujo',
+                                    'el-carmen' => 'El Carmen',
+                                    'el-chilcal' => 'El Chilcal',
+                                    'el-plumero' => 'El Plumero',
+                                    'el-vergel' => 'El Vergel',
+                                    'gustavo-andre' => 'Gustavo André',
+                                    'jocoli' => 'Jocolí',
+                                    'jocoli-viejo' => 'Jocolí Viejo',
+                                    'la-asuncion' => 'La Asunción',
+                                    'la-holanda' => 'La Holanda',
+                                    'la-palmera' => 'La Palmera',
+                                    'la-pega' => 'La Pega',
+                                    'las-violetas' => 'Las Violetas',
+                                    'lagunas-del-rosario' => 'Lagunas del Rosario',
+                                    'paramillo' => 'Paramillo',
+                                    'san-francisco' => 'San Francisco',
+                                    'san-jose' => 'San José',
+                                    'san-miguel' => 'San Miguel',
+                                    'tres-de-mayo' => 'Tres de Mayo',
+                                    'villa-tulumaya' => 'Villa Tulumaya',
+                                    'oscar-mendoza' => 'Oscar Mendoza',
+                                ];
+                                $distrito = $maq->propiedad->distrito ? ($distritos[$maq->propiedad->distrito] ?? $maq->propiedad->distrito) : null;
+                                $parts = array_filter([
+                                    $distrito,
+                                    $maq->propiedad->calle,
+                                    $maq->propiedad->numeracion
+                                ]);
+                            @endphp
+                            {{ implode(', ', $parts) }}
+                        </span>
                     </div>
                     @endif
                     
