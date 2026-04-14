@@ -14,7 +14,9 @@ class CultivoController extends Controller
      */
     private function normalizarTipo(?string $tipo): ?string
     {
-        if ($tipo === null) return null;
+        if ($tipo === null) {
+            return null;
+        }
 
         $tipo = trim($tipo);
         $tipo = preg_replace('/\s+/', ' ', $tipo); // colapsa espacios múltiples
@@ -93,7 +95,7 @@ class CultivoController extends Controller
 
         $validated = $request->validate([
             'propiedad_id' => 'required|exists:propiedades,id',
-            'nombre' => 'required|string|max:255',
+            'variedad' => 'required|string|max:255',
             'estacion' => 'required|string|max:255',
             'tipo' => ['required', 'string', 'max:255', 'regex:/^[\pL\pM0-9\s\-\.\,\/]+$/u'],
             'hectareas' => "required|numeric|min:0|max:$hectareasDisponibles",
@@ -153,7 +155,7 @@ class CultivoController extends Controller
 
         $validated = $request->validate([
             'propiedad_id' => 'sometimes|exists:propiedades,id',
-            'nombre' => 'sometimes|string|max:255',
+            'variedad' => 'sometimes|string|max:255',
             'estacion' => 'sometimes|string|max:255',
             'tipo' => ['sometimes', 'string', 'max:255', 'regex:/^[\pL\pM0-9\s\-\.\,\/]+$/u'],
             'hectareas' => "sometimes|numeric|min:0|max:$hectareasDisponibles",

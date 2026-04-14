@@ -7,38 +7,7 @@
         <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
                 <h3 class="font-semibold text-azul-marino text-lg">
-                    @php
-                        $distritos = [
-                            'costa-de-araujo' => 'Costa de Araujo',
-                            'el-carmen' => 'El Carmen',
-                            'el-chilcal' => 'El Chilcal',
-                            'el-plumero' => 'El Plumero',
-                            'el-vergel' => 'El Vergel',
-                            'gustavo-andre' => 'Gustavo André',
-                            'jocoli' => 'Jocolí',
-                            'jocoli-viejo' => 'Jocolí Viejo',
-                            'la-asuncion' => 'La Asunción',
-                            'la-holanda' => 'La Holanda',
-                            'la-palmera' => 'La Palmera',
-                            'la-pega' => 'La Pega',
-                            'las-violetas' => 'Las Violetas',
-                            'lagunas-del-rosario' => 'Lagunas del Rosario',
-                            'paramillo' => 'Paramillo',
-                            'san-francisco' => 'San Francisco',
-                            'san-jose' => 'San José',
-                            'san-miguel' => 'San Miguel',
-                            'tres-de-mayo' => 'Tres de Mayo',
-                            'villa-tulumaya' => 'Villa Tulumaya',
-                            'oscar-mendoza' => 'Oscar Mendoza',
-                        ];
-                        $distrito = $propiedad->distrito ? ($distritos[$propiedad->distrito] ?? $propiedad->distrito) : null;
-                        $parts = array_filter([
-                            $distrito,
-                            $propiedad->calle,
-                            $propiedad->numeracion
-                        ]);
-                    @endphp
-                    {{ implode(', ', $parts) }}
+                    {{ $propiedad->direccion_completa }}
                 </h3>
                 <p class="text-sm text-gray-500">{{ number_format($propiedad->hectareas, 2, ',', '.') }} hectáreas</p>
             </div>

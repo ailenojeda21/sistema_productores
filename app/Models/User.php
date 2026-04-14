@@ -11,6 +11,35 @@ class User extends Authenticatable
 {
     use HasFactory, HasRoles, Notifiable;
 
+    public const COOPERATIVAS = [
+        'cooperativa_nueva_california' => 'Coop Nueva California',
+        'cooperativa_tulumaya' => 'Coop Tulumaya',
+        'cooperativa_norte_mendocino' => 'Coop Norte Mendocino',
+        'cooperativa_tres_de_mayo' => 'Coop Tres de Mayo',
+        'cooperativa_altas_cumbres' => 'Coop Altas Cumbres',
+        'cooperativa_tres_portenas' => 'Coop Tres Porteñas',
+        'cooperativa_el_poniente' => 'Coop El Poniente',
+        'cooperativa_pampanos_mendocinos' => 'Coop Pámpanos Mendocinos',
+        'cooperativa_ingeniero_giagnoni' => 'Coop Ingeniero Giagnoni',
+        'cooperativa_las_trincheras' => 'Coop Las Trincheras',
+        'cooperativa_agricola_beltran' => 'Coop Agrícola Beltrán',
+        'cooperativa_la_dormida' => 'Coop La Dormida',
+        'cooperativa_del_algarrobal' => 'Coop Del Algarrobal',
+        'cooperativa_el_libertador' => 'Coop El Libertador',
+        'cooperativa_brindis' => 'Coop Brindis',
+        'cooperativa_productores_junin' => 'Coop Productores de Junín',
+        'cooperativa_colonia_california' => 'Coop Colonia California',
+        'cooperativa_mendoza' => 'Coop Mendoza',
+        'cooperativa_norte_lavallino' => 'Coop Norte Lavallino',
+        'cooperativa_maipu' => 'Coop Maipú',
+        'cooperativa_lacofrut' => 'Coop Lacofrut',
+    ];
+
+    public static function getCooperativasForForm(): array
+    {
+        return self::COOPERATIVAS;
+    }
+
     /**
      * Relación: Un usuario tiene muchas propiedades
      */

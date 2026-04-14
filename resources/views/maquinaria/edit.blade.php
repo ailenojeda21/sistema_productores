@@ -30,13 +30,17 @@
             <!-- Propiedad -->
             <div class="mb-4">
                 <label for="propiedad_id" class="block text-gray-700 font-semibold mb-1">Propiedad asociada</label>
-                <select name="propiedad_id" id="propiedad_id" class="w-full p-2 border border-gray-300 rounded">
-                    @foreach($propiedades as $propiedad)
-                        <option value="{{ $propiedad->id }}" {{ (old('propiedad_id', $maquinaria->propiedad_id) == $propiedad->id) ? 'selected' : '' }}>
-                            {{ $propiedad->ubicacion }}  {{ $propiedad->direccion }}
-                        </option>
-                    @endforeach
-                </select>
+              <select name="propiedad_id" id="propiedad_id" class="w-full p-2 border border-gray-300 rounded">
+    @foreach($propiedades as $propiedad)
+        <option 
+            value="{{ $propiedad->id }}" 
+            {{ (old('propiedad_id', $maquinaria->propiedad_id) == $propiedad->id) ? 'selected' : '' }}>
+            
+            {{ $propiedad->direccion_completa }}
+            
+        </option>
+    @endforeach
+</select>
             </div>
 
 
@@ -74,24 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Implementos / Accesorios</h3>
                 <div class="grid grid-cols-2 gap-x-8 gap-y-3">
-                    @php
-                        $implements = [
-                            'arado' => 'Arado',
-                            'rastra' => 'Rastra',
-                            'niveleta_comun' => 'Niveleta común',
-                            'niveleta_laser' => 'Niveleta láser',
-                            'cincel_cultivadora' => 'Cincel o cultivadora',
-                            'desmalezadora' => 'Desmalezadora',
-                            'pulverizadora_tractor' => 'Pulverizadora de tractor',
-                            'mochila_pulverizadora' => 'Mochila pulverizadora',
-                            'cosechadora' => 'Cosechadora',
-                            'enfardadora' => 'Enfardadora',
-                            'retroexcavadora' => 'Retroexcavadora',
-                            'carro_carreton' => 'Carro o carreton',
-                        ];
-                    @endphp
-
-                    @foreach($implements as $field => $label)
+                    @foreach(\App\Models\Maquinaria::getImplementosForForm() as $field => $label)
                         <div class="flex items-center">
                             <input type="checkbox" name="{{ $field }}" id="{{ $field }}" class="custom-checkbox"
                                 {{ old($field, $maquinaria->$field) ? 'checked' : '' }}>

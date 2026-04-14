@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Maquinaria extends Model
 {
-    /**
-     * Campos asignables masivamente
-     */
     protected $fillable = [
         'propiedad_id',
         'tractor',
@@ -27,20 +24,45 @@ class Maquinaria extends Model
         'carro_carreton',
     ];
 
-    /**
-     * Relación: Una maquinaria pertenece a una propiedad
-     */
+    public const IMPLEMENTOS_LABELS = [
+        'arado' => 'Arado',
+        'rastra' => 'Rastra',
+        'niveleta_comun' => 'Niveleta común',
+        'niveleta_laser' => 'Niveleta láser',
+        'cincel_cultivadora' => 'Cincel/Cultivadora',
+        'desmalezadora' => 'Desmalezadora',
+        'pulverizadora_tractor' => 'Pulverizadora',
+        'mochila_pulverizadora' => 'Mochila pulverizadora',
+        'cosechadora' => 'Cosechadora',
+        'enfardadora' => 'Enfardadora',
+        'retroexcavadora' => 'Retroexcavadora',
+        'carro_carreton' => 'Carro/Carretón',
+    ];
+
+    public static function getImplementosForForm(): array
+    {
+        return self::IMPLEMENTOS_LABELS;
+    }
+
+    public function getImplementosActivosAttribute(): array
+    {
+        $activos = [];
+        foreach (self::IMPLEMENTOS_LABELS as $key => $label) {
+            if (! empty($this->$key)) {
+                $activos[] = $label;
+            }
+        }
+
+        return $activos;
+    }
+
+    public function getTipoLabelAttribute(): string
+    {
+        return $this->tractor ? 'Tractor' : 'Maquinaria';
+    }
+
     public function propiedad()
     {
         return $this->belongsTo(Propiedad::class);
     }
-
-    /**
-     * Relación: Una maquinaria puede tener muchos implementos
-     * (Si necesitas esta relación, descomenta y ajusta)
-     */
-    // public function implementos()
-    // {
-    //     return $this->hasMany(Implemento::class);
-    // }
 }

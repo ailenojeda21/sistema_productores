@@ -26,27 +26,9 @@
                     <label class="block font-semibold mb-1" for="distrito">Distrito</label>
                     <select id="distrito" name="distrito" class="w-full p-2 border border-gray-300 rounded">
                         <option value="">Seleccione un distrito</option>
-                        <option value="costa-de-araujo" {{ old('distrito', $propiedad->distrito) == 'costa-de-araujo' ? 'selected' : '' }}>Costa de Araujo</option>
-                        <option value="el-carmen" {{ old('distrito', $propiedad->distrito) == 'el-carmen' ? 'selected' : '' }}>El Carmen</option>
-                        <option value="el-chilcal" {{ old('distrito', $propiedad->distrito) == 'el-chilcal' ? 'selected' : '' }}>El Chilcal</option>
-                        <option value="el-plumero" {{ old('distrito', $propiedad->distrito) == 'el-plumero' ? 'selected' : '' }}>El Plumero</option>
-                        <option value="el-vergel" {{ old('distrito', $propiedad->distrito) == 'el-vergel' ? 'selected' : '' }}>El Vergel</option>
-                        <option value="gustavo-andre" {{ old('distrito', $propiedad->distrito) == 'gustavo-andre' ? 'selected' : '' }}>Gustavo André</option>
-                        <option value="jocoli" {{ old('distrito', $propiedad->distrito) == 'jocoli' ? 'selected' : '' }}>Jocolí</option>
-                        <option value="jocoli-viejo" {{ old('distrito', $propiedad->distrito) == 'jocoli-viejo' ? 'selected' : '' }}>Jocolí Viejo</option>
-                        <option value="la-asuncion" {{ old('distrito', $propiedad->distrito) == 'la-asuncion' ? 'selected' : '' }}>La Asunción</option>
-                        <option value="la-holanda" {{ old('distrito', $propiedad->distrito) == 'la-holanda' ? 'selected' : '' }}>La Holanda</option>
-                        <option value="la-palmera" {{ old('distrito', $propiedad->distrito) == 'la-palmera' ? 'selected' : '' }}>La Palmera</option>
-                        <option value="la-pega" {{ old('distrito', $propiedad->distrito) == 'la-pega' ? 'selected' : '' }}>La Pega</option>
-                        <option value="las-violetas" {{ old('distrito', $propiedad->distrito) == 'las-violetas' ? 'selected' : '' }}>Las Violetas</option>
-                        <option value="lagunas-del-rosario" {{ old('distrito', $propiedad->distrito) == 'lagunas-del-rosario' ? 'selected' : '' }}>Lagunas del Rosario</option>
-                        <option value="paramillo" {{ old('distrito', $propiedad->distrito) == 'paramillo' ? 'selected' : '' }}>Paramillo</option>
-                        <option value="san-francisco" {{ old('distrito', $propiedad->distrito) == 'san-francisco' ? 'selected' : '' }}>San Francisco</option>
-                        <option value="san-jose" {{ old('distrito', $propiedad->distrito) == 'san-jose' ? 'selected' : '' }}>San José</option>
-                        <option value="san-miguel" {{ old('distrito', $propiedad->distrito) == 'san-miguel' ? 'selected' : '' }}>San Miguel</option>
-                        <option value="tres-de-mayo" {{ old('distrito', $propiedad->distrito) == 'tres-de-mayo' ? 'selected' : '' }}>Tres de Mayo</option>
-                        <option value="villa-tulumaya" {{ old('distrito', $propiedad->distrito) == 'villa-tulumaya' ? 'selected' : '' }}>Villa Tulumaya</option>
-                        <option value="oscar-mendoza" {{ old('distrito', $propiedad->distrito) == 'oscar-mendoza' ? 'selected' : '' }}>Oscar Mendoza</option>
+                        @foreach(\App\Models\Propiedad::getDistritosForForm() as $value => $label)
+                            <option value="{{ $value }}" {{ old('distrito', $propiedad->distrito) == $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -109,9 +91,9 @@
                     <div id="tipoDerechoRiegoDiv" class="hidden mt-2">
                         <select name="tipo_derecho_riego" class="w-full p-2 border border-gray-300 rounded">
                             <option value="">Seleccione...</option>
-                            <option value="Subterráneo" {{ $propiedad->tipo_derecho_riego == 'Subterráneo' ? 'selected' : '' }}>Subterráneo</option>
-                            <option value="Superficial" {{ $propiedad->tipo_derecho_riego == 'Superficial' ? 'selected' : '' }}>Superficial</option>
-                            <option value="Ambos" {{ $propiedad->tipo_derecho_riego == 'Ambos' ? 'selected' : '' }}>Ambos</option>
+                            @foreach(\App\Models\Propiedad::getTipoDerechoRiegoForForm() as $value => $label)
+                                <option value="{{ $value }}" {{ $propiedad->tipo_derecho_riego == $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>

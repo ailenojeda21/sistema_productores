@@ -11,7 +11,7 @@
         <!-- Header -->
         <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
-                <h3 class="font-semibold text-azul-marino text-lg">{{ $cultivo->nombre }}</h3>
+                <h3 class="font-semibold text-azul-marino text-lg">{{ $cultivo->variedad }}</h3>
                 <p class="text-sm text-gray-500">{{ $cultivo->tipo }} - {{ $cultivo->estacion }}</p>
             </div>
             <span class="material-symbols-outlined text-gray-400">agriculture</span>
@@ -22,40 +22,7 @@
             @if(isset($cultivo->propiedad) && $cultivo->propiedad)
             <div class="flex items-center text-sm">
                 <span class="font-medium text-gray-600 w-32">Propiedad:</span>
-                <span class="text-gray-800">
-                    @php
-                        $distritos = [
-                            'costa-de-araujo' => 'Costa de Araujo',
-                            'el-carmen' => 'El Carmen',
-                            'el-chilcal' => 'El Chilcal',
-                            'el-plumero' => 'El Plumero',
-                            'el-vergel' => 'El Vergel',
-                            'gustavo-andre' => 'Gustavo André',
-                            'jocoli' => 'Jocolí',
-                            'jocoli-viejo' => 'Jocolí Viejo',
-                            'la-asuncion' => 'La Asunción',
-                            'la-holanda' => 'La Holanda',
-                            'la-palmera' => 'La Palmera',
-                            'la-pega' => 'La Pega',
-                            'las-violetas' => 'Las Violetas',
-                            'lagunas-del-rosario' => 'Lagunas del Rosario',
-                            'paramillo' => 'Paramillo',
-                            'san-francisco' => 'San Francisco',
-                            'san-jose' => 'San José',
-                            'san-miguel' => 'San Miguel',
-                            'tres-de-mayo' => 'Tres de Mayo',
-                            'villa-tulumaya' => 'Villa Tulumaya',
-                            'oscar-mendoza' => 'Oscar Mendoza',
-                        ];
-                        $distrito = $cultivo->propiedad->distrito ? ($distritos[$cultivo->propiedad->distrito] ?? $cultivo->propiedad->distrito) : null;
-                        $parts = array_filter([
-                            $distrito,
-                            $cultivo->propiedad->calle,
-                            $cultivo->propiedad->numeracion
-                        ]);
-                    @endphp
-                    {{ implode(', ', $parts) }}
-                </span>
+                <span class="text-gray-800">{{ $cultivo->propiedad->direccion_completa }}</span>
             </div>
             @endif
             <div class="flex items-center text-sm">
@@ -64,7 +31,7 @@
             </div>
             <div class="flex items-center text-sm">
                 <span class="font-medium text-gray-600 w-32">Manejo:</span>
-                <span class="text-gray-800">{{ $cultivo->manejo_cultivo }}</span>
+                <span class="text-gray-800">{{ $cultivo->manejo_label }}</span>
             </div>
             @if($cultivo->tecnologia_riego)
             <div class="flex items-center text-sm">
@@ -109,7 +76,7 @@
             <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
                 <div class="flex items-start justify-between mb-3">
                     <div class="flex-1">
-                        <h3 class="font-semibold text-azul-marino text-lg">{{ $cultivo->nombre }}</h3>
+                        <h3 class="font-semibold text-azul-marino text-lg">{{ $cultivo->variedad }}</h3>
                         <p class="text-sm text-gray-500">{{ $cultivo->tipo }} - {{ $cultivo->estacion }}</p>
                     </div>
                     <span class="material-symbols-outlined text-gray-400">agriculture</span>
@@ -119,40 +86,7 @@
                     @if(isset($cultivo->propiedad) && $cultivo->propiedad)
                     <div class="flex items-center text-sm">
                         <span class="font-medium text-gray-600 w-32">Propiedad:</span>
-                        <span class="text-gray-800">
-                    @php
-                        $distritos = [
-                            'costa-de-araujo' => 'Costa de Araujo',
-                            'el-carmen' => 'El Carmen',
-                            'el-chilcal' => 'El Chilcal',
-                            'el-plumero' => 'El Plumero',
-                            'el-vergel' => 'El Vergel',
-                            'gustavo-andre' => 'Gustavo André',
-                            'jocoli' => 'Jocolí',
-                            'jocoli-viejo' => 'Jocolí Viejo',
-                            'la-asuncion' => 'La Asunción',
-                            'la-holanda' => 'La Holanda',
-                            'la-palmera' => 'La Palmera',
-                            'la-pega' => 'La Pega',
-                            'las-violetas' => 'Las Violetas',
-                            'lagunas-del-rosario' => 'Lagunas del Rosario',
-                            'paramillo' => 'Paramillo',
-                            'san-francisco' => 'San Francisco',
-                            'san-jose' => 'San José',
-                            'san-miguel' => 'San Miguel',
-                            'tres-de-mayo' => 'Tres de Mayo',
-                            'villa-tulumaya' => 'Villa Tulumaya',
-                            'oscar-mendoza' => 'Oscar Mendoza',
-                        ];
-                        $distrito = $cultivo->propiedad->distrito ? ($distritos[$cultivo->propiedad->distrito] ?? $cultivo->propiedad->distrito) : null;
-                        $parts = array_filter([
-                            $distrito,
-                            $cultivo->propiedad->calle,
-                            $cultivo->propiedad->numeracion
-                        ]);
-                    @endphp
-                    {{ implode(', ', $parts) }}
-                </span>
+                        <span class="text-gray-800">{{ $cultivo->propiedad->direccion_completa }}</span>
                     </div>
                     @endif
                     <div class="flex items-center text-sm">
@@ -161,7 +95,7 @@
                     </div>
                     <div class="flex items-center text-sm">
                         <span class="font-medium text-gray-600 w-32">Manejo:</span>
-                        <span class="text-gray-800">{{ $cultivo->manejo_cultivo }}</span>
+                        <span class="text-gray-800">{{ $cultivo->manejo_label }}</span>
                     </div>
                     @if($cultivo->tecnologia_riego)
                     <div class="flex items-center text-sm">

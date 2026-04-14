@@ -15,6 +15,7 @@ class ProfileController extends Controller
     public function edit(Request $request)
     {
         $user = Auth::user();
+
         return view('profile.edit', compact('user'));
     }
 
@@ -24,16 +25,16 @@ class ProfileController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . auth()->id()],
-            'dni'      => ['nullable', 'string', 'max:20'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.auth()->id()],
+            'dni' => ['nullable', 'string', 'max:20'],
             'telefono' => ['nullable', 'string', 'max:20'],
             'cooperativas' => ['nullable', 'array'],
             'cooperativas.*' => ['string'],
         ]);
 
         // Si el checkbox "tiene_cooperativas" no está marcado, limpiar las cooperativas
-        if (!$request->has('tiene_cooperativas')) {
+        if (! $request->has('tiene_cooperativas')) {
             $validated['cooperativas'] = null;
         }
 
@@ -41,7 +42,7 @@ class ProfileController extends Controller
         $user->update($validated);
 
         return Redirect::route('profile')
-            ->with('status', 'Perfil actualizado correctamente.');
+            ->with('success', 'Perfil actualizado correctamente.');
     }
 
     /**
@@ -50,6 +51,7 @@ class ProfileController extends Controller
     public function editAvatar()
     {
         $user = Auth::user();
+
         return view('profile.avatar', compact('user'));
     }
 
@@ -67,7 +69,7 @@ class ProfileController extends Controller
         ];
 
         $request->validate([
-            'avatar' => 'required|in:' . implode(',', $validAvatars),
+            'avatar' => 'required|in:'.implode(',', $validAvatars),
         ]);
 
         $user = Auth::user();
@@ -75,7 +77,7 @@ class ProfileController extends Controller
         $user->save();
 
         return Redirect::route('profile')
-            ->with('status', 'Avatar actualizado correctamente.');
+            ->with('success', 'Avatar actualizado correctamente.');
     }
 
     /**
@@ -104,6 +106,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
+
         return view('profile.show', compact('user'));
     }
 }

@@ -15,45 +15,45 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="propiedad_id">Propiedad</label>
-                    <select id="propiedad_id" name="propiedad_id" class="w-full p-2 border border-gray-300 rounded" required>
-                        <option value="">Seleccione propiedad</option>
-                        @foreach($propiedades as $propiedad)
-                        <option value="{{ $propiedad->id }}" data-hectareas="{{ $propiedad->hectareas }}">{{ $propiedad->direccion }}</option>
-                        @endforeach
-                    </select>
+                   <select id="propiedad_id" name="propiedad_id" class="w-full p-2 border border-gray-300 rounded" required>
+                    <option value="">Seleccione propiedad</option>
+                    @foreach($propiedades as $propiedad)
+                        <option value="{{ $propiedad->id }}"  data-hectareas="{{ $propiedad->hectareas }}">
+                            {{ $propiedad->direccion_completa }}
+                        </option>
+                    @endforeach
+                </select>
                 </div>
                 <div>
-                    <label class="block text-gray-700 font-semibold mb-1" for="nombre">Nombre</label>
-                    <input id="nombre" name="nombre" type="text" class="w-full p-2 border border-gray-300 rounded" required>
+                    <label class="block text-gray-700 font-semibold mb-1" for="variedad">Variedad</label>
+                    <input id="variedad" name="variedad" type="text" class="w-full p-2 border border-gray-300 rounded" required>
                 </div>
 
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="tipo">Tipo</label>
                     <select id="tipo" name="tipo" class="w-full p-2 border border-gray-300 rounded" required>
                         <option value="">Seleccione tipo</option>
-                        <option value="Frutícola">Frutícola</option>
-                        <option value="Hortícola">Hortícola</option>
-                        <option value="Vitícola">Vitícola</option>
-                        <option value="Olivícola">Olivícola</option>
+                        @foreach(\App\Models\Cultivo::getTiposForForm() as $value => $label)
+                            <option value="{{ $value }}" {{ old('tipo') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
                     <div>
                         <label class="block text-gray-700 font-semibold mb-1" for="manejo_cultivo">Manejo de Cultivos</label>
                         <select id="manejo_cultivo" name="manejo_cultivo" class="w-full p-2 border border-gray-300 rounded" required>
                             <option value="">Seleccione manejo</option>
-                            <option value="Convencional">Convencional</option>
-                            <option value="Agroecologico">Agroecológico</option>
-                            <option value="Organico">Orgánico</option>
+                            @foreach(\App\Models\Cultivo::getManejoOptionsForForm() as $value => $label)
+                                <option value="{{ $value }}" {{ old('manejo_cultivo') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
                         </select>
                     </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="estacion">Estación</label>
                     <select id="estacion" name="estacion" class="w-full p-2 border border-gray-300 rounded" required>
                         <option value="">Seleccione estación</option>
-                        <option value="Verano">Verano</option>
-                        <option value="Invierno">Invierno</option>
-                        <option value="Otoño">Otoño</option>
-                        <option value="Primavera">Primavera</option>
+                        @foreach(\App\Models\Cultivo::getEstacionesForForm() as $value => $label)
+                            <option value="{{ $value }}" {{ old('estacion') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div>
@@ -66,12 +66,9 @@
                     <label class="block text-gray-700 font-semibold mb-1" for="tecnologia_riego">Tecnología de riego</label>
                     <select id="tecnologia_riego" name="tecnologia_riego" class="w-full p-2 border border-gray-300 rounded" required>
                         <option value="">Seleccione tecnología</option>
-                        <option value="Surco">Por Surco</option>
-                        <option value="Inundación">Por Inundación</option>
-                        <option value="Cimalco">Cimalco</option>
-                        <option value="Manga">Manga</option>
-                        <option value="Goteo">Goteo</option>
-                        <option value="Aspersión">Aspersión</option>
+                        @foreach(\App\Models\Cultivo::getTecnologiaRiegoForForm() as $value => $label)
+                            <option value="{{ $value }}" {{ old('tecnologia_riego') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
             

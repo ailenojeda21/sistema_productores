@@ -8,85 +8,28 @@
     <!-- Primeras 2 maquinarias -->
     @foreach($firstTwo as $maq)
     <div class="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+        
         <!-- Header -->
         <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
-                <h3 class="font-semibold text-azul-marino text-lg">{{ $maq->tractor ? 'Tractor' : 'Maquinaria' }}</h3>
-                <p class="text-sm text-gray-500">{{ $maq->modelo_tractor ?? '-' }}</p>
+                <h3 class="font-semibold text-azul-marino text-lg">
+                    {{ $maq->propiedad->direccion_completa ?? 'Sin dirección' }}
+                </h3>
+                <p class="text-sm text-gray-500">
+                    {{ $maq->tractor ? 'Tractor' : 'Maquinaria' }} - {{ $maq->modelo_tractor ?? '-' }}
+                </p>
             </div>
             <span class="material-symbols-outlined text-gray-400">precision_manufacturing</span>
         </div>
 
         <!-- Detalles -->
         <div class="space-y-2 mb-4">
-            @if(isset($maq->propiedad))
-            <div class="flex items-center text-sm">
-                <span class="font-medium text-gray-600 w-32">Propiedad:</span>
-                <span class="text-gray-800">
-                    @php
-                        $distritos = [
-                            'costa-de-araujo' => 'Costa de Araujo',
-                            'el-carmen' => 'El Carmen',
-                            'el-chilcal' => 'El Chilcal',
-                            'el-plumero' => 'El Plumero',
-                            'el-vergel' => 'El Vergel',
-                            'gustavo-andre' => 'Gustavo André',
-                            'jocoli' => 'Jocolí',
-                            'jocoli-viejo' => 'Jocolí Viejo',
-                            'la-asuncion' => 'La Asunción',
-                            'la-holanda' => 'La Holanda',
-                            'la-palmera' => 'La Palmera',
-                            'la-pega' => 'La Pega',
-                            'las-violetas' => 'Las Violetas',
-                            'lagunas-del-rosario' => 'Lagunas del Rosario',
-                            'paramillo' => 'Paramillo',
-                            'san-francisco' => 'San Francisco',
-                            'san-jose' => 'San José',
-                            'san-miguel' => 'San Miguel',
-                            'tres-de-mayo' => 'Tres de Mayo',
-                            'villa-tulumaya' => 'Villa Tulumaya',
-                            'oscar-mendoza' => 'Oscar Mendoza',
-                        ];
-                        $distrito = $maq->propiedad->distrito ? ($distritos[$maq->propiedad->distrito] ?? $maq->propiedad->distrito) : null;
-                        $parts = array_filter([
-                            $distrito,
-                            $maq->propiedad->calle,
-                            $maq->propiedad->numeracion
-                        ]);
-                    @endphp
-                    {{ implode(', ', $parts) }}
-                </span>
-            </div>
-            @endif
-            
-            @php
-                $items = [
-                    'arado' => 'Arado',
-                    'rastra' => 'Rastra',
-                    'niveleta_comun' => 'Niveleta común',
-                    'niveleta_laser' => 'Niveleta láser',
-                    'cincel_cultivadora' => 'Cincel/Cultivadora',
-                    'desmalezadora' => 'Desmalezadora',
-                    'pulverizadora_tractor' => 'Pulverizadora',
-                    'mochila_pulverizadora' => 'Mochila pulverizadora',
-                    'cosechadora' => 'Cosechadora',
-                    'enfardadora' => 'Enfardadora',
-                    'retroexcavadora' => 'Retroexcavadora',
-                    'carro_carreton' => 'Carro/Carretón',
-                ];
-                $activos = [];
-                foreach ($items as $key => $label) {
-                    if (!empty($maq->$key)) {
-                        $activos[] = $label;
-                    }
-                }
-            @endphp
-            
-            @if(count($activos) > 0)
+
+            @if($maq->implementos_activos)
             <div class="text-sm">
                 <span class="font-medium text-gray-600 block mb-2">Implementos:</span>
                 <div class="flex flex-wrap gap-1.5">
-                    @foreach($activos as $item)
+                    @foreach($maq->implementos_activos as $item)
                     <span class="inline-flex items-center px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
                         {{ $item }}
                     </span>
@@ -99,6 +42,7 @@
                 <span class="text-gray-400 italic text-xs ml-2">Sin implementos</span>
             </div>
             @endif
+
         </div>
 
         <!-- Acciones -->
@@ -108,6 +52,7 @@
                 <span class="material-symbols-outlined text-lg">edit</span>
                 Editar
             </a>
+
             <form action="{{ route('maquinaria.destroy', $maq) }}" method="POST" 
                   onsubmit="return confirm('¿Seguro que deseas eliminar esta maquinaria?');">
                 @csrf
@@ -119,10 +64,11 @@
                 </button>
             </form>
         </div>
+
     </div>
     @endforeach
 
-    <!-- Expandible para el resto -->
+    <!-- Expandible -->
     @if($remaining->count() > 0)
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <button onclick="toggleExpandMaquinaria()" 
@@ -134,69 +80,26 @@
         <div id="expandable-content-maquinaria" class="hidden space-y-4 p-4 bg-gray-50">
             @foreach($remaining as $maq)
             <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+
                 <div class="flex items-start justify-between mb-3">
                     <div class="flex-1">
-                        <h3 class="font-semibold text-azul-marino text-lg">{{ $maq->tractor ? 'Tractor' : 'Maquinaria' }}</h3>
-                        <p class="text-sm text-gray-500">{{ $maq->modelo_tractor ?? '-' }}</p>
+                        <h3 class="font-semibold text-azul-marino text-lg">
+                            {{ $maq->propiedad->direccion_completa ?? 'Sin dirección' }}
+                        </h3>
+                        <p class="text-sm text-gray-500">
+                            {{ $maq->tractor ? 'Tractor' : 'Maquinaria' }} - {{ $maq->modelo_tractor ?? '-' }}
+                        </p>
                     </div>
                     <span class="material-symbols-outlined text-gray-400">precision_manufacturing</span>
                 </div>
 
                 <div class="space-y-2 mb-4">
-                    @if(isset($maq->propiedad))
-                    <div class="flex items-center text-sm">
-                        <span class="font-medium text-gray-600 w-32">Propiedad:</span>
-                        <span class="text-gray-800">
-                            @php
-                                $distritos = [
-                                    'costa-de-araujo' => 'Costa de Araujo',
-                                    'el-carmen' => 'El Carmen',
-                                    'el-chilcal' => 'El Chilcal',
-                                    'el-plumero' => 'El Plumero',
-                                    'el-vergel' => 'El Vergel',
-                                    'gustavo-andre' => 'Gustavo André',
-                                    'jocoli' => 'Jocolí',
-                                    'jocoli-viejo' => 'Jocolí Viejo',
-                                    'la-asuncion' => 'La Asunción',
-                                    'la-holanda' => 'La Holanda',
-                                    'la-palmera' => 'La Palmera',
-                                    'la-pega' => 'La Pega',
-                                    'las-violetas' => 'Las Violetas',
-                                    'lagunas-del-rosario' => 'Lagunas del Rosario',
-                                    'paramillo' => 'Paramillo',
-                                    'san-francisco' => 'San Francisco',
-                                    'san-jose' => 'San José',
-                                    'san-miguel' => 'San Miguel',
-                                    'tres-de-mayo' => 'Tres de Mayo',
-                                    'villa-tulumaya' => 'Villa Tulumaya',
-                                    'oscar-mendoza' => 'Oscar Mendoza',
-                                ];
-                                $distrito = $maq->propiedad->distrito ? ($distritos[$maq->propiedad->distrito] ?? $maq->propiedad->distrito) : null;
-                                $parts = array_filter([
-                                    $distrito,
-                                    $maq->propiedad->calle,
-                                    $maq->propiedad->numeracion
-                                ]);
-                            @endphp
-                            {{ implode(', ', $parts) }}
-                        </span>
-                    </div>
-                    @endif
-                    
-                    @php
-                        $activos = [];
-                        foreach ($items as $key => $label) {
-                            if (!empty($maq->$key)) {
-                                $activos[] = $label;
-                            }
-                        }
-                    @endphp
-                    
-                    @if(count($activos) > 0)
+
+                    @if($maq->implementos_activos)
                     <div class="text-sm">
                         <span class="font-medium text-gray-600 block mb-2">Implementos:</span>
                         <div class="flex flex-wrap gap-1.5">
-                            @foreach($activos as $item)
+                            @foreach($maq->implementos_activos as $item)
                             <span class="inline-flex items-center px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
                                 {{ $item }}
                             </span>
@@ -209,6 +112,7 @@
                         <span class="text-gray-400 italic text-xs ml-2">Sin implementos</span>
                     </div>
                     @endif
+
                 </div>
 
                 <div class="flex flex-col gap-2 pt-3 border-t border-gray-200">
@@ -217,6 +121,7 @@
                         <span class="material-symbols-outlined text-lg">edit</span>
                         Editar
                     </a>
+
                     <form action="{{ route('maquinaria.destroy', $maq) }}" method="POST" 
                           onsubmit="return confirm('¿Seguro que deseas eliminar esta maquinaria?');">
                         @csrf
@@ -228,6 +133,7 @@
                         </button>
                     </form>
                 </div>
+
             </div>
             @endforeach
         </div>
@@ -237,8 +143,12 @@
         function toggleExpandMaquinaria() {
             const content = document.getElementById('expandable-content-maquinaria');
             const icon = document.getElementById('expand-icon-maquinaria');
+
             content.classList.toggle('hidden');
-            icon.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+
+            icon.style.transform = content.classList.contains('hidden') 
+                ? 'rotate(0deg)' 
+                : 'rotate(180deg)';
         }
     </script>
     @endif

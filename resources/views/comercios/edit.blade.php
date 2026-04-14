@@ -49,17 +49,9 @@
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Seleccione el mercado</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
                     @php
-                        $mercados = [
-                            'mercado_guaymallen' => 'Mercado Cooperativo Guaymallen',
-                            'mercado_acceso_este' => 'Mercado Cooperativo Acceso Este',
-                            'mercado_las_heras' => 'Mercado Cooperativo Las Heras',
-                            'mercado_godoy_cruz' => 'Mercado Concentrador de Godoy Cruz',
-                            'mercado_colonia_bombal' => 'Mercado Cooperativo Colonia Bombal',
-                            'mercados_nacionales_internacionales' => 'Mercados Nacionales o Internacionales',
-                        ];
                         $selectedMercados = old('mercados', isset($comercio->mercados) ? (is_array($comercio->mercados) ? $comercio->mercados : json_decode($comercio->mercados, true)) : []);
                     @endphp
-                    @foreach($mercados as $field => $label)
+                    @foreach(\App\Models\Comercio::getMercadosForForm() as $field => $label)
                         <label class="flex items-center space-x-1">
                             <input type="checkbox" name="mercados[]" id="{{ $field }}" value="{{ $label }}" class="custom-checkbox"
                                 {{ is_array($selectedMercados) && in_array($label, $selectedMercados) ? 'checked' : '' }}>
@@ -82,32 +74,9 @@
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Seleccione la cooperativa</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
                     @php
-                        $cooperativas = [
-                            'cooperativa_nueva_california' => 'Coop. Nueva California',
-                            'cooperativa_tulumaya' => 'Coop. Tulumaya',
-                            'cooperativa_norte_mendocino' => 'Coop. Norte Mendocino',
-                            'cooperativa_tres_de_mayo' => 'Coop. Tres de Mayo',
-                            'cooperativa_altas_cumbres' => 'Coop. Altas Cumbres',
-                            'cooperativa_tres_portenas' => 'Coop. Tres Porteñas',
-                            'cooperativa_el_poniente' => 'Coop. El Poniente',
-                            'cooperativa_pampanos_mendocinos' => 'Coop. Pámpanos Mendocinos',
-                            'cooperativa_ingeniero_giagnoni' => 'Coop. Ingeniero Giagnoni',
-                            'cooperativa_las_trincheras' => 'Coop. Las Trincheras',
-                            'cooperativa_agricola_beltran' => 'Coop. Agrícola Beltrán',
-                            'cooperativa_la_dormida' => 'Coop. La Dormida',
-                            'cooperativa_del_algarrobal' => 'Coop. Del Algarrobal',
-                            'cooperativa_el_libertador' => 'Coop. El Libertador',
-                            'cooperativa_brindis' => 'Coop. Brindis',
-                            'cooperativa_productores_junin' => 'Coop. Productores de Junín',
-                            'cooperativa_colonia_california' => 'Coop. Colonia California',
-                            'cooperativa_mendoza' => 'Coop. Mendoza',
-                            'cooperativa_norte_lavallino' => 'Coop. Norte Lavallino',
-                            'cooperativa_maipu' => 'Coop. Maipú',
-                            'cooperativa_lacofut' => 'Coop. LACOFUT',
-                        ];
                         $selectedCooperativas = old('cooperativas', isset($comercio->cooperativas) ? (is_array($comercio->cooperativas) ? $comercio->cooperativas : json_decode($comercio->cooperativas, true)) : []);
                     @endphp
-                    @foreach($cooperativas as $field => $label)
+                    @foreach(\App\Models\Comercio::getCooperativasForForm() as $field => $label)
                         <label class="flex items-center space-x-1">
                             <input type="checkbox" name="cooperativas[]" id="{{ $field }}" value="{{ $label }}" class="custom-checkbox"
                                 {{ is_array($selectedCooperativas) && in_array($label, $selectedCooperativas) ? 'checked' : '' }}>
