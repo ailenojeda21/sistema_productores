@@ -37,7 +37,7 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Propiedad</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Máquina</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Tractor</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Modelo (Año)</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider w-1/2">
                         Implementos
@@ -61,7 +61,11 @@
 
                     <!-- Máquina -->
                     <td class="px-4 py-2 text-base text-gray-700">
-                        {{ $maq->tipo_label }}
+                        @if($maq->tractor)
+                            <span class="text-green-600 font-semibold">✓ Si</span>
+                        @else
+                            <span class="text-red-600 font-semibold">✓ No</span>
+                        @endif
                     </td>
 
                     <!-- Modelo -->
