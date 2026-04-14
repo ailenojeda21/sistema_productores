@@ -16,12 +16,7 @@
                     {{ $maq->propiedad->direccion_completa ?? 'Sin dirección' }}
                 </h3>
                 <p class="text-sm text-gray-500">
-                    @if($maq->tractor)
-                        <span class="text-green-600 font-semibold">✓ Tractor</span>
-                    @else
-                        <span class="text-gray-400">No</span>
-                    @endif
-                    - {{ $maq->modelo_tractor ?? '-' }}
+                   {{ $maq->tractor ? 'Tractor - ' . ($maq->modelo_tractor ?? '-') : '' }}
                 </p>
             </div>
             <span class="material-symbols-outlined text-gray-400">precision_manufacturing</span>
@@ -92,12 +87,7 @@
                             {{ $maq->propiedad->direccion_completa ?? 'Sin dirección' }}
                         </h3>
                         <p class="text-sm text-gray-500">
-                            @if($maq->tractor)
-                                <span class="text-green-600 font-semibold">✓ Tractor</span>
-                            @else
-                                <span class="text-gray-400">No</span>
-                            @endif
-                            - {{ $maq->modelo_tractor ?? '-' }}
+                      {{ $maq->tractor ? 'Tractor - ' . ($maq->modelo_tractor ?? '-') : '' }}
                         </p>
                     </div>
                     <span class="material-symbols-outlined text-gray-400">precision_manufacturing</span>
