@@ -22,6 +22,7 @@ class Maquinaria extends Model
         'enfardadora',
         'retroexcavadora',
         'carro_carreton',
+        'multiple',
     ];
 
     public const IMPLEMENTOS_LABELS = [
@@ -37,6 +38,7 @@ class Maquinaria extends Model
         'enfardadora' => 'Enfardadora',
         'retroexcavadora' => 'Retroexcavadora',
         'carro_carreton' => 'Carro/Carretón',
+        'multiple' => 'Multiple',
     ];
 
     public static function getImplementosForForm(): array
