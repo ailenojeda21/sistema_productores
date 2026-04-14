@@ -16,27 +16,9 @@
                     <label class="block text-gray-700 font-semibold mb-1" for="distrito">Distrito</label>
                     <select id="distrito" name="distrito" class="w-full p-2 border border-gray-300 rounded">
                         <option value="">Seleccione un distrito</option>
-                        <option value="costa-de-araujo">Costa de Araujo</option>
-                        <option value="el-carmen">El Carmen</option>
-                        <option value="el-chilcal">El Chilcal</option>
-                        <option value="el-plumero">El Plumero</option>
-                        <option value="el-vergel">El Vergel</option>
-                        <option value="gustavo-andre">Gustavo André</option>
-                        <option value="jocoli">Jocolí</option>
-                        <option value="jocoli-viejo">Jocolí Viejo</option>
-                        <option value="la-asuncion">La Asunción</option>
-                        <option value="la-holanda">La Holanda</option>
-                        <option value="la-palmera">La Palmera</option>
-                        <option value="la-pega">La Pega</option>
-                        <option value="las-violetas">Las Violetas</option>
-                        <option value="lagunas-del-rosario">Lagunas del Rosario</option>
-                        <option value="paramillo">Paramillo</option>
-                        <option value="san-francisco">San Francisco</option>
-                        <option value="san-jose">San José</option>
-                        <option value="san-miguel">San Miguel</option>
-                        <option value="tres-de-mayo">Tres de Mayo</option>
-                        <option value="villa-tulumaya">Villa Tulumaya</option>
-                        <option value="oscar-mendoza">Oscar Mendoza</option>
+                        @foreach(\App\Models\Propiedad::getDistritosForForm() as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div>
@@ -80,9 +62,9 @@
                     <label for="tipo_derecho_riego" class="block text-gray-700 font-semibold mb-1">Tipo de derecho de riego:</label>
                     <select name="tipo_derecho_riego" id="tipo_derecho_riego" class="w-full p-2 border border-gray-300 rounded">
                         <option value="">Seleccione...</option>
-                        <option value="Subterráneo">Subterráneo</option>
-                        <option value="Superficial">Superficial</option>
-                        <option value="Ambos">Ambos</option>
+                        @foreach(\App\Models\Propiedad::getTipoDerechoRiegoForForm() as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="flex items-center mt-6">

@@ -50,10 +50,10 @@
                 @forelse($maquinarias as $maq)
                 <tr class="align-top">
 
-                    <!-- Propiedad -->
+                  <!-- Propiedad -->
                     <td class="px-4 py-2 text-base text-gray-700">
                         @if(isset($maq->propiedad))
-                            {{ $maq->propiedad->ubicacion ?? '' }} {{ $maq->propiedad->direccion ?? '' }}
+                            {{ $maq->propiedad->direccion_completa }}
                         @else
                             -
                         @endif
@@ -61,7 +61,7 @@
 
                     <!-- Máquina -->
                     <td class="px-4 py-2 text-base text-gray-700">
-                        {{ $maq->tractor ? 'Tractor' : '-' }}
+                        {{ $maq->tipo_label }}
                     </td>
 
                     <!-- Modelo -->
@@ -72,34 +72,9 @@
                     <!-- Implementos -->
                     <td class="px-4 py-3 text-base text-gray-700">
 
-                        @php
-                            $items = [
-                                'arado' => 'Arado',
-                                'rastra' => 'Rastra',
-                                'niveleta_comun' => 'Niveleta común',
-                                'niveleta_laser' => 'Niveleta láser',
-                                'cincel_cultivadora' => 'Cincel/Cultivadora',
-                                'desmalezadora' => 'Desmalezadora',
-                                'pulverizadora_tractor' => 'Pulverizadora',
-                                'mochila_pulverizadora' => 'Mochila pulverizadora',
-                                'cosechadora' => 'Cosechadora',
-                                'enfardadora' => 'Enfardadora',
-                                'retroexcavadora' => 'Retroexcavadora',
-                                'carro_carreton' => 'Carro/Carretón',
-                            ];
-
-                            // Solo los que están activos
-                            $activos = [];
-                            foreach ($items as $key => $label) {
-                                if (!empty($maq->$key)) {
-                                    $activos[] = $label;
-                                }
-                            }
-                        @endphp
-
-                        @if(count($activos))
+                        @if($maq->implementos_activos)
                             <div class="flex flex-wrap gap-2">
-                                @foreach($activos as $item)
+                                @foreach($maq->implementos_activos as $item)
                                     <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
                                         {{ $item }}
                                     </span>

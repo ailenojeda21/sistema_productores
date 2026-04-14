@@ -22,7 +22,7 @@ class PropiedadController extends Controller
      */
     public function index()
     {
-        $propiedades = Propiedad::with(['usuario', 'maquinarias', 'cultivos'])
+        $propiedades = Propiedad::with(['usuario', 'maquinaria', 'cultivos'])
             ->where('usuario_id', Auth::id())
             ->get();
 
@@ -86,7 +86,7 @@ class PropiedadController extends Controller
      */
     public function show(string $id)
     {
-        $propiedad = Propiedad::with(['usuario', 'maquinarias', 'cultivos'])
+        $propiedad = Propiedad::with(['usuario', 'maquinaria', 'cultivos'])
             ->where('usuario_id', Auth::id())
             ->findOrFail($id);
 
