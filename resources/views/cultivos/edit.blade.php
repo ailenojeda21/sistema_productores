@@ -12,7 +12,7 @@
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+<div>
                     <label class="block text-gray-700 font-semibold mb-1" for="propiedad_id">Propiedad</label>
                    <select id="propiedad_id" name="propiedad_id" class="w-full p-2 border border-gray-300 rounded" required>
                    <option value="">Seleccione propiedad</option>
@@ -23,19 +23,24 @@
                    @endforeach
                </select>
                </div>
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-1" for="variedad">Variedad</label>
-                    <input id="variedad" name="variedad" type="text" class="w-full p-2 border border-gray-300 rounded" value="{{ old('variedad', $cultivo->variedad) }}" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-1" for="tipo">Tipo</label>
-                    <select id="tipo" name="tipo" class="w-full p-2 border border-gray-300 rounded" required>
-                        <option value="">Seleccione tipo</option>
-                        @foreach(\App\Models\Cultivo::getTiposForForm() as $value => $label)
-                            <option value="{{ $value }}" {{ old('tipo', $cultivo->tipo) == $value ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
+               <div>
+                   <label class="block text-gray-700 font-semibold mb-1" for="tipo">Tipo</label>
+                   <select id="tipo" name="tipo" class="w-full p-2 border border-gray-300 rounded" required>
+                       <option value="">Seleccione tipo</option>
+                       @foreach(\App\Models\Cultivo::getTiposForForm() as $value => $label)
+                           <option value="{{ $value }}" {{ old('tipo', $cultivo->tipo) == $value ? 'selected' : '' }}>{{ $label }}</option>
+                       @endforeach
+                   </select>
+               </div>
+               <div>
+                   <label class="block text-gray-700 font-semibold mb-1" for="variedad">Variedad</label>
+                   <select id="variedad" name="variedad" class="w-full p-2 border border-gray-300 rounded" required>
+                       <option value="">Seleccione variedad</option>
+                       @foreach(\App\Models\Cultivo::getAllVariedades() as $value => $label)
+                           <option value="{{ $value }}" {{ old('variedad', $cultivo->variedad) == $value ? 'selected' : '' }}>{{ $label }}</option>
+                       @endforeach
+                   </select>
+               </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="manejo_cultivo">Manejo de Cultivos</label>
                     <select id="manejo_cultivo" name="manejo_cultivo" class="w-full p-2 border border-gray-300 rounded" required>
@@ -165,6 +170,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     hectareasInput.addEventListener('input', validateHectareasValue);
     syncMaxHectareas();
+
+    // Dependent dropdown: Variedad changes based on Tipo
+    const tipoSelect = document.getElementById('tipo');
+    const variedadSelect = document.getElementById('variedad');
+
+    const variedadesData = {
+        'Hortícola': @json(\App\Models\Cultivo::VARIEDADES_HORTICOLA),
+        'Vitícola': @json(\App\Models\Cultivo::VARIEDADES_VITICOLA),
+        'Olivícola': @json(\App\Models\Cultivo::VARIEDADES_OLIVICOLA),
+        'Frutícola': @json(\App\Models\Cultivo::VARIEDADES_FRUTICOLA),
+    };
+
+    function updateVariedadOptions() {
+        const tipo = tipoSelect.value;
+        const variedades = variedadesData[tipo] || {};
+
+        // Guardar valor actual
+        const currentValue = variedadSelect.value;
+
+        // Limpiar opciones
+        variedadSelect.innerHTML = '<option value="">Seleccione variedad</option>';
+
+        // Agregar nuevas opciones
+        for (const [value, label] of Object.entries(variedades)) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            variedadSelect.appendChild(option);
+        }
+
+        // Restaurar valor si existe en las nuevas opciones
+        if (variedades[currentValue]) {
+            variedadSelect.value = currentValue;
+        }
+    }
+
+    if (tipoSelect && variedadSelect) {
+        tipoSelect.addEventListener('change', updateVariedadOptions);
+        updateVariedadOptions();
+    }
 });
 </script>
 @endpush
