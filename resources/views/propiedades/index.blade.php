@@ -51,87 +51,122 @@
                     <th class="px-2 py-2"></th>
                 </tr>
             </thead>
-            <tbody id="propiedades-tbody" class="bg-white divide-y divide-gray-200">
-                @foreach($propiedades as $propiedad)
-                <tr>
-                    <td class="px-2 py-2 text-base text-gray-700">
-                        {{ $propiedad->direccion_completa }}
-                    </td>
-                    <td class="px-2 py-2 text-base text-gray-700 whitespace-nowrap">
-                        @if($propiedad->lat && $propiedad->lng)
-                            <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})"
-                                    class="text-blue-600 hover:text-blue-800 underline">Ver Mapa</button>
-                        @else
-                            Sin ubicación
-                        @endif
-                    </td>
-                    <td class="px-2 py-2 text-base text-gray-700">{{ number_format($propiedad->hectareas, 2, ',', '.') }}</td>
-                    <td class="px-2 py-2 text-base text-gray-700">
-     @if($propiedad->tipo_tenencia)
-         <span class="font-medium capitalize">
-             {{ str_replace('_', ' ', $propiedad->tipo_tenencia) }}
-         </span>
-     @else
-         -
-     @endif
- </td>
+        <tbody id="propiedades-tbody" class="bg-white divide-y divide-gray-200">
+    @foreach($propiedades as $propiedad)
+    <tr>
+        <td class="px-2 py-2 text-base text-gray-700">
+            {{ $propiedad->direccion_completa }}
+        </td>
 
-<td class="px-2 py-2 text-base text-gray-700">
-    {{ $propiedad->especificar_tenencia ?? '-' }}
-</td>
+        <td class="px-2 py-2 text-base text-gray-700 whitespace-nowrap text-center">
+            @if($propiedad->lat && $propiedad->lng)
+                <button onclick="showLocationModal({{ $propiedad->lat }}, {{ $propiedad->lng }})"
+                        class="text-blue-600 hover:text-blue-800 underline">
+                    Ver Mapa
+                </button>
+            @else
+                -
+            @endif
+        </td>
 
-                    <td class="px-2 py-2 text-base text-gray-700 text-center">
-                        @if($propiedad->derecho_riego)
-                            <span class="text-green-600 font-semibold">✓ Sí</span>
-                        @else
-                            <span class="text-red-600 font-semibold">✗ No</span>
-                        @endif
-                    </td>
-                    <td class="px-2 py-2 text-base text-gray-700">{{ $propiedad->tipo_derecho_riego ? $propiedad->tipo_derecho_riego : '-' }}</td>
-                    <td class="px-2 py-2 text-base text-gray-700 text-center">
-                        @if($propiedad->rut)
-                            <span class="text-green-600 font-semibold">✓ Sí</span>
-                        @else
-                            <span class="text-red-600 font-semibold">✗ No</span>
-                        @endif
-                    </td>
-                    <td class="px-2 py-2 text-base text-gray-700">{{ $propiedad->rut_valor ? number_format($propiedad->rut_valor, 0, '', '') : '-' }}</td>
-                    <td class="px-2 py-2 text-base text-gray-700 whitespace-nowrap">
-                        @if($propiedad->rut_archivo)
-                            <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">RUT</a>
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="px-2 py-2 text-base text-gray-700 text-center">
-                        @if($propiedad->malla)
-                            <span class="text-green-600 font-semibold">✓ Sí</span>
-                        @else
-                            <span class="text-red-600 font-semibold">✗ No</span>
-                        @endif
-                    </td>
-                    <td class="px-2 py-2 text-base text-gray-700">{{ $propiedad->hectareas_malla ? number_format($propiedad->hectareas_malla, 2, ',', '.') : '-' }}</td>
-                    <td class="px-2 py-2 text-base text-gray-700 text-center">
-                        @if($propiedad->cierre_perimetral)
-                            <span class="text-green-600 font-semibold">✓ Sí</span>
-                        @else
-                            <span class="text-red-600 font-semibold">✗ No</span>
-                        @endif
-                    </td>
-                    <td class="px-2 py-2">
-                        <div class="flex items-center gap-2">
-                            <a href="{{ route('propiedades.edit', $propiedad) }}" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">Editar</a>
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            {{ number_format($propiedad->hectareas, 2, ',', '.') }}
+        </td>
 
-                            <form action="{{ route('propiedades.destroy', $propiedad) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta propiedad?');" class="m-0 p-0">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">Eliminar</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            @if($propiedad->tipo_tenencia)
+                <span class="font-medium capitalize">
+                    {{ str_replace('_', ' ', $propiedad->tipo_tenencia) }}
+                </span>
+            @else
+                -
+            @endif
+        </td>
+
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            {{ $propiedad->especificar_tenencia ?? '-' }}
+        </td>
+
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            @if($propiedad->derecho_riego)
+                <span class="text-green-600 font-semibold">✓ Sí</span>
+            @else
+                <span class="text-red-600 font-semibold">✗ No</span>
+            @endif
+        </td>
+
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            {{ $propiedad->tipo_derecho_riego ?: '-' }}
+        </td>
+
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            @if($propiedad->rut)
+                <span class="text-green-600 font-semibold">✓ Sí</span>
+            @else
+                <span class="text-red-600 font-semibold">✗ No</span>
+            @endif
+        </td>
+
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            {{ $propiedad->rut_valor ? number_format($propiedad->rut_valor, 0, '', '') : '-' }}
+        </td>
+
+        <td class="px-2 py-2 text-base text-gray-700 text-center whitespace-nowrap">
+            @if($propiedad->rut_archivo)
+                <a href="{{ Storage::url($propiedad->rut_archivo) }}"
+                   target="_blank"
+                   class="text-blue-600 hover:text-blue-800 underline">
+                    RUT
+                </a>
+            @else
+                -
+            @endif
+        </td>
+
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            @if($propiedad->malla)
+                <span class="text-green-600 font-semibold">✓ Sí</span>
+            @else
+                <span class="text-red-600 font-semibold">✗ No</span>
+            @endif
+        </td>
+
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            {{ $propiedad->hectareas_malla ? number_format($propiedad->hectareas_malla, 2, ',', '.') : '-' }}
+        </td>
+
+        <td class="px-2 py-2 text-base text-gray-700 text-center">
+            @if($propiedad->cierre_perimetral)
+                <span class="text-green-600 font-semibold">✓ Sí</span>
+            @else
+                <span class="text-red-600 font-semibold">✗ No</span>
+            @endif
+        </td>
+
+        <td class="px-2 py-2">
+            <div class="flex items-center gap-2">
+                <a href="{{ route('propiedades.edit', $propiedad) }}"
+                   class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-semibold shadow text-center">
+                    Editar
+                </a>
+
+                <form action="{{ route('propiedades.destroy', $propiedad) }}"
+                      method="POST"
+                      onsubmit="return confirm('¿Seguro que deseas eliminar esta propiedad?');"
+                      class="m-0 p-0">
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit"
+                            class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 font-semibold shadow text-center">
+                        Eliminar
+                    </button>
+                </form>
+            </div>
+        </td>
+    </tr>
+    @endforeach
+</tbody>
         </table>
         @else
         @include('propiedades.partials.empty-state')
