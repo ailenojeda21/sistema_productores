@@ -51,7 +51,7 @@
                 <tr class="align-top">
 
                   <!-- Propiedad -->
-                    <td class="px-4 py-2 text-base text-gray-700">
+                    <td class="px-4 py-2 text-base text-gray-700 text-center">
                         @if(isset($maq->propiedad))
                             {{ $maq->propiedad->direccion_completa }}
                         @else
@@ -69,7 +69,7 @@
                     </td>
 
                     <!-- Modelo -->
-                    <td class="px-4 py-2 text-base text-gray-700">
+                    <td class="px-4 py-2 text-base text-gray-700 text-center">
                         {{ $maq->modelo_tractor ?? '-' }}
                     </td>
 
