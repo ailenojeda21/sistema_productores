@@ -18,39 +18,63 @@
 
       <div>
         <h1 class="text-2xl font-bold text-slate-900">Productores</h1>
-        <p class="text-sm text-slate-600">Buscar por DNI o nombre.</p>
+        <p class="text-sm text-slate-600">Buscar por diferentes criterios.</p>
       </div>
 
-      <!-- Barra de búsqueda -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <!-- Barra de búsqueda compact -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
+        <div class="flex flex-wrap gap-2 items-center">
+          <!-- Select tipo de búsqueda -->
+          <select
+            v-model="searchType"
+            class="rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0 bg-slate-50"
+          >
+            <option value="dni">DNI</option>
+            <option value="name">Nombre</option>
+            <option value="distrito">Distrito</option>
+            <option value="variedad">Variedad</option>
+            <option value="tipo">Tipo</option>
+            <option value="rut">N° RUT</option>
+          </select>
+
+          <!-- Input de búsqueda -->
           <input
-            v-model="form.dni"
-            class="w-full rounded-xl border-slate-200 focus:border-slate-400 focus:ring-0"
-            placeholder="DNI"
-            inputmode="numeric"
+            v-model="form.search"
+            class="flex-1 min-w-[200px] rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0"
+            :placeholder="placeholderText"
+            :inputmode="searchType === 'dni' || searchType === 'rut' ? 'numeric' : 'text'"
           />
-          <input
-            v-model="form.name"
-            class="w-full rounded-xl border-slate-200 focus:border-slate-400 focus:ring-0"
-            placeholder="Nombre"
-          />
+
+          <div class="flex gap-2">
+            <button
+              class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
+              @click="search"
+            >
+              Buscar
+            </button>
+
+            <button
+              class="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold hover:bg-slate-50"
+              @click="clear"
+            >
+              Limpiar
+            </button>
+          </div>
         </div>
 
-        <div class="mt-3 flex gap-2">
-          <button
-            class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
-            @click="search"
-          >
-            Buscar
-          </button>
-
-          <button
-            class="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold hover:bg-slate-50"
-            @click="clear"
-          >
-            Limpiar
-          </button>
+        <!-- Filtros activos -->
+        <div v-if="activeFilters.length" class="mt-2 pt-2 border-t border-slate-100">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs text-slate-500">Filtros:</span>
+            <span
+              v-for="filter in activeFilters"
+              :key="filter.key"
+              class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full"
+            >
+              {{ filter.label }}
+              <button @click="removeFilter(filter.key)" class="hover:text-slate-900">×</button>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -104,7 +128,7 @@
 
 <script setup>
 import StaffLayout from '@/Layouts/StaffLayout.vue'
-import { reactive } from 'vue'
+import { reactive, computed, ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
@@ -120,18 +144,73 @@ const props = defineProps({
   filters: { type: Object, default: () => ({}) },
 })
 
+const searchType = ref('dni')
+
+const placeholders = {
+  dni: 'Ingrese DNI',
+  name: 'Ingrese nombre',
+  distrito: 'Ingrese distrito',
+  variedad: 'Ingrese variedad',
+  tipo: 'Ingrese tipo',
+  rut: 'Ingrese N° RUT',
+}
+
+const placeholderText = computed(() => placeholders[searchType.value] || 'Buscar...')
+
 const form = reactive({
+  search: props.filters.search ?? '',
   dni: props.filters.dni ?? '',
   name: props.filters.name ?? '',
+  distrito: props.filters.distrito ?? '',
+  variedad: props.filters.variedad ?? '',
+  tipo: props.filters.tipo ?? '',
+  rut: props.filters.rut ?? '',
+})
+
+const activeFilters = computed(() => {
+  const filters = []
+  if (form.dni) filters.push({ key: 'dni', label: `DNI: ${form.dni}` })
+  if (form.name) filters.push({ key: 'name', label: `Nombre: ${form.name}` })
+  if (form.distrito) filters.push({ key: 'distrito', label: `Distrito: ${form.distrito}` })
+  if (form.variedad) filters.push({ key: 'variedad', label: `Variedad: ${form.variedad}` })
+  if (form.tipo) filters.push({ key: 'tipo', label: `Tipo: ${form.tipo}` })
+  if (form.rut) filters.push({ key: 'rut', label: `RUT: ${form.rut}` })
+  return filters
 })
 
 const search = () => {
+  // Limpiar todos los campos primero
+  form.dni = ''
+  form.name = ''
+  form.distrito = ''
+  form.variedad = ''
+  form.tipo = ''
+  form.rut = ''
+
+  // Asignar solo el campo activo
+  form[searchType.value] = form.search
+
   router.get('/staff/producers', { ...form }, { preserveState: true, replace: true })
 }
 
 const clear = () => {
+  form.search = ''
   form.dni = ''
   form.name = ''
+  form.distrito = ''
+  form.variedad = ''
+  form.tipo = ''
+  form.rut = ''
+  searchType.value = 'dni'
+  search()
+}
+
+const removeFilter = (key) => {
+  form[key] = ''
+  form.search = ''
+  if (key === searchType.value) {
+    searchType.value = 'dni'
+  }
   search()
 }
 
