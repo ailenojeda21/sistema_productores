@@ -355,6 +355,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
 
+                // habilitar tile manager
+                L.control.layers({
+                    'OpenStreetMap': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(map),
+                    'Satelital': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                        attribution: ''
+                    })
+                }).addTo(map);
+
+                // mostrar layer manager por defecto
+                // map.zoomControl.setPosition('topright');
+
+
                 // If we have coordinates, show marker
                 if (latInput.value && lngInput.value) {
                     updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
