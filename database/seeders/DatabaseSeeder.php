@@ -20,9 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PropiedadSeeder::class,
             MaquinariaSeeder::class,
-            ImplementoSeeder::class,
             CultivoSeeder::class,
-            TecnologiaRiegoSeeder::class,
         ]);
         // Puedes comentar o eliminar el factory de test si no lo necesitas
         // User::factory()->create([

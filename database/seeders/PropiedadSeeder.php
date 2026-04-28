@@ -14,18 +14,18 @@ class PropiedadSeeder extends Seeder
         if ($usuario) {
             Propiedad::firstOrCreate([
                 'usuario_id' => $usuario->id,
-                'ubicacion' => 'Campo Norte',
-                'superficie' => 15.5,
-                'malla_antigranizo' => true,
-                'es_propietario' => true,
+                'calle' => 'Campo Norte',
+                'hectareas' => 15.5,
+                'malla' => true,
+                'tipo_tenencia' => 'Propio',
                 'derecho_riego' => true,
             ]);
             Propiedad::firstOrCreate([
                 'usuario_id' => $usuario->id,
-                'ubicacion' => 'Campo Sur',
-                'superficie' => 8.2,
-                'malla_antigranizo' => false,
-                'es_propietario' => false,
+                'calle' => 'Campo Sur',
+                'hectareas' => 8.2,
+                'malla' => false,
+                'tipo_tenencia' => 'Arrendado',
                 'derecho_riego' => false,
             ]);
         }
