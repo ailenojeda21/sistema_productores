@@ -14,11 +14,11 @@ class MaquinariaSeeder extends Seeder
         if ($propiedad) {
             Maquinaria::firstOrCreate([
                 'propiedad_id' => $propiedad->id,
-                'tipo' => 'Tractor',
+                'tractor' => true,
             ]);
             Maquinaria::firstOrCreate([
                 'propiedad_id' => $propiedad->id,
-                'tipo' => 'Cosechadora',
+                'cosechadora' => true,
             ]);
         }
     }

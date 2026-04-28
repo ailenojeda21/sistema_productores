@@ -14,12 +14,14 @@ class CultivoSeeder extends Seeder
         if ($propiedad) {
             Cultivo::firstOrCreate([
                 'propiedad_id' => $propiedad->id,
+                'variedad' => 'Híbrido',
                 'estacion' => 'Verano',
                 'tipo' => 'Maíz',
                 'hectareas' => 10.5,
             ]);
             Cultivo::firstOrCreate([
                 'propiedad_id' => $propiedad->id,
+                'variedad' => 'Trigo Pan',
                 'estacion' => 'Invierno',
                 'tipo' => 'Trigo',
                 'hectareas' => 5.0,
