@@ -42,18 +42,23 @@
                 </a>
                 <a href="{{ route('profile') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-2">person</span> Perfil
+                    <x-completion-circle :percentage="Auth::user()->profile_completeness" class="ml-auto" />
                 </a>
                 <a href="{{ route('propiedades.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-2">home</span> Propiedades
+                    <x-completion-circle :percentage="Auth::user()->propiedades_completeness" class="ml-auto" />
                 </a>
                 <a href="{{ route('cultivos.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-3">spa</span> Cultivos
+                    <x-completion-circle :percentage="Auth::user()->cultivos_completeness" class="ml-auto" />
                 </a>
                 <a href="{{ route('maquinaria.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-2">agriculture</span> Maquinarias
+                    <x-completion-circle :percentage="Auth::user()->maquinarias_completeness" class="ml-auto" />
                 </a>
                 <a href="{{ route('comercios.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-2">shopping_cart</span> Comercialización
+                    <x-completion-circle :percentage="Auth::user()->comercializacion_completeness" class="ml-auto" />
                 </a>
             </nav>
 
@@ -94,18 +99,23 @@
                 </a>
                 <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">person</span> Perfil
+                    <x-completion-circle :percentage="Auth::user()->profile_completeness" class="ml-auto" />
                 </a>
                 <a href="{{ route('propiedades.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">home</span> Propiedades
+                    <x-completion-circle :percentage="Auth::user()->propiedades_completeness" class="ml-auto" />
                 </a>
                 <a href="{{ route('cultivos.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">spa</span> Cultivos
+                    <x-completion-circle :percentage="Auth::user()->cultivos_completeness" class="ml-auto" />
                 </a>
                 <a href="{{ route('maquinaria.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">agriculture</span> Maquinarias
+                    <x-completion-circle :percentage="Auth::user()->maquinarias_completeness" class="ml-auto" />
                 </a>
                 <a href="{{ route('comercios.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">shopping_cart</span> Comercialización
+                    <x-completion-circle :percentage="Auth::user()->comercializacion_completeness" class="ml-auto" />
                 </a>
             </nav>
 
