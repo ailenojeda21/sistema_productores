@@ -25,33 +25,26 @@
                     <label class="block text-gray-700 font-semibold mb-1" for="calle">Calle</label>
                     <input id="calle" name="calle" type="text" class="w-full p-2 border border-gray-300 rounded">
                 </div>
+
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="numeracion">Numeración</label>
                     <input id="numeracion" name="numeracion" type="number" class="w-full p-2 border border-gray-300 rounded">
                 </div>
                 <div>
+                    <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
+                    <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+
+                <div class="md:col-span-2">
                     <label class="block text-gray-700 font-semibold mb-1">Ubicación</label>
                     <input type="hidden" name="lat" class="lat-input" value="{{ old('lat', '') }}">
                     <input type="hidden" name="lng" class="lng-input" value="{{ old('lng', '') }}">
-                    
-                    <!-- Botón para mostrar/ocultar mapa -->
-                    <button type="button" class="toggle-map-btn px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro hover:text-azul-marino font-semibold shadow transition">
-                        Ver Mapa
-                    </button>
-                    
-                    <!-- Contenedor del mapa (inicialmente oculto) -->
-                    <div class="map-container hidden mt-4">
-                        <div class="map-element w-full h-64 rounded border"></div>
-                        <p class="text-sm text-gray-500 mt-2">
-                            Coordenadas seleccionadas:
-                            <span class="coordenadas-display font-semibold">No seleccionadas</span>
-                        </p>
-                        <p class="text-sm text-gray-500">Haz click en el mapa para ubicar la propiedad. También puedes arrastrar el pin.</p>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
-                    <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" required>
+                    <div class="map-element w-full h-56 rounded border"></div>
+                    <p class="text-sm text-gray-500 mt-2">
+                        Coordenadas:
+                        <span class="coordenadas-display font-semibold">No seleccionada</span>
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">Haga clic en el mapa para marcar la ubicación. También puede arrastrar el pin.</p>
                 </div>
 
                 <div class="flex items-center mt-6">
@@ -328,100 +321,59 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar cada botón de mapa por separado
-    const toggleButtons = document.querySelectorAll('.toggle-map-btn');
+    const mapElements = document.querySelectorAll('.map-element');
     
-    toggleButtons.forEach(function(toggleBtn) {
+    mapElements.forEach(function(mapElement) {
         let map, marker;
-        let mapInitialized = false;
         
-        const container = toggleBtn.closest('div').querySelector('.map-container');
-        const mapElement = container.querySelector('.map-element');
-        const latInput = toggleBtn.closest('div').querySelector('.lat-input');
-        const lngInput = toggleBtn.closest('div').querySelector('.lng-input');
-        const coordDisplay = container.querySelector('.coordenadas-display');
+        const latInput = mapElement.parentElement.querySelector('.lat-input');
+        const lngInput = mapElement.parentElement.querySelector('.lng-input');
+        const coordDisplay = mapElement.parentElement.querySelector('.coordenadas-display');
         
-        // Toggle map visibility
-        toggleBtn.addEventListener('click', function() {
-            container.classList.toggle('hidden');
-            
-            if (!mapInitialized) {
-                // Initialize map on first show
-                const initialLat = parseFloat(latInput.value) || -31.5;
-                const initialLng = parseFloat(lngInput.value) || -68.5;
+        const initialLat = parseFloat(latInput?.value) || -31.5;
+        const initialLng = parseFloat(lngInput?.value) || -68.5;
 
-                map = L.map(mapElement).setView([initialLat, initialLng], 13);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
-                     // habilitar tile manager
-                L.control.layers({
-                    'OpenStreetMap': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap contributors'
-                    }).addTo(map),
-                    'Satelital': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                        attribution: ''
-                    })
-                }).addTo(map);
+        map = L.map(mapElement).setView([initialLat, initialLng], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-                // mostrar layer manager por defecto
-                // map.zoomControl.setPosition('topright')
+        L.control.layers({
+            'Mapa': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map),
+            'Satelital': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: ''
+            })
+        }).addTo(map);
 
-                // habilitar tile manager
-                L.control.layers({
-                    'OpenStreetMap': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap contributors'
-                    }).addTo(map),
-                    'Satelital': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                        attribution: ''
-                    })
-                }).addTo(map);
+        if (latInput?.value && lngInput?.value) {
+            updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
+        }
 
-                // mostrar layer manager por defecto
-                // map.zoomControl.setPosition('topright');
+        if (!latInput?.value && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+            });
+        }
 
-
-                // If we have coordinates, show marker
-                if (latInput.value && lngInput.value) {
-                    updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
-                }
-
-                // Try to get user location if no coordinates set
-                if (!latInput.value && navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function(pos) {
-                        map.setView([pos.coords.latitude, pos.coords.longitude], 13);
-                    });
-                }
-
-                // Click on map to set marker
-                map.on('click', function(e) {
-                    updateMarker(e.latlng);
-                });
-
-                mapInitialized = true;
-            }
-            
-            // Force map resize when showing
-            if (!container.classList.contains('hidden')) {
-                setTimeout(() => {
-                    map.invalidateSize();
-                }, 100);
-            }
+        map.on('click', function(e) {
+            updateMarker(e.latlng);
         });
 
-        // Function to update marker and coordinates
+        setTimeout(() => { map.invalidateSize(); }, 100);
+
         function updateMarker(latlng) {
             if (marker) {
                 marker.setLatLng(latlng);
             } else {
                 marker = L.marker(latlng, {draggable: true}).addTo(map);
-                // Event for marker drag
                 marker.on('dragend', function(e) {
                     updateMarker(e.target.getLatLng());
                 });
             }
             
-            // Update hidden fields and show coordinates
             latInput.value = latlng.lat.toFixed(7);
             lngInput.value = latlng.lng.toFixed(7);
             coordDisplay.textContent = latlng.lat.toFixed(7) + ', ' + latlng.lng.toFixed(7);
