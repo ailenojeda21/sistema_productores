@@ -21,7 +21,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
-                {{-- Distrito --}}
+                {{-- Distrito y Calle --}}
                 <div>
                     <label class="block font-semibold mb-1" for="distrito">Distrito</label>
                     <select id="distrito" name="distrito" class="w-full p-2 border border-gray-300 rounded">
@@ -31,8 +31,6 @@
                         @endforeach
                     </select>
                 </div>
-
-                {{-- Calle --}}
                 <div>
                     <label class="block font-semibold mb-1" for="calle">Calle</label>
                     <input name="calle" type="text"
@@ -40,37 +38,13 @@
                         value="{{ old('calle', $propiedad->calle) }}">
                 </div>
 
-                {{-- Numeración --}}
+                {{-- Numeración y Hectáreas --}}
                 <div>
                     <label class="block font-semibold mb-1" for="numeracion">Numeración</label>
                     <input name="numeracion" type="number"
                         class="w-full p-2 border border-gray-300 rounded"
                         value="{{ old('numeracion', $propiedad->numeracion) }}">
                 </div>
-
-                {{-- Ubicación --}}
-                <div>
-                    <label class="block font-semibold mb-1">Ubicación</label>
-                    <input type="hidden" name="lat" class="lat-input" value="{{ old('lat', $propiedad->lat) }}">
-                    <input type="hidden" name="lng" class="lng-input" value="{{ old('lng', $propiedad->lng) }}">
-
-                    <button type="button"
-                        class="toggle-map-btn px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro hover:text-azul-marino transition">
-                        Ver mapa
-                    </button>
-
-                    <div class="map-container hidden mt-4">
-                        <div class="map-element w-full h-64 rounded border"></div>
-                        <p class="text-sm text-gray-500 mt-2">
-                            Coordenadas:
-                            <span class="coordenadas-display font-semibold">
-                                {{ $propiedad->lat ? $propiedad->lat.', '.$propiedad->lng : 'No seleccionadas' }}
-                            </span>
-                        </p>
-                    </div>
-                </div>
-
-                {{-- Hectáreas --}}
                 <div>
                     <label class="block font-semibold mb-1">Hectáreas</label>
                     <input id="hectareas" name="hectareas" type="number" step="0.01"
@@ -78,6 +52,21 @@
                         value="{{ old('hectareas', $propiedad->hectareas) }}"
                         placeholder="Hectáreas totales">
                     <p class="text-xs text-gray-500 mt-1">Recuerda indicar las hectáreas con malla más abajo.</p>
+                </div>
+
+                {{-- Mapa (2 columnas) --}}
+                <div class="md:col-span-2">
+                    <label class="block font-semibold mb-1">Ubicación</label>
+                    <input type="hidden" name="lat" class="lat-input" value="{{ old('lat', $propiedad->lat) }}">
+                    <input type="hidden" name="lng" class="lng-input" value="{{ old('lng', $propiedad->lng) }}">
+                    <div class="map-element w-full h-56 rounded border"></div>
+                    <p class="text-sm text-gray-500 mt-2">
+                        Coordenadas:
+                        <span class="coordenadas-display font-semibold">
+                            {{ $propiedad->lat ? $propiedad->lat.', '.$propiedad->lng : 'No seleccionada' }}
+                        </span>
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">Haga clic en el mapa para marcar la ubicación. También puede arrastrar el pin.</p>
                 </div>
 
                 {{-- Derecho de riego (junto a hectáreas) --}}
@@ -368,74 +357,59 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar cada botón de mapa por separado
-    const toggleButtons = document.querySelectorAll('.toggle-map-btn');
+    const mapElements = document.querySelectorAll('.map-element');
     
-    toggleButtons.forEach(function(toggleBtn) {
+    mapElements.forEach(function(mapElement) {
         let map, marker;
-        let mapInitialized = false;
         
-        const container = toggleBtn.closest('div').querySelector('.map-container');
-        const mapElement = container.querySelector('.map-element');
-        const latInput = toggleBtn.closest('div').querySelector('.lat-input');
-        const lngInput = toggleBtn.closest('div').querySelector('.lng-input');
-        const coordDisplay = container.querySelector('.coordenadas-display');
+        const latInput = mapElement.parentElement.querySelector('.lat-input');
+        const lngInput = mapElement.parentElement.querySelector('.lng-input');
+        const coordDisplay = mapElement.parentElement.querySelector('.coordenadas-display');
         
-        // Toggle map visibility
-        toggleBtn.addEventListener('click', function() {
-            container.classList.toggle('hidden');
-            
-            if (!mapInitialized) {
-                // Initialize map on first show
-                const initialLat = parseFloat(latInput.value) || -31.5;
-                const initialLng = parseFloat(lngInput.value) || -68.5;
+        const initialLat = parseFloat(latInput?.value) || -31.5;
+        const initialLng = parseFloat(lngInput?.value) || -68.5;
 
-                map = L.map(mapElement).setView([initialLat, initialLng], 13);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
+        map = L.map(mapElement).setView([initialLat, initialLng], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-                // If we have coordinates, show marker
-                if (latInput.value && lngInput.value) {
-                    updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
-                }
+        L.control.layers({
+            'Mapa': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map),
+            'Satelital': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: ''
+            })
+        }).addTo(map);
 
-                // Try to get user location if no coordinates set
-                if (!latInput.value && navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function(pos) {
-                        map.setView([pos.coords.latitude, pos.coords.longitude], 13);
-                    });
-                }
+        if (latInput?.value && lngInput?.value) {
+            updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
+        }
 
-                // Click on map to set marker
-                map.on('click', function(e) {
-                    updateMarker(e.latlng);
-                });
+        if (!latInput?.value && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+            });
+        }
 
-                mapInitialized = true;
-            }
-            
-            // Force map resize when showing
-            if (!container.classList.contains('hidden')) {
-                setTimeout(() => {
-                    map.invalidateSize();
-                }, 100);
-            }
+        map.on('click', function(e) {
+            updateMarker(e.latlng);
         });
 
-        // Function to update marker and coordinates
+        setTimeout(() => { map.invalidateSize(); }, 100);
+
         function updateMarker(latlng) {
             if (marker) {
                 marker.setLatLng(latlng);
             } else {
                 marker = L.marker(latlng, {draggable: true}).addTo(map);
-                // Event for marker drag
                 marker.on('dragend', function(e) {
                     updateMarker(e.target.getLatLng());
                 });
             }
             
-            // Update hidden fields and show coordinates
             latInput.value = latlng.lat.toFixed(7);
             lngInput.value = latlng.lng.toFixed(7);
             coordDisplay.textContent = latlng.lat.toFixed(7) + ', ' + latlng.lng.toFixed(7);

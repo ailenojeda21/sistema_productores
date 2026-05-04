@@ -105,23 +105,19 @@ class User extends Authenticatable
         return asset('storage/avatars/uno.png');
     }
 
-    public function getProfileCompletenessAttribute(): int
-    {
-        $fields = ['name', 'email', 'dni', 'telefono'];
-        $filled = 0;
+  public function getProfileCompletenessAttribute(): int
+{
+    $fields = ['name', 'email', 'dni', 'telefono'];
+    $filled = 0;
 
-        foreach ($fields as $field) {
-            if (! empty($this->$field)) {
-                $filled++;
-            }
-        }
-
-        if (! empty($this->cooperativas) && is_array($this->cooperativas) && count($this->cooperativas) > 0) {
+    foreach ($fields as $field) {
+        if (!empty($this->$field)) {
             $filled++;
         }
-
-        return round(($filled / 5) * 100);
     }
+
+    return round(($filled / 4) * 100);
+}
 
     public function getPropiedadesCompletenessAttribute(): int
     {
