@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class StaffProducerController extends Controller
 {
@@ -21,7 +22,6 @@ class StaffProducerController extends Controller
             ->select('users.id', 'users.name', 'users.dni', 'users.email')
             ->distinct()
 
-            // Buscar por DNI
             ->when($dni !== '', function ($q) use ($dni) {
                 $q->whereRaw(
                     'LOWER(users.dni) LIKE ?',
@@ -29,7 +29,6 @@ class StaffProducerController extends Controller
                 );
             })
 
-            // Buscar por Nombre
             ->when($name !== '', function ($q) use ($name) {
                 $q->whereRaw(
                     'LOWER(users.name) LIKE ?',
@@ -37,7 +36,6 @@ class StaffProducerController extends Controller
                 );
             })
 
-            // Buscar por Distrito
             ->when($distrito !== '', function ($q) use ($distrito) {
                 $normalized = strtolower(str_replace(' ', '-', trim($distrito)));
                 $search = str_replace('-', '', $normalized);
@@ -50,7 +48,6 @@ class StaffProducerController extends Controller
                 });
             })
 
-            // Buscar por Variedad
             ->when($variedad !== '', function ($q) use ($variedad) {
                 $q->whereHas('propiedades.cultivos', function ($sub) use ($variedad) {
                     $sub->whereRaw(
@@ -60,7 +57,6 @@ class StaffProducerController extends Controller
                 });
             })
 
-            // Buscar por Tipo
             ->when($tipo !== '', function ($q) use ($tipo) {
                 $q->whereHas('propiedades.cultivos', function ($sub) use ($tipo) {
                     $sub->whereRaw(
@@ -70,9 +66,7 @@ class StaffProducerController extends Controller
                 });
             })
 
-            // Buscar por RUT
             ->when($rut !== '', function ($q) use ($rut) {
-                // dejamos solo números
                 $search = preg_replace('/\D/', '', $rut);
 
                 $q->whereHas('propiedades', function ($sub) use ($search) {
@@ -108,6 +102,112 @@ class StaffProducerController extends Controller
                 'rut' => $rut,
             ],
             'producers' => $producers,
+        ]);
+    }
+
+    /**
+     * 🔥 MÉTODO QUE TE FALTABA
+     */
+    public function show($id)
+    {
+        $producer = User::with([
+            'propiedades.cultivos',
+            'propiedades.maquinaria',
+            'comercializacion'
+        ])->findOrFail($id);
+
+        $user = Auth::guard('staff')->user();
+
+        // Preparar propiedades con dirección completa
+        $propiedades = $producer->propiedades->map(function ($prop) {
+            return [
+                'id' => $prop->id,
+                'direccion' => $prop->direccion,
+                'hectareas' => $prop->hectareas,
+                'tipo_tenencia' => $prop->tipo_tenencia,
+                'especificar_tenencia' => $prop->especificar_tenencia,
+                'derecho_riego' => $prop->derecho_riego,
+                'tipo_derecho_riego' => $prop->tipo_derecho_riego,
+                'malla' => $prop->malla,
+                'hectareas_malla' => $prop->hectareas_malla,
+                'cierre_perimetral' => $prop->cierre_perimetral,
+                'rut' => $prop->rut,
+                'rut_valor' => $prop->rut_valor,
+                'rut_archivo_url' => $prop->rut_archivo ? Storage::url($prop->rut_archivo) : null,
+                'lat' => $prop->lat,
+                'lng' => $prop->lng,
+            ];
+        });
+
+        // Recolectar cultivos de todas las propiedades
+        $cultivos = [];
+        foreach ($producer->propiedades as $prop) {
+            foreach ($prop->cultivos as $cult) {
+                $cultivos[] = [
+                    'id' => $cult->id,
+                    'nombre' => $cult->nombre,
+                    'tipo' => $cult->tipo,
+                    'hectareas' => $cult->hectareas,
+                    'manejo_cultivo' => $cult->manejo_cultivo,
+                    'tecnologia_riego' => $cult->tecnologia_riego,
+                    'propiedad' => [
+                        'direccion' => $prop->direccion,
+                    ],
+                ];
+            }
+        }
+
+        // Recolectar maquinarias de todas las propiedades
+   $maquinarias = [];
+
+foreach ($producer->propiedades as $prop) {
+    if ($prop->maquinaria) {
+        $maq = $prop->maquinaria;
+
+        $maquinarias[] = [
+            'id' => $maq->id,
+            'tractor' => $maq->tractor,
+            'modelo_tractor' => $maq->modelo_tractor,
+            'implementos' => $maq->implementos,
+            'implementos_flags' => $maq->implementos_flags,
+            'propiedad' => [
+                'direccion' => $prop->direccion_completa,
+            ],
+        ];
+    }
+}
+
+        // Datos de comercialización
+        $comercio = $producer->comercializacion ? [
+            'infraestructura_empaque' => $producer->comercializacion->infraestructura_empaque,
+            'vende_en_finca' => $producer->comercializacion->vende_en_finca,
+            'mercados' => $producer->comercializacion->mercados,
+            'cooperativas' => $producer->comercializacion->cooperativas,
+        ] : null;
+
+        // Calcular stats
+        $stats = [
+            'propiedades' => $propiedades->count(),
+            'cultivos' => count($cultivos),
+            'maquinarias' => count($maquinarias),
+            'hectareas' => $propiedades->sum('hectareas'),
+        ];
+
+        return inertia('Staff/Producers/Show', [
+            'authUser' => $user,
+            'producer' => [
+                'id' => $producer->id,
+                'name' => $producer->name,
+                'dni' => $producer->dni,
+                'email' => $producer->email,
+                'telefono' => $producer->telefono,
+                'cooperativas' => $producer->cooperativas,
+            ],
+            'propiedades' => $propiedades,
+            'cultivos' => $cultivos,
+            'maquinarias' => $maquinarias,
+            'comercio' => $comercio,
+            'stats' => $stats,
         ]);
     }
 }
