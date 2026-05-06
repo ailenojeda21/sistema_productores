@@ -50,7 +50,7 @@ class User extends Authenticatable
 
     public function comercializacion()
     {
-        return $this->hasMany(Comercio::class, 'usuario_id');
+        return $this->hasOne(Comercio::class, 'usuario_id');
     }
 
     public function archivos()
