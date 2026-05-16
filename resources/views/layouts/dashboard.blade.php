@@ -130,7 +130,20 @@
 
         <!-- Main -->
         <main class="flex-1 min-w-0">
-            <div class="p-4 lg:p-8">
+
+            <!-- 🔥 NAV SUPERIOR DESKTOP -->
+            <header class="hidden lg:flex items-center justify-end h-12 px-6 border-b border-gray-200 bg-white">
+                <div class="flex items-center gap-2 px-3 py-1 rounded-lg border bg-white shadow-sm">
+                    <div class="w-6 h-6 flex items-center justify-center bg-gray-100 rounded text-xs font-bold">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </div>
+                    <span class="text-sm text-gray-700">
+                        {{ Auth::user()->name }}
+                    </span>
+                </div>
+            </header>
+
+            <div class="pt-4 pb-6 px-4 lg:px-8">
                 <div class="w-full max-w-7xl mx-auto">
                     @yield('dashboard-content')
                 </div>
@@ -163,12 +176,10 @@
     closeBtn?.addEventListener('click', closeDrawer);
     overlay?.addEventListener('click', closeDrawer);
 
-    // Cerrar con ESC
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeDrawer();
     });
 
-    // Cierra al navegar (mejora UX)
     drawer?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
 </script>
 @endsection
@@ -177,14 +188,13 @@
 <style>
   table { border-collapse: collapse; width: 100%; }
   td, th { word-wrap: break-word; white-space: normal; }
-  
-  /* Ocultar scrollbar pero mantener funcionalidad */
+
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari and Opera */
+    display: none;
   }
 </style>
 @endsection

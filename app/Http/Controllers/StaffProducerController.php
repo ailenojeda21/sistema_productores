@@ -210,4 +210,191 @@ foreach ($producer->propiedades as $prop) {
             'stats' => $stats,
         ]);
     }
+
+    public function export(Request $request)
+    {
+        $dni = trim((string) $request->get('dni', ''));
+        $name = trim((string) $request->get('name', ''));
+        $distrito = trim((string) $request->get('distrito', ''));
+        $variedad = trim((string) $request->get('variedad', ''));
+        $tipo = trim((string) $request->get('tipo', ''));
+        $rut = trim((string) $request->get('rut', ''));
+
+        $query = User::query();
+
+        if ($dni) {
+            $query->where('dni', 'like', "%{$dni}%");
+        }
+        if ($name) {
+            $query->where('name', 'like', "%{$name}%");
+        }
+        if ($distrito) {
+            $query->whereHas('propiedades', function ($q) use ($distrito) {
+                $normalizedDistrito = strtolower(str_replace(' ', '-', $distrito));
+                $q->whereRaw("LOWER(REPLACE(distrito, ' ', '-')) = ?", [$normalizedDistrito]);
+            });
+        }
+        if ($rut) {
+            $query->whereHas('propiedades', function ($q) use ($rut) {
+                $q->where('rut', true)
+                  ->where('rut_valor', 'like', "%{$rut}%");
+            });
+        }
+
+        // Búsqueda por variedad o tipo requiere join con cultivos
+        if ($variedad || $tipo) {
+            $query->whereHas('propiedades.cultivos', function ($q) use ($variedad, $tipo) {
+                if ($variedad) {
+                    $q->whereRaw("LOWER(variedad) LIKE ?", ['%' . strtolower($variedad) . '%']);
+                }
+                if ($tipo) {
+                    $q->whereRaw("LOWER(tipo) LIKE ?", ['%' . strtolower($tipo) . '%']);
+                }
+            });
+        }
+
+        $producers = $query->with(['propiedades.cultivos'])->get();
+
+        // Determinar tipo de búsqueda para headers adicionales
+        $searchType = null;
+        $searchValue = null;
+        if ($variedad) {
+            $searchType = 'variedad';
+            $searchValue = $variedad;
+        } elseif ($tipo) {
+            $searchType = 'tipo';
+            $searchValue = $tipo;
+        } elseif ($distrito) {
+            $searchType = 'distrito';
+            $searchValue = $distrito;
+        }
+
+        // Generar Excel (HTML table que Excel puede abrir)
+        $headers = ['Nombre', 'DNI', 'RUT', 'Teléfono', 'Email'];
+        
+        if ($searchType === 'variedad') {
+            $headers = array_merge($headers, ['Variedad', 'Hectáreas']);
+        } elseif ($searchType === 'tipo') {
+            $headers = array_merge($headers, ['Tipo', 'Hectáreas']);
+        } elseif ($searchType === 'distrito') {
+            $headers = array_merge($headers, ['Distrito']);
+        }
+
+        // Título dinámico según tipo de búsqueda
+        $titulo = 'Listado de Productores';
+        if ($searchType === 'distrito' && $searchValue) {
+            $titulo = 'Productores del Distrito ' . $searchValue;
+        } elseif ($searchType === 'variedad' && $searchValue) {
+            $titulo = 'Productores que cultivan ' . $searchValue;
+        } elseif ($searchType === 'tipo' && $searchValue) {
+            $titulo = 'Productores de tipo ' . $searchValue;
+        }
+
+        // Fecha y hora de exportación
+        $fechaExport = date('d/m/Y H:i') . ' hs';
+
+        // Nombre de archivo dinámico
+        $dateStr = date('Y-m-d');
+        if ($searchType && $searchValue) {
+            $filename = 'productores_' . strtolower(str_replace(' ', '_', $searchValue)) . '_' . $dateStr . '.xlsx';
+        } else {
+            $filename = 'productores_todos_' . $dateStr . '.xlsx';
+        }
+
+        $html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                th { background-color: #1e40af; color: white; }
+                tr:nth-child(even) { background-color: #f8fafc; }
+                .title { font-size: 18px; font-weight: bold; color: #1e40af; margin-bottom: 10px; }
+                .date { font-size: 12px; color: #64748b; margin-bottom: 20px; }
+            </style>
+        </head>
+        <body>
+        <div class="title">' . htmlspecialchars($titulo) . '</div>
+        <div class="date">Fecha de exportación: ' . $fechaExport . '</div>
+        <table>
+        <thead>
+        <tr>';
+
+        foreach ($headers as $header) {
+            $html .= '<th>' . htmlspecialchars($header) . '</th>';
+        }
+        $html .= '</tr></thead><tbody>';
+
+        foreach ($producers as $producer) {
+            $row = [
+                htmlspecialchars($producer->name),
+                htmlspecialchars($producer->dni ?? ''),
+                htmlspecialchars($producer->propiedades->where('rut', true)->first()?->rut_valor ?? ''),
+                htmlspecialchars($producer->telefono ?? ''),
+                htmlspecialchars($producer->email),
+            ];
+
+            if ($searchType === 'variedad') {
+                $variedadData = $this->getVariedadData($producer, $variedad);
+                $row[] = htmlspecialchars($variedadData['variedad']);
+                $row[] = $variedadData['hectareas'];
+            } elseif ($searchType === 'tipo') {
+                $tipoData = $this->getTipoData($producer, $tipo);
+                $row[] = htmlspecialchars($tipoData['tipo']);
+                $row[] = $tipoData['hectareas'];
+            } elseif ($searchType === 'distrito') {
+                $distritos = $producer->propiedades->pluck('distrito')->filter()->unique()->values()->toArray();
+                $row[] = htmlspecialchars(implode(', ', $distritos));
+            }
+
+            $html .= '<tr><td>' . implode('</td><td>', $row) . '</td></tr>';
+        }
+
+        $html .= '</tbody></table></body></html>';
+
+        return response($html, 200, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    private function getVariedadData($producer, $variedad)
+    {
+        $totalHectareas = 0;
+        $variedadesEncontradas = [];
+
+        foreach ($producer->propiedades as $prop) {
+            foreach ($prop->cultivos as $cult) {
+                if (stripos($cult->variedad, $variedad) !== false) {
+                    $variedadesEncontradas[] = $cult->variedad;
+                    $totalHectareas += $cult->hectareas;
+                }
+            }
+        }
+
+        return [
+            'variedad' => implode(', ', array_unique($variedadesEncontradas)) ?: $variedad,
+            'hectareas' => $totalHectareas,
+        ];
+    }
+
+    private function getTipoData($producer, $tipo)
+    {
+        $totalHectareas = 0;
+        $tiposEncontrados = [];
+
+        foreach ($producer->propiedades as $prop) {
+            foreach ($prop->cultivos as $cult) {
+                if (stripos($cult->tipo, $tipo) !== false) {
+                    $tiposEncontrados[] = $cult->tipo;
+                    $totalHectareas += $cult->hectareas;
+                }
+            }
+        }
+
+        return [
+            'tipo' => implode(', ', array_unique($tiposEncontrados)) ?: $tipo,
+            'hectareas' => $totalHectareas,
+        ];
+    }
 }
