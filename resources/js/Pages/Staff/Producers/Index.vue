@@ -59,6 +59,17 @@
             >
               Limpiar
             </button>
+
+            <button
+              v-if="hasResults && canExport"
+              class="px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-semibold hover:bg-green-700 flex items-center gap-2"
+              @click="exportResults"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Exportar resultados
+            </button>
           </div>
         </div>
 
@@ -78,8 +89,8 @@
         </div>
       </div>
 
-      <!-- Listado -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <!-- Listado - Solo mostrar si hay búsqueda activa -->
+      <div v-if="hasSearchPerformed" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div v-if="producers.data && producers.data.length" class="divide-y divide-slate-100">
           <button
             v-for="p in producers.data"
@@ -121,6 +132,14 @@
             Siguiente
           </button>
         </div>
+      </div>
+      
+      <!-- Mensaje cuando no hay búsqueda -->
+      <div v-else class="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+        <svg class="w-12 h-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <p class="text-slate-600">Realice una búsqueda para ver los productores</p>
       </div>
     </div>
   </StaffLayout>
@@ -177,6 +196,28 @@ const activeFilters = computed(() => {
   if (form.rut) filters.push({ key: 'rut', label: `RUT: ${form.rut}` })
   return filters
 })
+
+const hasResults = computed(() => props.producers.data && props.producers.data.length > 0)
+
+const hasSearchPerformed = computed(() => {
+  return form.dni || form.name || form.distrito || form.variedad || form.tipo || form.rut
+})
+
+const canExport = computed(() => {
+  return form.distrito || form.variedad || form.tipo
+})
+
+const exportResults = () => {
+  const params = new URLSearchParams()
+  if (form.dni) params.append('dni', form.dni)
+  if (form.name) params.append('name', form.name)
+  if (form.distrito) params.append('distrito', form.distrito)
+  if (form.variedad) params.append('variedad', form.variedad)
+  if (form.tipo) params.append('tipo', form.tipo)
+  if (form.rut) params.append('rut', form.rut)
+  
+  window.open(`/staff/producers/export?${params.toString()}`, '_blank')
+}
 
 const search = () => {
   // Limpiar todos los campos primero

@@ -60,6 +60,13 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-gray-400 shrink-0">home</span>
+                        <div>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider">Dirección</span>
+                            <p class="text-sm text-gray-700 font-medium">{{ $user->direccion ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-gray-400 shrink-0">calendar_today</span>
                         <div>
                             <span class="text-xs text-gray-500 uppercase tracking-wider">Creado</span>

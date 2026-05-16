@@ -69,6 +69,18 @@
                     @error('telefono') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
                 </div>
 
+                <!-- Dirección -->
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-1">
+                        <span class="material-symbols-outlined mr-2">home</span>
+                        Dirección
+                    </label>
+                    <input name="direccion" type="text"
+                           class="w-full p-2 border border-gray-300 rounded"
+                           value="{{ old('direccion', $user->direccion) }}">
+                    @error('direccion') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
+                </div>
+
                 <!-- Creado (solo lectura) -->
                 <div class="md:col-span-2">
                     <label class="flex items-center text-gray-700 font-semibold mb-1">
@@ -177,6 +189,17 @@
                     <input name="telefono" type="text"
                            class="w-full p-3 border border-gray-300 rounded-lg"
                            value="{{ old('telefono', $user->telefono) }}">
+                </div>
+
+                <!-- Dirección -->
+                <div>
+                    <label class="flex items-center text-gray-700 font-semibold mb-2 text-sm">
+                        <span class="material-symbols-outlined mr-2">home</span>
+                        Dirección
+                    </label>
+                    <input name="direccion" type="text"
+                           class="w-full p-3 border border-gray-300 rounded-lg"
+                           value="{{ old('direccion', $user->direccion) }}">
                 </div>
 
                 <!-- Creado (solo lectura) -->

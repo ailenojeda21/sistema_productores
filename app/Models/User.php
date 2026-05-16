@@ -67,6 +67,7 @@ class User extends Authenticatable
         'password',
         'dni',
         'telefono',
+        'direccion',
         'avatar',
         'cooperativas',
     ];
@@ -107,7 +108,7 @@ class User extends Authenticatable
 
   public function getProfileCompletenessAttribute(): int
 {
-    $fields = ['name', 'email', 'dni', 'telefono'];
+    $fields = ['name', 'email', 'dni', 'telefono', 'direccion'];
     $filled = 0;
 
     foreach ($fields as $field) {
@@ -116,7 +117,7 @@ class User extends Authenticatable
         }
     }
 
-    return round(($filled / 4) * 100);
+    return round(($filled / 5) * 100);
 }
 
     public function getPropiedadesCompletenessAttribute(): int
