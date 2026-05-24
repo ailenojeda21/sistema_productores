@@ -17,21 +17,31 @@ return [
     |--------------------------------------------------------------------------
     | Authentication Guards
     |--------------------------------------------------------------------------
+    |
+    | web        → Productores (modelo User)           → login, sesión web
+    | staff      → Staff (modelo StaffUser)             → sesión web staff
+    | staff-api  → Staff (modelo StaffUser)             → API con Sanctum tokens
+    |              Requiere HasApiTokens en StaffUser (ya agregado).
+    |
     */
 
     'guards' => [
 
-        // 🔹 Sistema A (productores)
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
 
-        // 🔹 Sistema B (administradores / auditores)
         'staff' => [
             'driver' => 'session',
             'provider' => 'staff_users',
         ],
+
+        'staff-api' => [
+            'driver' => 'sanctum',
+            'provider' => 'staff_users',
+        ],
+
     ],
 
     /*
@@ -42,17 +52,16 @@ return [
 
     'providers' => [
 
-        // 🔹 Productores
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        // 🔹 Administradores / Auditores
         'staff_users' => [
             'driver' => 'eloquent',
             'model' => App\Models\StaffUser::class,
         ],
+
     ],
 
     /*
@@ -70,14 +79,6 @@ return [
             'throttle' => 60,
         ],
 
-        // (opcional) si después querés reset para staff
-        /*
-        'staff_users' => [
-            'provider' => 'staff_users',
-            'table' => 'password_reset_tokens',
-            'expire' => 60,
-        ],
-        */
     ],
 
     /*

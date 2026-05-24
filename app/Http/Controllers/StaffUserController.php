@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\StaffUser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -16,7 +15,7 @@ class StaffUserController extends Controller
      */
     public function index(Request $request)
     {
-        $user = Auth::guard('staff')->user();
+        $user = $request->user();
 
         $name = trim((string) $request->get('name', ''));
         $email = trim((string) $request->get('email', ''));
@@ -38,12 +37,21 @@ class StaffUserController extends Controller
             'last_access_at' => $staffUser->last_access_at ?? null,
         ]);
 
+        $filters = [
+            'name' => $name,
+            'email' => $email,
+        ];
+
+        if ($this->isApiRequest($request)) {
+            return response()->json([
+                'filters' => $filters,
+                'users' => $users,
+            ]);
+        }
+
         return Inertia::render('Staff/Users/Index', [
             'user' => $user,
-            'filters' => [
-                'name' => $name,
-                'email' => $email,
-            ],
+            'filters' => $filters,
             'users' => $users,
         ]);
     }
@@ -51,20 +59,26 @@ class StaffUserController extends Controller
     /**
      * Muestra el formulario para editar un usuario (solo admin)
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        $user = Auth::guard('staff')->user();
+        $user = $request->user();
         $staffUser = StaffUser::findOrFail($id);
+
+        $userData = [
+            'id' => $staffUser->id,
+            'name' => $staffUser->name,
+            'email' => $staffUser->email,
+            'role' => $staffUser->role,
+            'active' => $staffUser->active,
+        ];
+
+        if ($this->isApiRequest($request)) {
+            return response()->json($userData);
+        }
 
         return Inertia::render('Staff/Users/Edit', [
             'user' => $user,
-            'staffUser' => [
-                'id' => $staffUser->id,
-                'name' => $staffUser->name,
-                'email' => $staffUser->email,
-                'role' => $staffUser->role,
-                'active' => $staffUser->active,
-            ],
+            'staffUser' => $userData,
             'pageTitle' => 'Editar usuario',
             'pageSubtitle' => 'Actualizacion de datos del usuario',
         ]);
@@ -90,6 +104,13 @@ class StaffUserController extends Controller
             $staffUser->update([
                 'active' => (bool) $validated['active'],
             ]);
+
+            if ($this->isApiRequest($request)) {
+                return response()->json([
+                    'message' => 'Estado actualizado',
+                    'user' => $staffUser->fresh(),
+                ]);
+            }
 
             return back()->with('success', 'Estado actualizado');
         }
@@ -119,6 +140,13 @@ class StaffUserController extends Controller
 
         $staffUser->update($updateData);
 
+        if ($this->isApiRequest($request)) {
+            return response()->json([
+                'message' => 'Usuario actualizado exitosamente',
+                'user' => $staffUser->fresh(),
+            ]);
+        }
+
         return redirect()
             ->route('staff.users.index')
             ->with('success', 'Usuario actualizado exitosamente');
@@ -127,10 +155,14 @@ class StaffUserController extends Controller
     /**
      * Elimina (soft delete) un usuario staff (solo admin)
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $staffUser = StaffUser::findOrFail($id);
         $staffUser->delete();
+
+        if ($this->isApiRequest($request)) {
+            return response()->json(['message' => 'Usuario eliminado']);
+        }
 
         return back()->with('success', 'Usuario eliminado');
     }
@@ -138,11 +170,19 @@ class StaffUserController extends Controller
     /**
      * Muestra el formulario para crear un nuevo usuario (solo admin)
      */
-    public function create()
+    public function create(Request $request)
     {
-        $user = Auth::guard('staff')->user();
+        $user = $request->user();
 
-        // ✅ Respeta la convención de rutas Inertia/Vue (case-sensitive en deploy)
+        $availableRoles = ['admin', 'auditor'];
+
+        if ($this->isApiRequest($request)) {
+            return response()->json([
+                'available_roles' => $availableRoles,
+                'fields' => ['name', 'email', 'password', 'password_confirmation', 'role'],
+            ]);
+        }
+
         return Inertia::render('Staff/Users/Create', [
             'user' => $user,
             'pageTitle' => 'Agregar usuario',
@@ -157,25 +197,29 @@ class StaffUserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-
-            // ✅ Validar contra staff_users (NO users)
             'email' => ['required', 'string', 'email', 'max:255', 'unique:staff_users,email'],
-
-            // ✅ Requiere password_confirmation en el form
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-
             'role' => ['required', 'in:admin,auditor'],
         ]);
 
-        StaffUser::create([
+        $staffUser = StaffUser::create([
             'name' => $validated['name'],
             'email' => strtolower($validated['email']),
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
-
-            // ✅ Solo si tu tabla tiene "active" (si no existe, borrá esta línea)
-            // 'active' => true,
         ]);
+
+        if ($this->isApiRequest($request)) {
+            return response()->json([
+                'message' => 'Usuario staff creado exitosamente',
+                'user' => [
+                    'id' => $staffUser->id,
+                    'name' => $staffUser->name,
+                    'email' => $staffUser->email,
+                    'role' => $staffUser->role,
+                ],
+            ], 201);
+        }
 
         return redirect()
             ->route('staff.dashboard')

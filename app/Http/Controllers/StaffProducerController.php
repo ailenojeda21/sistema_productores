@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class StaffProducerController extends Controller
@@ -89,23 +88,32 @@ class StaffProducerController extends Controller
             'email' => $u->email,
         ]);
 
-        $user = Auth::guard('staff')->user();
+        $user = $request->user();
+
+        $filters = [
+            'dni' => $dni,
+            'name' => $name,
+            'distrito' => $distrito,
+            'variedad' => $variedad,
+            'tipo' => $tipo,
+            'rut' => $rut,
+        ];
+
+        if ($this->isApiRequest($request)) {
+            return response()->json([
+                'filters' => $filters,
+                'producers' => $producers,
+            ]);
+        }
 
         return inertia('Staff/Producers/Index', [
             'user' => $user,
-            'filters' => [
-                'dni' => $dni,
-                'name' => $name,
-                'distrito' => $distrito,
-                'variedad' => $variedad,
-                'tipo' => $tipo,
-                'rut' => $rut,
-            ],
+            'filters' => $filters,
             'producers' => $producers,
         ]);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $producer = User::with([
             'propiedades.cultivos',
@@ -113,7 +121,7 @@ class StaffProducerController extends Controller
             'comercializacion',
         ])->findOrFail($id);
 
-        $user = Auth::guard('staff')->user();
+        $user = $request->user();
 
         // Preparar propiedades con dirección completa
         $propiedades = $producer->propiedades->map(function ($prop) {
@@ -190,8 +198,7 @@ class StaffProducerController extends Controller
             'hectareas' => $propiedades->sum('hectareas'),
         ];
 
-        return inertia('Staff/Producers/Show', [
-            'authUser' => $user,
+        $responseData = [
             'producer' => [
                 'id' => $producer->id,
                 'name' => $producer->name,
@@ -205,7 +212,16 @@ class StaffProducerController extends Controller
             'maquinarias' => $maquinarias,
             'comercio' => $comercio,
             'stats' => $stats,
-        ]);
+        ];
+
+        if ($this->isApiRequest($request)) {
+            return response()->json($responseData);
+        }
+
+        return inertia('Staff/Producers/Show', array_merge(
+            ['authUser' => $user],
+            $responseData
+        ));
     }
 
     public function export(Request $request)
