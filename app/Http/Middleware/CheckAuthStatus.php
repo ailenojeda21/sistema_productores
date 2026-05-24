@@ -14,6 +14,7 @@ class CheckAuthStatus
 
         if (Auth::check()) {
             Auth::user()->touch();
+
             return $next($request);
         }
 

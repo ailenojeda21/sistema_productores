@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Archivo;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class ArchivoController extends Controller
 {
@@ -15,6 +14,7 @@ class ArchivoController extends Controller
     {
         // Listar todos los archivos con relaciones
         $archivos = Archivo::with(['usuario', 'propiedad'])->get();
+
         return response()->json($archivos);
     }
 
@@ -31,6 +31,7 @@ class ArchivoController extends Controller
             'fecha_subida' => 'required|date',
         ]);
         $archivo = Archivo::create($validated);
+
         return response()->json($archivo, 201);
     }
 
@@ -40,6 +41,7 @@ class ArchivoController extends Controller
     public function show(string $id)
     {
         $archivo = Archivo::with(['usuario', 'propiedad'])->findOrFail($id);
+
         return response()->json($archivo);
     }
 
@@ -57,6 +59,7 @@ class ArchivoController extends Controller
             'fecha_subida' => 'sometimes|date',
         ]);
         $archivo->update($validated);
+
         return response()->json($archivo);
     }
 
@@ -67,6 +70,7 @@ class ArchivoController extends Controller
     {
         $archivo = Archivo::findOrFail($id);
         $archivo->delete();
+
         return response()->json(['message' => 'Archivo eliminado correctamente']);
     }
 }

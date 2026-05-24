@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Cultivo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class StaffDashboardController extends Controller
@@ -31,7 +31,7 @@ class StaffDashboardController extends Controller
         // KPIs - Hectáreas
         $hectareasCultivadas = (float) Cultivo::sum('hectareas');
         $hectareasTotalLavalle = self::HECTAREAS_TOTAL_LAVALLE;
-        
+
         // Calcular porcentaje y restantes
         $hectareasRestantes = max(0, $hectareasTotalLavalle - $hectareasCultivadas);
         $porcentajeOcupado = min(100, round(($hectareasCultivadas / $hectareasTotalLavalle) * 100, 1));
@@ -57,7 +57,7 @@ class StaffDashboardController extends Controller
     /**
      * Obtiene usuarios nuevos por mes para los últimos N meses
      *
-     * @param int $meses Número de meses hacia atrás (default: 6)
+     * @param  int  $meses  Número de meses hacia atrás (default: 6)
      * @return array ['labels' => [...], 'data' => [...]]
      */
     private function getUsuariosNuevosPorMes(int $meses = 6): array
@@ -65,10 +65,14 @@ class StaffDashboardController extends Controller
         $from = now()->startOfMonth()->subMonths($meses - 1);
         $to = now()->endOfMonth();
 
-        // Consulta agrupada por mes
+        $driver = DB::connection()->getDriverName();
+        $dateFormat = $driver === 'sqlite'
+            ? "strftime('%Y-%m', created_at)"
+            : "DATE_FORMAT(created_at, '%Y-%m')";
+
         $registrosPorMes = User::query()
             ->whereBetween('created_at', [$from, $to])
-            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as periodo, COUNT(*) as total")
+            ->select(DB::raw("{$dateFormat} as periodo, COUNT(*) as total"))
             ->groupBy('periodo')
             ->orderBy('periodo')
             ->pluck('total', 'periodo')

@@ -79,9 +79,9 @@ class StaffUserController extends Controller
 
         if (
             $request->has('active')
-            && !$request->filled('name')
-            && !$request->filled('email')
-            && !$request->filled('role')
+            && ! $request->filled('name')
+            && ! $request->filled('email')
+            && ! $request->filled('role')
         ) {
             $validated = $request->validate([
                 'active' => ['required', 'boolean'],
@@ -113,7 +113,7 @@ class StaffUserController extends Controller
             'role' => $validated['role'],
         ];
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $updateData['password'] = Hash::make($validated['password']);
         }
 

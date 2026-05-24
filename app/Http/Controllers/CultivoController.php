@@ -120,7 +120,9 @@ class CultivoController extends Controller
      */
     public function edit(string $id)
     {
-        $cultivo = Cultivo::findOrFail($id);
+        $cultivo = Cultivo::whereHas('propiedad', function ($q) {
+            $q->where('usuario_id', auth()->id());
+        })->findOrFail($id);
         $propiedades = Propiedad::where('usuario_id', auth()->id())->get();
 
         return view('cultivos.edit', compact('cultivo', 'propiedades'));
@@ -182,7 +184,9 @@ class CultivoController extends Controller
      */
     public function destroy(string $id)
     {
-        $cultivo = Cultivo::findOrFail($id);
+        $cultivo = Cultivo::whereHas('propiedad', function ($q) {
+            $q->where('usuario_id', auth()->id());
+        })->findOrFail($id);
         $cultivo->delete();
 
         return redirect()->route('cultivos.index')

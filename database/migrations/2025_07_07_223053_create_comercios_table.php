@@ -9,24 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
-{
-    Schema::create('comercios', function (Blueprint $table) {
-        $table->id(); // ID (clave primaria)
-        $table->unsignedBigInteger('usuario_id'); // Usuario_ID (clave foránea)
+    public function up()
+    {
+        Schema::create('comercios', function (Blueprint $table) {
+            $table->id(); // ID (clave primaria)
+            $table->unsignedBigInteger('usuario_id'); // Usuario_ID (clave foránea)
 
-    $table->boolean('infraestructura_empaque')->default(false);
-    $table->boolean('comercio_mercado')->default(false);
-    $table->boolean('vende_en_finca')->default(false);
-    $table->string('nombre_mercado')->nullable();
-     $table->string('mercados')->nullable();
+            $table->boolean('infraestructura_empaque')->default(false);
+            $table->boolean('comercio_mercado')->default(false);
+            $table->boolean('vende_en_finca')->default(false);
+            $table->string('nombre_mercado')->nullable();
+            $table->string('mercados')->nullable();
 
-        $table->timestamps();
+            $table->timestamps();
 
-        // Clave foránea
-        $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
-    });
-}
+            // Clave foránea
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
+        });
+    }
 
     /**
      * Reverse the migrations.

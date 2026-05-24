@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PropiedadController;
 use App\Http\Controllers\ArchivoController;
-use App\Http\Controllers\MaquinariaController;
 use App\Http\Controllers\CultivoController;
+use App\Http\Controllers\MaquinariaController;
+use App\Http\Controllers\PropiedadController;
+use Illuminate\Support\Facades\Route;
 
 // Rutas protegidas por autenticación
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Comercio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +16,7 @@ class ComercioController extends Controller
         $comercios = Comercio::with('usuario')
             ->where('usuario_id', Auth::id())
             ->get();
+
         return view('comercios.index', compact('comercios'));
     }
 
@@ -31,6 +31,7 @@ class ComercioController extends Controller
             return redirect()->route('comercios.edit', $existing->id)
                 ->with('info', 'Ya existe un comercio. Puedes editarlo.');
         }
+
         return view('comercios.create');
     }
 
@@ -56,6 +57,7 @@ class ComercioController extends Controller
         $validated['usuario_id'] = Auth::id();
 
         Comercio::create($validated);
+
         return redirect()->route('comercios.index')->with('success', 'Comercio creado correctamente');
     }
 
@@ -64,7 +66,10 @@ class ComercioController extends Controller
      */
     public function show($id)
     {
-        $comercio = Comercio::with('usuario')->findOrFail($id);
+        $comercio = Comercio::with('usuario')
+            ->where('usuario_id', Auth::id())
+            ->findOrFail($id);
+
         return view('comercios.show', compact('comercio'));
     }
 
@@ -73,7 +78,9 @@ class ComercioController extends Controller
      */
     public function edit($id)
     {
-        $comercio = Comercio::findOrFail($id);
+        $comercio = Comercio::where('usuario_id', Auth::id())
+            ->findOrFail($id);
+
         return view('comercios.edit', compact('comercio'));
     }
 
@@ -82,7 +89,8 @@ class ComercioController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $comercio = Comercio::findOrFail($id);
+        $comercio = Comercio::where('usuario_id', Auth::id())
+            ->findOrFail($id);
 
         $validated = $request->validate([
             'infraestructura_empaque' => 'nullable',
@@ -99,6 +107,7 @@ class ComercioController extends Controller
         $validated['cooperativas'] = $request->has('tiene_cooperativas') ? $request->input('cooperativas', []) : [];
 
         $comercio->update($validated);
+
         return redirect()->route('comercios.index')->with('success', 'Comercio actualizado correctamente');
     }
 
@@ -107,8 +116,10 @@ class ComercioController extends Controller
      */
     public function destroy($id)
     {
-        $comercio = Comercio::findOrFail($id);
+        $comercio = Comercio::where('usuario_id', Auth::id())
+            ->findOrFail($id);
         $comercio->delete();
+
         return redirect()->route('comercios.index')->with('success', 'Comercio eliminado correctamente');
     }
 }
