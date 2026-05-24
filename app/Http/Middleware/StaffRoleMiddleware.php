@@ -16,7 +16,7 @@ class StaffRoleMiddleware
      */
     public function handle(Request $request, Closure $next, $role)
     {
-        $user = Auth::guard('staff')->user();
+        $user = Auth::guard('staff')->user() ?? Auth::guard('staff-api')->user();
 
         if (! $user || $user->role !== $role) {
             abort(403, 'No autorizado. Se requiere rol: '.$role);

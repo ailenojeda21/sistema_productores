@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Cultivo;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -19,38 +18,38 @@ class StaffDashboardController extends Controller
 
     public function index(Request $request)
     {
-        $user = Auth::guard('staff')->user();
+        $user = $request->user();
 
-        // KPIs - Usuarios
         $usuariosTotal = User::count();
         $usuariosNuevos30d = User::where('created_at', '>=', now()->subDays(30))->count();
-
-        // Usuarios nuevos por mes (últimos 6 meses)
         $usuariosNuevosPorMes = $this->getUsuariosNuevosPorMes(6);
 
-        // KPIs - Hectáreas
         $hectareasCultivadas = (float) Cultivo::sum('hectareas');
         $hectareasTotalLavalle = self::HECTAREAS_TOTAL_LAVALLE;
-
-        // Calcular porcentaje y restantes
         $hectareasRestantes = max(0, $hectareasTotalLavalle - $hectareasCultivadas);
         $porcentajeOcupado = min(100, round(($hectareasCultivadas / $hectareasTotalLavalle) * 100, 1));
 
+        $kpiData = [
+            'usuarios' => [
+                'total' => $usuariosTotal,
+                'nuevos30d' => $usuariosNuevos30d,
+                'nuevosPorMes' => $usuariosNuevosPorMes,
+            ],
+            'hectareas' => [
+                'cultivadas' => $hectareasCultivadas,
+                'totalLavalle' => $hectareasTotalLavalle,
+                'restantes' => $hectareasRestantes,
+                'porcentaje' => $porcentajeOcupado,
+            ],
+        ];
+
+        if ($this->isApiRequest($request)) {
+            return response()->json(['user' => $user, 'kpiData' => $kpiData]);
+        }
+
         return Inertia::render('Staff/Dashboard', [
             'user' => $user,
-            'kpiData' => [
-                'usuarios' => [
-                    'total' => $usuariosTotal,
-                    'nuevos30d' => $usuariosNuevos30d,
-                    'nuevosPorMes' => $usuariosNuevosPorMes,
-                ],
-                'hectareas' => [
-                    'cultivadas' => $hectareasCultivadas,
-                    'totalLavalle' => $hectareasTotalLavalle,
-                    'restantes' => $hectareasRestantes,
-                    'porcentaje' => $porcentajeOcupado,
-                ],
-            ],
+            'kpiData' => $kpiData,
         ]);
     }
 
