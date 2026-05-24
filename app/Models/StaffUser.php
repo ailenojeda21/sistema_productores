@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class StaffUser extends Authenticatable
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'staff_users';
 
@@ -16,7 +17,7 @@ class StaffUser extends Authenticatable
         'email',
         'password',
         'role',
-        'active'
+        'active',
     ];
 
     protected $hidden = [

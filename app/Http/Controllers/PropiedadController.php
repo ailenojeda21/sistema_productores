@@ -98,7 +98,8 @@ class PropiedadController extends Controller
      */
     public function edit(string $id)
     {
-        $propiedad = Propiedad::findOrFail($id);
+        $propiedad = Propiedad::where('usuario_id', Auth::id())
+            ->findOrFail($id);
 
         return view('propiedades.edit', compact('propiedad'));
     }
@@ -108,7 +109,8 @@ class PropiedadController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $propiedad = Propiedad::findOrFail($id);
+        $propiedad = Propiedad::where('usuario_id', Auth::id())
+            ->findOrFail($id);
 
         // =========================
         // VALIDACIÓN
@@ -221,7 +223,8 @@ class PropiedadController extends Controller
      */
     public function destroy(string $id)
     {
-        $propiedad = Propiedad::findOrFail($id);
+        $propiedad = Propiedad::where('usuario_id', Auth::id())
+            ->findOrFail($id);
         $propiedad->delete();
 
         return redirect()->route('propiedades.index')

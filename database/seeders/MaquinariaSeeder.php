@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Maquinaria;
 use App\Models\Propiedad;
+use Illuminate\Database\Seeder;
 
 class MaquinariaSeeder extends Seeder
 {

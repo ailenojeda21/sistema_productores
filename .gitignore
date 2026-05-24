@@ -1,76 +1,92 @@
-# ===========================
-# Sistema / OS
-# ===========================
+# =========================================================
+# Sistema operativo
+# =========================================================
 .DS_Store
 Thumbs.db
 *.log
 
-# ===========================
+# =========================================================
 # IDEs / Editores
-# ===========================
+# =========================================================
 .idea/
 .vscode/
 .fleet/
 .nova/
 .zed/
+*.iml
 .phpactor.json
 
-# ===========================
+# =========================================================
 # Laravel
-# ===========================
+# =========================================================
 /vendor/
+
 .env
 .env.*
+!.env.example
+
 /storage/*.key
 
+# Storage
 /storage/app/*
-!/storage/app/public
+!/storage/app/public/
+/storage/app/public/*
+!/storage/app/public/.gitignore
 
 /storage/framework/cache/*
 /storage/framework/sessions/*
 /storage/framework/views/*
 /storage/logs/*
 
+# Public storage symlink
+/public/storage
+
+# Build / Hot reload
 /public/hot
-#/public/build
+/public/build
 
-# Mantener estructura de storage público
-/public/storage/*
-!/public/storage/.gitignore
-
+# Laravel caches
 .phpunit.cache
 .phpunit.result.cache
+.pint.cache
+
+# Auth / local configs
 /auth.json
 Homestead.json
 Homestead.yaml
-database/database.sqlite
 
-# ===========================
+# SQLite local DB
+/database/database.sqlite
+
+# =========================================================
 # Node / Vite
-# ===========================
-/node_modules
+# =========================================================
+/node_modules/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# ===========================
-# Tests / Coverage
-# ===========================
-/coverage
+.eslintcache
 
-# ===========================
+# =========================================================
+# Tests / Coverage
+# =========================================================
+/coverage/
+
+# =========================================================
 # Archivos comprimidos
-# ===========================
+# =========================================================
 *.zip
 *.tar
 *.tar.gz
 *.rar
 *.7z
 
-# ===========================
-# Temporales / Backups
-# ===========================
+# =========================================================
+# Temporales / backups
+# =========================================================
 *.bak
 *.tmp
 *.swp
@@ -78,9 +94,9 @@ pnpm-debug.log*
 *.old
 *.orig
 
-# ===========================
-# Multimedia / Binarios pesados
-# ===========================
+# =========================================================
+# Multimedia / binarios pesados
+# =========================================================
 *.psd
 *.ai
 *.mp4
@@ -97,15 +113,15 @@ pnpm-debug.log*
 *.class
 *.jar
 
-# ===========================
-# Lock files IMPORTANTES (NO ignorar)
-# ===========================
+# =========================================================
+# Capturas / assets temporales
+# =========================================================
+caps/
+
+# =========================================================
+# IMPORTANTES (NO ignorar)
+# =========================================================
 !composer.lock
 !package-lock.json
 !yarn.lock
 !pnpm-lock.yaml
-
-# ===========================
-# Otros específicos del proyecto
-# ===========================
-caps/nueva propidad mobile.png

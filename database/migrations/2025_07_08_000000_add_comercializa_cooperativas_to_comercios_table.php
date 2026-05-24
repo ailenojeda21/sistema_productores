@@ -8,11 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('comercios', 'comercializa_cooperativas')) {
+        if (! Schema::hasColumn('comercios', 'comercializa_cooperativas')) {
             Schema::table('comercios', function (Blueprint $table) {
                 $table->boolean('comercializa_cooperativas')
-                      ->default(false)
-                      ->after('infraestructura_empaque');
+                    ->default(false)
+                    ->after('infraestructura_empaque');
             });
         }
     }

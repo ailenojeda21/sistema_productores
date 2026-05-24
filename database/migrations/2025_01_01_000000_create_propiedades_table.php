@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-  public function up(): void
+    public function up(): void
     {
         Schema::create('propiedades', function (Blueprint $table) {
             $table->id();
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('direccion')->nullable();
             $table->decimal('lat', 10, 7)->nullable();
             $table->decimal('lng', 10, 7)->nullable();
-            
+
             $table->decimal('hectareas', 8, 2)->nullable();
             $table->boolean('es_propietario')->default(false);
             $table->boolean('malla')->default(false);

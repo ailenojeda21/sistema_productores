@@ -11,8 +11,6 @@ class StaffRoleMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @param  string  $role
      * @return mixed
      */
@@ -20,8 +18,8 @@ class StaffRoleMiddleware
     {
         $user = Auth::guard('staff')->user();
 
-        if (!$user || $user->role !== $role) {
-            abort(403, 'No autorizado. Se requiere rol: ' . $role);
+        if (! $user || $user->role !== $role) {
+            abort(403, 'No autorizado. Se requiere rol: '.$role);
         }
 
         return $next($request);

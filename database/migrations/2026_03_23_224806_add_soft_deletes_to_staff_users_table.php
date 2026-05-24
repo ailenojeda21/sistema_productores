@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Verifica si NO existe la columna antes de agregarla
-        if (!Schema::hasColumn('staff_users', 'deleted_at')) {
+        if (! Schema::hasColumn('staff_users', 'deleted_at')) {
             Schema::table('staff_users', function (Blueprint $table) {
                 $table->softDeletes();
             });

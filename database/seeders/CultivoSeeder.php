@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Cultivo;
 use App\Models\Propiedad;
+use Illuminate\Database\Seeder;
 
 class CultivoSeeder extends Seeder
 {

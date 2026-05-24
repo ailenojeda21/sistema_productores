@@ -25,14 +25,14 @@ class StaffProducerController extends Controller
             ->when($dni !== '', function ($q) use ($dni) {
                 $q->whereRaw(
                     'LOWER(users.dni) LIKE ?',
-                    ['%' . strtolower($dni) . '%']
+                    ['%'.strtolower($dni).'%']
                 );
             })
 
             ->when($name !== '', function ($q) use ($name) {
                 $q->whereRaw(
                     'LOWER(users.name) LIKE ?',
-                    ['%' . strtolower($name) . '%']
+                    ['%'.strtolower($name).'%']
                 );
             })
 
@@ -52,7 +52,7 @@ class StaffProducerController extends Controller
                 $q->whereHas('propiedades.cultivos', function ($sub) use ($variedad) {
                     $sub->whereRaw(
                         'LOWER(variedad) LIKE ?',
-                        ['%' . strtolower($variedad) . '%']
+                        ['%'.strtolower($variedad).'%']
                     );
                 });
             })
@@ -61,7 +61,7 @@ class StaffProducerController extends Controller
                 $q->whereHas('propiedades.cultivos', function ($sub) use ($tipo) {
                     $sub->whereRaw(
                         'LOWER(tipo) LIKE ?',
-                        ['%' . strtolower($tipo) . '%']
+                        ['%'.strtolower($tipo).'%']
                     );
                 });
             })
@@ -105,15 +105,12 @@ class StaffProducerController extends Controller
         ]);
     }
 
-    /**
-     * 🔥 MÉTODO QUE TE FALTABA
-     */
     public function show($id)
     {
         $producer = User::with([
             'propiedades.cultivos',
             'propiedades.maquinaria',
-            'comercializacion'
+            'comercializacion',
         ])->findOrFail($id);
 
         $user = Auth::guard('staff')->user();
@@ -158,24 +155,24 @@ class StaffProducerController extends Controller
         }
 
         // Recolectar maquinarias de todas las propiedades
-   $maquinarias = [];
+        $maquinarias = [];
 
-foreach ($producer->propiedades as $prop) {
-    if ($prop->maquinaria) {
-        $maq = $prop->maquinaria;
+        foreach ($producer->propiedades as $prop) {
+            if ($prop->maquinaria) {
+                $maq = $prop->maquinaria;
 
-        $maquinarias[] = [
-            'id' => $maq->id,
-            'tractor' => $maq->tractor,
-            'modelo_tractor' => $maq->modelo_tractor,
-            'implementos' => $maq->implementos,
-            'implementos_flags' => $maq->implementos_flags,
-            'propiedad' => [
-                'direccion' => $prop->direccion_completa,
-            ],
-        ];
-    }
-}
+                $maquinarias[] = [
+                    'id' => $maq->id,
+                    'tractor' => $maq->tractor,
+                    'modelo_tractor' => $maq->modelo_tractor,
+                    'implementos' => $maq->implementos,
+                    'implementos_flags' => $maq->implementos_flags,
+                    'propiedad' => [
+                        'direccion' => $prop->direccion_completa,
+                    ],
+                ];
+            }
+        }
 
         // Datos de comercialización
         $comercio = $producer->comercializacion ? [
@@ -237,7 +234,7 @@ foreach ($producer->propiedades as $prop) {
         if ($rut) {
             $query->whereHas('propiedades', function ($q) use ($rut) {
                 $q->where('rut', true)
-                  ->where('rut_valor', 'like', "%{$rut}%");
+                    ->where('rut_valor', 'like', "%{$rut}%");
             });
         }
 
@@ -245,10 +242,10 @@ foreach ($producer->propiedades as $prop) {
         if ($variedad || $tipo) {
             $query->whereHas('propiedades.cultivos', function ($q) use ($variedad, $tipo) {
                 if ($variedad) {
-                    $q->whereRaw("LOWER(variedad) LIKE ?", ['%' . strtolower($variedad) . '%']);
+                    $q->whereRaw('LOWER(variedad) LIKE ?', ['%'.strtolower($variedad).'%']);
                 }
                 if ($tipo) {
-                    $q->whereRaw("LOWER(tipo) LIKE ?", ['%' . strtolower($tipo) . '%']);
+                    $q->whereRaw('LOWER(tipo) LIKE ?', ['%'.strtolower($tipo).'%']);
                 }
             });
         }
@@ -271,7 +268,7 @@ foreach ($producer->propiedades as $prop) {
 
         // Generar Excel (HTML table que Excel puede abrir)
         $headers = ['Nombre', 'DNI', 'RUT', 'Teléfono', 'Email'];
-        
+
         if ($searchType === 'variedad') {
             $headers = array_merge($headers, ['Variedad', 'Hectáreas']);
         } elseif ($searchType === 'tipo') {
@@ -283,22 +280,22 @@ foreach ($producer->propiedades as $prop) {
         // Título dinámico según tipo de búsqueda
         $titulo = 'Listado de Productores';
         if ($searchType === 'distrito' && $searchValue) {
-            $titulo = 'Productores del Distrito ' . $searchValue;
+            $titulo = 'Productores del Distrito '.$searchValue;
         } elseif ($searchType === 'variedad' && $searchValue) {
-            $titulo = 'Productores que cultivan ' . $searchValue;
+            $titulo = 'Productores que cultivan '.$searchValue;
         } elseif ($searchType === 'tipo' && $searchValue) {
-            $titulo = 'Productores de tipo ' . $searchValue;
+            $titulo = 'Productores de tipo '.$searchValue;
         }
 
         // Fecha y hora de exportación
-        $fechaExport = date('d/m/Y H:i') . ' hs';
+        $fechaExport = date('d/m/Y H:i').' hs';
 
         // Nombre de archivo dinámico
         $dateStr = date('Y-m-d');
         if ($searchType && $searchValue) {
-            $filename = 'productores_' . strtolower(str_replace(' ', '_', $searchValue)) . '_' . $dateStr . '.xlsx';
+            $filename = 'productores_'.strtolower(str_replace(' ', '_', $searchValue)).'_'.$dateStr.'.xlsx';
         } else {
-            $filename = 'productores_todos_' . $dateStr . '.xlsx';
+            $filename = 'productores_todos_'.$dateStr.'.xlsx';
         }
 
         $html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
@@ -314,14 +311,14 @@ foreach ($producer->propiedades as $prop) {
             </style>
         </head>
         <body>
-        <div class="title">' . htmlspecialchars($titulo) . '</div>
-        <div class="date">Fecha de exportación: ' . $fechaExport . '</div>
+        <div class="title">'.htmlspecialchars($titulo).'</div>
+        <div class="date">Fecha de exportación: '.$fechaExport.'</div>
         <table>
         <thead>
         <tr>';
 
         foreach ($headers as $header) {
-            $html .= '<th>' . htmlspecialchars($header) . '</th>';
+            $html .= '<th>'.htmlspecialchars($header).'</th>';
         }
         $html .= '</tr></thead><tbody>';
 
@@ -347,14 +344,14 @@ foreach ($producer->propiedades as $prop) {
                 $row[] = htmlspecialchars(implode(', ', $distritos));
             }
 
-            $html .= '<tr><td>' . implode('</td><td>', $row) . '</td></tr>';
+            $html .= '<tr><td>'.implode('</td><td>', $row).'</td></tr>';
         }
 
         $html .= '</tbody></table></body></html>';
 
         return response($html, 200, [
             'Content-Type' => 'application/vnd.ms-excel',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
     }
 

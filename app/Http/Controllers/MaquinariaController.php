@@ -171,7 +171,9 @@ class MaquinariaController extends Controller
 
     public function destroy($id)
     {
-        $maquinaria = Maquinaria::findOrFail($id);
+        $maquinaria = Maquinaria::whereHas('propiedad', function ($q) {
+            $q->where('usuario_id', auth()->id());
+        })->findOrFail($id);
         $maquinaria->delete();
 
         return redirect()->route('maquinaria.index')
