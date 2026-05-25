@@ -31,6 +31,8 @@ class StaffApiAuthController extends Controller
             ]);
         }
 
+        $staff->update(['last_login_at' => now()]);
+
         $device = $request->device_name ?? 'staff-api';
         $token = $staff->createToken($device)->plainTextToken;
 

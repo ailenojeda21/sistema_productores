@@ -60,6 +60,16 @@ class Maquinaria extends Model
         return $activos;
     }
 
+    public function getImplementosFlagsAttribute(): array
+    {
+        $flags = [];
+        foreach (self::IMPLEMENTOS_LABELS as $key => $label) {
+            $flags[$key] = ! empty($this->$key);
+        }
+
+        return $flags;
+    }
+
     public function getTipoLabelAttribute(): string
     {
         return $this->tractor ? 'Tractor' : 'Maquinaria';

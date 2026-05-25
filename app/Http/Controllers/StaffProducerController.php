@@ -173,7 +173,7 @@ class StaffProducerController extends Controller
                     'id' => $maq->id,
                     'tractor' => $maq->tractor,
                     'modelo_tractor' => $maq->modelo_tractor,
-                    'implementos' => $maq->implementos,
+                    'implementos' => $maq->implementos_activos,
                     'implementos_flags' => $maq->implementos_flags,
                     'propiedad' => [
                         'direccion' => $prop->direccion_completa,
