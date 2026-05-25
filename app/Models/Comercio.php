@@ -17,6 +17,8 @@ class Comercio extends Model
     ];
 
     protected $casts = [
+        'infraestructura_empaque' => 'boolean',
+        'vende_en_finca' => 'boolean',
         'mercados' => 'array',
         'cooperativas' => 'array',
     ];

@@ -28,6 +28,7 @@ class StaffUser extends Authenticatable
 
     protected $casts = [
         'active' => 'boolean',
+        'password' => 'hashed',
     ];
 
     public function isAdmin(): bool
