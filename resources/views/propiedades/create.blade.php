@@ -32,7 +32,7 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
-                    <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded" required>
+                    <input id="hectareas" name="hectareas" type="text" inputmode="decimal" class="w-full p-2 border border-gray-300 rounded" required>
                 </div>
 
                 <div class="md:col-span-2">
@@ -81,13 +81,13 @@
                     <input type="checkbox" name="malla" id="malla" class="mr-2 rounded-full custom-checkbox">
                     <label for="malla">¿Tiene malla antigranizo?</label>
                 </div>
-                 <div id="malla-fields" class="hidden md:col-span-2">
-                     <div class="mt-2">
-                         <label class="block text-gray-700 font-semibold mb-1" for="hectareas_malla">Hectáreas con malla</label>
-                         <input id="hectareas_malla" name="hectareas_malla" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded transition-colors">
-                         <p id="hectareas-malla-hint" class="text-sm text-gray-500 mt-1">Ingrese las hectáreas totales primero</p>
-                     </div>
-                 </div>
+                  <div id="malla-fields" class="hidden md:col-span-2">
+                      <div class="mt-2">
+                          <label class="block text-gray-700 font-semibold mb-1" for="hectareas_malla">Hectáreas con malla</label>
+                          <input id="hectareas_malla" name="hectareas_malla" type="text" inputmode="decimal" class="w-full p-2 border border-gray-300 rounded transition-colors">
+                          <p id="hectareas-malla-hint" class="text-sm text-gray-500 mt-1">Ingrese las hectáreas totales primero</p>
+                      </div>
+                  </div>
                 <div class="flex items-center mt-6">
                     <input type="checkbox" name="cierre_perimetral" id="cierre_perimetral" class="mr-2 rounded-full custom-checkbox">
                     <label for="cierre_perimetral">¿Tiene cierre perimetral?</label>
@@ -179,42 +179,21 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const radios = document.querySelectorAll('.tenencia-radio');
-    const inputOtro = document.querySelector('input[name="especificar_tenencia"]');
-
-    radios.forEach(radio => {
-        radio.addEventListener('change', () => {
-            if (radio.value === 'otros') {
-                inputOtro.classList.remove('hidden');
-                inputOtro.focus();
-            } else {
-                inputOtro.classList.add('hidden');
-                inputOtro.value = '';
-            }
-        });
-    });
-});
-</script>
-
-<script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Elementos para checkboxes y toggles
+    const form = document.querySelector('form');
     const tenenciaRadios = document.querySelectorAll('.tenencia-radio');
-    const otrosContainer = document.getElementById('otros-tenencia-container');
     const riego = document.getElementById('derecho_riego');
     const riegoDiv = document.getElementById('tipoDerechoRiegoDiv');
     const rut = document.getElementById('rut');
     const rutFields = document.getElementById('rut-fields');
-    const malla = document.getElementById('malla');
-    const mallaFields = document.getElementById('malla-fields');
-    const hectareasInput = document.getElementById('hectareas');
-    const hectareasMallaInput = document.getElementById('hectareas_malla');
+    const mallaChk = document.getElementById('malla');
+    const mallaDiv = document.getElementById('malla-fields');
+    const totInput = document.getElementById('hectareas');
+    const mallaInput = document.getElementById('hectareas_malla');
+    const hint = document.getElementById('hectareas-malla-hint');
 
-    // Función toggle reutilizable
-    const toggle = (check, div) => div.classList.toggle('hidden', !check.checked);
+    const toggle = (check, div) => div?.classList.toggle('hidden', !check.checked);
 
-    // Función para toggle del campo "otros" en tenencia
     const toggleOtros = () => {
         const sel = document.querySelector('.tenencia-radio:checked');
         const inputOtro = document.querySelector('input[name="especificar_tenencia"]');
@@ -228,93 +207,102 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    // Función para validación de hectáreas con malla
-    function syncHectareasMallaMax() {
-        if (!hectareasMallaInput) return;
+    // ──────────────────────────────────────────────
+    // Validación visual SOLO lectura (input event)
+    // ──────────────────────────────────────────────
+    const validarMalla = () => {
+        if (!mallaInput || !hint) return;
 
-        const total = parseFloat(hectareasInput?.value) || 0;
-        const current = parseFloat(hectareasMallaInput.value) || 0;
-        const hint = document.getElementById('hectareas-malla-hint');
+        mallaInput.classList.remove('border-green-500', 'border-red-500', 'border-gray-300');
 
-        if (!hint) return;
+        if (!mallaChk?.checked) {
+            hint.className = 'text-sm text-gray-500 mt-1';
+            hint.textContent = 'Seleccione "tiene malla antigranizo" primero';
+            return;
+        }
 
-        hectareasMallaInput.max = total > 0 ? total : '';
-        hectareasMallaInput.placeholder = total > 0 ? `Máximo ${total.toFixed(2)} ha` : '';
-        hectareasMallaInput.classList.remove('border-green-500', 'border-red-500', 'border-gray-300');
+        const total = Number(totInput?.value) || 0;
+        const malla = Number(mallaInput.value) || 0;
 
         if (total === 0) {
             hint.className = 'text-sm text-gray-500 mt-1';
             hint.textContent = 'Ingrese las hectáreas totales primero';
-            hectareasMallaInput.classList.add('border-gray-300');
-        } else if (current > total) {
-            hectareasMallaInput.classList.add('border-red-500');
+            mallaInput.classList.add('border-gray-300');
+        } else if (malla > total) {
+            mallaInput.classList.add('border-red-500');
             hint.className = 'text-sm text-red-600 mt-1 font-semibold';
-            hint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">error</span> El valor (${current} ha) excede las hectáreas totales (${total.toFixed(2)} ha)`;
-            hectareasMallaInput.value = total;
-        } else if (current > 0) {
-            hectareasMallaInput.classList.add('border-green-500');
+            hint.textContent = `Excede el máximo (${malla} ha > ${total} ha)`;
+        } else if (malla > 0) {
+            mallaInput.classList.add('border-green-500');
             hint.className = 'text-sm text-green-600 mt-1 font-semibold';
-            hint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">check_circle</span> Válido: ${current} ha de ${total.toFixed(2)} ha disponibles`;
+            hint.textContent = `Válido: ${malla} ha de ${total} ha`;
         } else {
             hint.className = 'text-sm text-blue-600 mt-1 font-semibold';
-            hint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">info</span> Máximo disponible: ${total.toFixed(2)} ha`;
-            hectareasMallaInput.classList.add('border-gray-300');
+            hint.textContent = `Máximo disponible: ${total} ha`;
+            mallaInput.classList.add('border-gray-300');
         }
-    }
+    };
 
-    // Configurar listeners
-    tenenciaRadios.forEach(radio => radio.addEventListener('change', toggleOtros));
+    const esMallaValida = () => !mallaChk?.checked || Number(totInput?.value) === 0 || Number(mallaInput?.value) <= Number(totInput?.value);
 
-    if (riego && riegoDiv) {
-        riego.addEventListener('change', () => toggle(riego, riegoDiv));
-    }
+    // ──────────────────────────────────────────────
+    // Corrección NO intrusiva (blur event)
+    // ──────────────────────────────────────────────
+    const corregirMalla = () => {
+        if (!mallaChk?.checked || !mallaInput || !hint) return;
+        const total = Number(totInput?.value) || 0;
+        const malla = Number(mallaInput.value) || 0;
+        if (total > 0 && malla > total) {
+            mallaInput.value = String(total);
+            hint.className = 'text-sm text-yellow-600 mt-1 font-semibold';
+            hint.textContent = `Valor ajustado a ${total} ha (máximo permitido)`;
+            mallaInput.classList.remove('border-red-500');
+            mallaInput.classList.add('border-green-500');
+        }
+    };
 
-    if (rut && rutFields) {
-        rut.addEventListener('change', () => toggle(rut, rutFields));
-    }
-
-    if (malla && mallaFields) {
-        malla.addEventListener('change', function() {
-            toggle(malla, mallaFields);
-            if (malla.checked) {
-                syncHectareasMallaMax();
-            } else {
-                const hint = document.getElementById('hectareas-malla-hint');
-                if (hint) {
-                    hint.className = 'text-sm text-gray-500 mt-1';
-                    hint.textContent = 'Seleccione "tiene malla antigranizo" primero';
-                }
+    // ──────────────────────────────────────────────
+    // Bloqueo de submit
+    // ──────────────────────────────────────────────
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            validarMalla();
+            if (!esMallaValida()) {
+                e.preventDefault();
+                mallaInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                mallaInput?.focus();
             }
         });
     }
 
-    if (hectareasInput && hectareasMallaInput) {
-        hectareasInput.addEventListener('input', syncHectareasMallaMax);
-        hectareasMallaInput.addEventListener('input', syncHectareasMallaMax);
+    // ──────────────────────────────────────────────
+    // Event wiring
+    // ──────────────────────────────────────────────
+    tenenciaRadios.forEach(r => r.addEventListener('change', toggleOtros));
+    if (riego && riegoDiv) riego.addEventListener('change', () => toggle(riego, riegoDiv));
+    if (rut && rutFields) rut.addEventListener('change', () => toggle(rut, rutFields));
+
+    if (mallaChk && mallaDiv) {
+        mallaChk.addEventListener('change', () => {
+            toggle(mallaChk, mallaDiv);
+            validarMalla();
+        });
     }
 
-    // Inicializar estados
+    if (totInput && mallaInput) {
+        totInput.addEventListener('input', validarMalla);
+        mallaInput.addEventListener('input', validarMalla);
+        mallaInput.addEventListener('blur', corregirMalla);
+    }
+
+    // ──────────────────────────────────────────────
+    // Init
+    // ──────────────────────────────────────────────
     toggleOtros();
     if (riego && riegoDiv) toggle(riego, riegoDiv);
     if (rut && rutFields) toggle(rut, rutFields);
-    if (malla && mallaFields) toggle(malla, mallaFields);
-
-    // Inicializar validación de hectáreas con malla si el checkbox está marcado
-    if (malla && malla.checked) {
-        syncHectareasMallaMax();
-    }
-
-    // Inicializar validación general
-    syncHectareasMallaMax();
-
-    // Delay adicional para móvil - reintentar inicialización
-    setTimeout(() => {
-        console.log('Reintentando inicialización con delay para móvil');
-        if (riego && riegoDiv) toggle(riego, riegoDiv);
-        if (rut && rutFields) toggle(rut, rutFields);
-        if (malla && mallaFields) toggle(malla, mallaFields);
-        syncHectareasMallaMax();
-    }, 500);
+    if (mallaChk && mallaDiv) toggle(mallaChk, mallaDiv);
+    if (mallaChk?.checked) validarMalla();
 });
 </script>
 
