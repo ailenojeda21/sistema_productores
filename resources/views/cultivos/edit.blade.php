@@ -8,7 +8,7 @@
     ]" />
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Editar Cultivo</h2>
-        <form method="POST" action="{{ route('cultivos.update', $cultivo) }}">
+        <form method="POST" action="{{ route('cultivos.update', $cultivo) }}" data-cultivo-id="{{ $cultivo->id }}">
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -61,7 +61,7 @@
                 </div>
                  <div>
                       <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas Totales</label>
-                      <input id="hectareas" name="hectareas" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded transition-colors" value="{{ old('hectareas', $cultivo->hectareas) }}" required>
+                       <input id="hectareas" name="hectareas" type="text" inputmode="decimal" class="w-full p-2 border border-gray-300 rounded transition-colors" value="{{ old('hectareas', $cultivo->hectareas) }}" required>
                       <p id="hectareas-hint" class="text-sm text-gray-500 mt-1">Seleccione una propiedad para ver disponibilidad</p>
                   </div>
                  <div class="md:col-span-2">
@@ -80,96 +80,128 @@
 </div>
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const selectProp = document.getElementById('propiedad_id');
-    const hectareasInput = document.getElementById('hectareas');
-    const hectareasHint = document.getElementById('hectareas-hint');
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    const propSelect = document.getElementById('propiedad_id');
+    const haInput = document.getElementById('hectareas');
+    const hint = document.getElementById('hectareas-hint');
 
-    if (!selectProp || !hectareasInput || !hectareasHint) return;
+    if (!propSelect || !haInput || !hint) return;
 
-    async function syncMaxHectareas() {
-        const propId = selectProp.value;
+    const toNum = (v) => { const n = Number(String(v).replace(',', '.')); return isNaN(n) ? 0 : n; };
 
-        if (!propId) {
-            hectareasInput.max = '';
-            hectareasInput.placeholder = '';
-            hectareasHint.textContent = 'Seleccione una propiedad para ver disponibilidad';
+    let disponible = null;
+    let total = 0;
+
+    const setHint = (type, msg) => {
+        hint.className = `text-sm text-${type}-600 mt-1 font-semibold`;
+        hint.textContent = msg;
+    };
+
+    const setBorder = (color) => {
+        haInput.classList.remove('border-green-500', 'border-red-500', 'border-gray-300');
+        if (color) haInput.classList.add(`border-${color}-500`);
+    };
+
+    const actualizarUI = () => {
+        if (!propSelect.value || disponible === null) {
+            setBorder('gray');
+            setHint('gray', 'Seleccione una propiedad para ver disponibilidad');
             return;
         }
+        const current = toNum(haInput.value);
+        if (disponible <= 0) {
+            setBorder('red');
+            setHint('red', `Total: ${total} ha | No hay hectáreas disponibles`);
+            return;
+        }
+        if (current > disponible) {
+            setBorder('red');
+            setHint('red', `El valor (${current} ha) excede lo disponible (${disponible} ha)`);
+        } else if (current > 0) {
+            setBorder('green');
+            const rest = disponible - current;
+            setHint('green', `Disponibles: ${rest.toFixed(2)} ha de ${disponible.toFixed(2)} ha`);
+        } else {
+            setBorder('gray');
+            setHint('blue', `Máximo disponible: ${disponible.toFixed(2)} ha (Total propiedad: ${total.toFixed(2)} ha)`);
+        }
+    };
 
+    async function fetchDisponibilidad() {
+        const propId = propSelect.value;
+        if (!propId) {
+            disponible = null; total = 0;
+            actualizarUI();
+            return;
+        }
         try {
             const url = "{{ route('cultivos.hectareas-disponibles') }}";
-            const response = await fetch(`${url}?propiedad_id=${propId}&cultivo_id={{ $cultivo->id }}`, {
+            const cultivoId = form?.dataset.cultivoId || '';
+            const params = new URLSearchParams({ propiedad_id: propId });
+            if (cultivoId) params.append('cultivo_id', cultivoId);
+
+            const res = await fetch(`${url}?${params}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                 }
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Response error:', response.status, errorText);
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || 'Error al obtener hectáreas disponibles');
-            }
-
-            const data = await response.json();
-            const maxVal = parseFloat(data.hectareas_disponibles);
-
-            hectareasInput.max = maxVal || '';
-            hectareasInput.placeholder = maxVal ? `Máximo ${maxVal.toFixed(2)} ha` : '';
-            hectareasInput.classList.remove('border-green-500', 'border-red-500', 'border-gray-300');
-
-            const current = parseFloat(hectareasInput.value);
-            if (maxVal !== null && current > maxVal) {
-                hectareasInput.value = maxVal;
-            }
-
-            if (maxVal !== null) {
-                if (maxVal <= 0) {
-                    hectareasInput.classList.add('border-red-500');
-                    hectareasHint.className = 'text-sm text-red-600 mt-1 font-semibold';
-                    hectareasHint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">error</span> Total: ${data.hectareas_totales} ha | No hay hectáreas disponibles`;
-                } else {
-                    hectareasInput.classList.add('border-green-500');
-                    hectareasHint.className = 'text-sm text-green-600 mt-1 font-semibold';
-                    hectareasHint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">check_circle</span> Total: ${data.hectareas_totales} ha | Disponibles: <span class="text-xl">${maxVal.toFixed(2)} ha</span>`;
-                }
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            hectareasInput.classList.remove('border-green-500', 'border-red-500');
-            hectareasInput.classList.add('border-gray-300');
-            hectareasHint.className = 'text-sm text-gray-500 mt-1';
-            hectareasHint.textContent = 'Seleccione una propiedad para ver disponibilidad';
+            if (!res.ok) throw new Error('Error al obtener disponibilidad');
+            const data = await res.json();
+            disponible = toNum(data.hectareas_disponibles);
+            total = toNum(data.hectareas_totales);
+        } catch (e) {
+            console.error(e);
+            disponible = 0; total = 0;
         }
+        actualizarUI();
     }
 
-    selectProp.addEventListener('change', syncMaxHectareas);
+    propSelect.addEventListener('change', fetchDisponibilidad);
 
-    function validateHectareasValue() {
-        const maxVal = parseFloat(hectareasInput.max);
-        const current = parseFloat(hectareasInput.value);
-
-        if (!isNaN(maxVal) && maxVal > 0) {
-            if (!isNaN(current) && current > maxVal) {
-                hectareasInput.classList.remove('border-green-500', 'border-gray-300');
-                hectareasInput.classList.add('border-red-500');
-                hectareasHint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">error</span> El valor ingresado (${current} ha) excede las hectáreas disponibles (${maxVal.toFixed(2)} ha)`;
-                hectareasHint.className = 'text-sm text-red-600 mt-1 font-semibold';
-            } else if (!isNaN(current)) {
-                hectareasInput.classList.remove('border-red-500', 'border-gray-300');
-                hectareasInput.classList.add('border-green-500');
-                const remaining = maxVal - current;
-                hectareasHint.innerHTML = `<span class="material-symbols-outlined align-middle text-lg mr-1">check_circle</span> Disponibles: <span class="text-xl">${remaining.toFixed(2)} ha</span> de ${maxVal.toFixed(2)} ha`;
-                hectareasHint.className = 'text-sm text-green-600 mt-1 font-semibold';
-            }
+    haInput.addEventListener('input', () => {
+        if (!propSelect.value || disponible === null || disponible <= 0) return;
+        const current = toNum(haInput.value);
+        if (current > disponible) {
+            setBorder('red');
+            setHint('red', `El valor (${current} ha) excede lo disponible (${disponible} ha)`);
+        } else if (current > 0) {
+            setBorder('green');
+            const rest = disponible - current;
+            setHint('green', `Disponibles: ${rest.toFixed(2)} ha de ${disponible.toFixed(2)} ha`);
+        } else {
+            setBorder('gray');
+            setHint('blue', `Máximo disponible: ${disponible.toFixed(2)} ha (Total propiedad: ${total.toFixed(2)} ha)`);
         }
+    });
+
+    haInput.addEventListener('blur', () => {
+        if (!propSelect.value || disponible === null || disponible <= 0) return;
+        const current = toNum(haInput.value);
+        if (current > disponible) {
+            haInput.value = disponible.toFixed(2);
+            setBorder('green');
+            setHint('green', `Disponibles: 0 ha de ${disponible.toFixed(2)} ha`);
+        } else {
+            actualizarUI();
+        }
+    });
+
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            actualizarUI();
+            const current = toNum(haInput.value);
+            if (disponible > 0 && current > disponible) {
+                e.preventDefault();
+                haInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                haInput.focus();
+            }
+        });
     }
 
-    hectareasInput.addEventListener('input', validateHectareasValue);
-    syncMaxHectareas();
+    fetchDisponibilidad();
 
     // Dependent dropdown: Variedad changes based on Tipo
     const tipoSelect = document.getElementById('tipo');
@@ -185,25 +217,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateVariedadOptions() {
         const tipo = tipoSelect.value;
         const variedades = variedadesData[tipo] || {};
-
-        // Guardar valor actual
         const currentValue = variedadSelect.value;
-
-        // Limpiar opciones
         variedadSelect.innerHTML = '<option value="">Seleccione variedad</option>';
-
-        // Agregar nuevas opciones
         for (const [value, label] of Object.entries(variedades)) {
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = label;
-            variedadSelect.appendChild(option);
+            const opt = document.createElement('option');
+            opt.value = value;
+            opt.textContent = label;
+            variedadSelect.appendChild(opt);
         }
-
-        // Restaurar valor si existe en las nuevas opciones
-        if (variedades[currentValue]) {
-            variedadSelect.value = currentValue;
-        }
+        if (variedades[currentValue]) variedadSelect.value = currentValue;
     }
 
     if (tipoSelect && variedadSelect) {
