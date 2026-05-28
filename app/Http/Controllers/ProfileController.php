@@ -26,7 +26,6 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.auth()->id()],
             'dni' => ['nullable', 'string', 'max:20'],
             'telefono' => ['nullable', 'string', 'max:20'],
             'direccion' => ['nullable', 'string', 'max:255'],
@@ -40,6 +39,7 @@ class ProfileController extends Controller
         }
 
         $user = auth()->user();
+        $validated['email'] = $user->email;
         $user->update($validated);
 
         return Redirect::route('profile')

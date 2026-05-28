@@ -12,6 +12,7 @@ use App\Http\Controllers\StaffProducerController;
 use App\Http\Controllers\StaffUserController;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -94,6 +95,7 @@ Route::middleware('web')->group(function () {
             'password' => Hash::make($data['password']),
         ]);
 
+        event(new Registered($user));
         Auth::login($user);
         $request->session()->regenerate();
 
