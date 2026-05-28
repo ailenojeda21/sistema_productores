@@ -40,9 +40,8 @@
                         Correo electrónico
                     </label>
                     <input name="email" type="email"
-                           class="w-full p-2 border border-gray-300 rounded"
-                           value="{{ old('email', $user->email) }}" required>
-                    @error('email') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
+                           class="w-full p-2 border border-gray-200 rounded bg-gray-50 text-gray-600"
+                           value="{{ old('email', $user->email) }}" disabled>
                 </div>
 
                 <!-- DNI -->
@@ -165,8 +164,8 @@
                         Correo electrónico
                     </label>
                     <input name="email" type="email"
-                           class="w-full p-3 border border-gray-300 rounded-lg"
-                           value="{{ old('email', $user->email) }}" required>
+                           class="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-600"
+                           value="{{ old('email', $user->email) }}" disabled>
                 </div>
 
                 <!-- DNI -->

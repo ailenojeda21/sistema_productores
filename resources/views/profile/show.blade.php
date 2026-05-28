@@ -42,7 +42,12 @@
                         <span class="material-symbols-outlined text-gray-400 shrink-0">mail</span>
                         <div>
                             <span class="text-xs text-gray-500 uppercase tracking-wider">Email</span>
-                            <p class="text-sm text-gray-700 font-medium">{{ $user->email }}</p>
+                            <p class="text-sm text-gray-700 font-medium">
+                                {{ $user->email }}
+                                @if($user->hasVerifiedEmail())
+                                    <span class="material-symbols-outlined text-green-500 align-middle text-lg ml-1" title="Verificado">verified</span>
+                                @endif
+                            </p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
