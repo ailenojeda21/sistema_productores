@@ -62,6 +62,7 @@ Route::middleware('web')->group(function () {
     })->name('login.create');
 
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:login-producer')
         ->name('login');
 
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
@@ -156,7 +157,8 @@ Route::prefix('staff')->group(function () {
     Route::get('/login', [StaffAuthController::class, 'showLogin'])
         ->name('staff.login');
 
-    Route::post('/login', [StaffAuthController::class, 'login']);
+    Route::post('/login', [StaffAuthController::class, 'login'])
+        ->middleware('throttle:login-staff');
 
     /*
     |--------------------------------------------------------------------------

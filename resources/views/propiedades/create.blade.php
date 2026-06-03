@@ -14,7 +14,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="distrito">Distrito</label>
-                    <select id="distrito" name="distrito" class="w-full p-2 border border-gray-300 rounded">
+                    <select id="distrito" name="distrito" class="w-full p-2 border border-gray-300 rounded" required>
                         <option value="">Seleccione un distrito</option>
                         @foreach(\App\Models\Propiedad::getDistritosForForm() as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
@@ -23,28 +23,56 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="calle">Calle</label>
-                    <input id="calle" name="calle" type="text" class="w-full p-2 border border-gray-300 rounded">
+                    <input id="calle" name="calle" type="text" class="w-full p-2 border border-gray-300 rounded" required>
                 </div>
 
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="numeracion">Numeración</label>
-                    <input id="numeracion" name="numeracion" type="number" class="w-full p-2 border border-gray-300 rounded">
+                    <input id="numeracion" name="numeracion" type="number" class="w-full p-2 border border-gray-300 rounded" required>
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
                     <input id="hectareas" name="hectareas" type="text" inputmode="decimal" class="w-full p-2 border border-gray-300 rounded" required>
                 </div>
 
-                <div class="md:col-span-2">
+                <div class="md:col-span-2 location-map-field">
                     <label class="block text-gray-700 font-semibold mb-1">Ubicación</label>
+                    <div class="mb-4 rounded-md border-l-4 border-blue-600 bg-blue-50 p-4 text-blue-950 shadow-sm">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
+                            <span class="text-2xl leading-none" aria-hidden="true">📍</span>
+                            <div>
+                                <h3 class="text-base font-bold">Seleccione la ubicación exacta de la propiedad</h3>
+                                <p class="mt-1 text-sm font-medium text-blue-900">
+                                    Haga clic sobre el mapa para colocar el marcador. También puede arrastrarlo para ajustar la posición.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                     <input type="hidden" name="lat" class="lat-input" value="{{ old('lat', '') }}">
                     <input type="hidden" name="lng" class="lng-input" value="{{ old('lng', '') }}">
-                    <div class="map-element w-full h-56 rounded border"></div>
+                    @php($hasSelectedLocation = old('lat', '') && old('lng', ''))
+                    <div class="mb-3">
+                        <span class="location-status-badge inline-flex rounded-full px-3 py-1 text-sm font-bold {{ $hasSelectedLocation ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $hasSelectedLocation ? '✅ Ubicación seleccionada correctamente' : '⚠️ Ubicación pendiente de seleccionar' }}
+                        </span>
+                    </div>
+                    <div class="relative">
+                        <div class="map-element w-full h-56 rounded border" aria-label="Mapa para seleccionar la ubicación exacta de la propiedad"></div>
+                        <div class="location-map-help {{ $hasSelectedLocation ? 'hidden' : '' }} pointer-events-none absolute left-3 right-3 top-3 z-[1000] rounded-lg bg-yellow-200 px-4 py-3 text-sm font-bold text-yellow-950 shadow-lg sm:left-4 sm:right-auto">
+                            📍 Haga clic en el mapa para marcar la ubicación
+                        </div>
+                    </div>
                     <p class="text-sm text-gray-500 mt-2">
                         Coordenadas:
                         <span class="coordenadas-display font-semibold">No seleccionada</span>
                     </p>
-                    <p class="text-xs text-gray-400 mt-1">Haga clic en el mapa para marcar la ubicación. También puede arrastrar el pin.</p>
+                    {{-- Mensaje de error de coordenadas --}}
+                    <p id="map-error" class="hidden mt-1 text-sm font-semibold text-red-600 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        Debes seleccionar una ubicación en el mapa.
+                    </p>
                 </div>
 
                 <div class="flex items-center mt-6">
@@ -105,6 +133,7 @@
                    name="tipo_tenencia"
                    value="propietario"
                    class="mr-3 tenencia-radio"
+                   required
                    {{ old('tipo_tenencia') === 'propietario' ? 'checked' : '' }}>
             <span class="text-gray-700">Propietario</span>
         </label>
@@ -180,6 +209,16 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[required]').forEach(function(el) {
+        el.addEventListener('invalid', function() {
+            if (this.validity.valueMissing) {
+                this.setCustomValidity('Este campo es obligatorio.');
+            }
+        });
+        el.addEventListener('input', function() { this.setCustomValidity(''); });
+        el.addEventListener('change', function() { this.setCustomValidity(''); });
+    });
+
     const form = document.querySelector('form');
     const tenenciaRadios = document.querySelectorAll('.tenencia-radio');
     const riego = document.getElementById('derecho_riego');
@@ -191,6 +230,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const totInput = document.getElementById('hectareas');
     const mallaInput = document.getElementById('hectareas_malla');
     const hint = document.getElementById('hectareas-malla-hint');
+    const rutValor = document.getElementById('rut_valor');
+    const rutArchivo = document.getElementById('rut_archivo_file');
 
     const toggle = (check, div) => div?.classList.toggle('hidden', !check.checked);
 
@@ -266,11 +307,38 @@ document.addEventListener('DOMContentLoaded', function () {
     // ──────────────────────────────────────────────
     if (form) {
         form.addEventListener('submit', (e) => {
+            const lat = document.querySelector('.lat-input');
+            const lng = document.querySelector('.lng-input');
+            const mapError = document.getElementById('map-error');
+            const mapEl = document.querySelector('.map-element');
+
+            // Limpiar estado de error del mapa antes de re-validar
+            if (mapError) mapError.classList.add('hidden');
+            if (mapEl) mapEl.classList.remove('border-red-500', 'border-2');
+
+            if (!lat?.value || !lng?.value) {
+                e.preventDefault();
+                if (mapEl) {
+                    mapEl.classList.add('border-red-500', 'border-2');
+                    mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                if (mapError) mapError.classList.remove('hidden');
+                return false;
+            }
+
             validarMalla();
             if (!esMallaValida()) {
                 e.preventDefault();
                 mallaInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 mallaInput?.focus();
+                return false;
+            }
+
+            if (rut?.checked && !rutValor?.value && (!rutArchivo?.files || rutArchivo.files.length === 0)) {
+                rut.checked = false;
+                toggle(rut, rutFields);
+                if (rutValor) { rutValor.value = ''; rutValor.required = false; }
+                if (rutArchivo) rutArchivo.value = '';
             }
         });
     }
@@ -280,7 +348,25 @@ document.addEventListener('DOMContentLoaded', function () {
     // ──────────────────────────────────────────────
     tenenciaRadios.forEach(r => r.addEventListener('change', toggleOtros));
     if (riego && riegoDiv) riego.addEventListener('change', () => toggle(riego, riegoDiv));
-    if (rut && rutFields) rut.addEventListener('change', () => toggle(rut, rutFields));
+    if (rut && rutFields) {
+        rut.addEventListener('change', () => {
+            toggle(rut, rutFields);
+            if (!rut.checked) {
+                if (rutValor) { rutValor.value = ''; rutValor.required = false; }
+                if (rutArchivo) rutArchivo.value = '';
+            }
+        });
+    }
+
+    if (rutArchivo) {
+        rutArchivo.addEventListener('change', () => {
+            if (rut?.checked && rutArchivo.files.length > 0) {
+                if (rutValor) rutValor.required = true;
+            } else if (rut?.checked) {
+                if (rutValor) rutValor.required = false;
+            }
+        });
+    }
 
     if (mallaChk && mallaDiv) {
         mallaChk.addEventListener('change', () => {
@@ -300,9 +386,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // ──────────────────────────────────────────────
     toggleOtros();
     if (riego && riegoDiv) toggle(riego, riegoDiv);
-    if (rut && rutFields) toggle(rut, rutFields);
+    if (rut && rutFields) { toggle(rut, rutFields); if (rutValor) rutValor.required = false; }
     if (mallaChk && mallaDiv) toggle(mallaChk, mallaDiv);
     if (mallaChk?.checked) validarMalla();
+
+    if (rutValor) {
+        rutValor.addEventListener('invalid', function() {
+            if (this.validity.valueMissing) {
+                this.setCustomValidity('Este campo es obligatorio.');
+            }
+        });
+        rutValor.addEventListener('input', function() { this.setCustomValidity(''); });
+    }
 });
 </script>
 
@@ -314,9 +409,12 @@ document.addEventListener('DOMContentLoaded', function() {
     mapElements.forEach(function(mapElement) {
         let map, marker;
         
-        const latInput = mapElement.parentElement.querySelector('.lat-input');
-        const lngInput = mapElement.parentElement.querySelector('.lng-input');
-        const coordDisplay = mapElement.parentElement.querySelector('.coordenadas-display');
+        const locationField = mapElement.closest('.location-map-field');
+        const latInput = locationField?.querySelector('.lat-input');
+        const lngInput = locationField?.querySelector('.lng-input');
+        const coordDisplay = locationField?.querySelector('.coordenadas-display');
+        const statusBadge = locationField?.querySelector('.location-status-badge');
+        const mapHelp = locationField?.querySelector('.location-map-help');
         
         const initialLat = parseFloat(latInput?.value) || -31.5;
         const initialLng = parseFloat(lngInput?.value) || -68.5;
@@ -364,7 +462,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             latInput.value = latlng.lat.toFixed(7);
             lngInput.value = latlng.lng.toFixed(7);
+            latInput.setCustomValidity('');
+            lngInput.setCustomValidity('');
             coordDisplay.textContent = latlng.lat.toFixed(7) + ', ' + latlng.lng.toFixed(7);
+
+            if (statusBadge) {
+                statusBadge.className = 'location-status-badge inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-green-800';
+                statusBadge.textContent = '✅ Ubicación seleccionada correctamente';
+            }
+            if (mapHelp) mapHelp.classList.add('hidden');
+
+            // Limpiar error del mapa al seleccionar coordenadas válidas
+            const mapError = document.getElementById('map-error');
+            if (mapError) mapError.classList.add('hidden');
+            if (mapElement) mapElement.classList.remove('border-red-500', 'border-2');
         }
     });
 });
