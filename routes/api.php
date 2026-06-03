@@ -30,7 +30,8 @@ use Illuminate\Support\Facades\Route;
 // =====================================================================
 
 // Login (público, sin auth)
-Route::post('/staff/login', [App\Http\Controllers\StaffApiAuthController::class, 'login']);
+Route::post('/staff/login', [App\Http\Controllers\StaffApiAuthController::class, 'login'])
+    ->middleware('throttle:login-staff-api');
 
 // Rutas protegidas con token Sanctum
 Route::middleware(['auth:staff-api'])->prefix('staff')->group(function () {
