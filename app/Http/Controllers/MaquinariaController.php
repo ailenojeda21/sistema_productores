@@ -58,7 +58,7 @@ class MaquinariaController extends Controller
                     $propiedad = Propiedad::find($item['propiedad_id']);
 
                     return redirect()->back()
-                        ->with('error', 'Ya existe una maquinaria registrada para la propiedad: '.($propiedad->direccion ?? 'ID '.$item['propiedad_id']))
+                        ->with('error', 'Ya existe una maquinaria registrada para la propiedad: '.($propiedad->calle ?? 'ID '.$item['propiedad_id']))
                         ->withInput();
                 }
 
@@ -90,7 +90,7 @@ class MaquinariaController extends Controller
             $propiedad = Propiedad::find($validated['propiedad_id']);
 
             return redirect()->back()
-                ->with('error', 'Ya existe una maquinaria registrada para la propiedad: '.($propiedad->direccion ?? 'ID '.$validated['propiedad_id']))
+                ->with('error', 'Ya existe una maquinaria registrada para la propiedad: '.($propiedad->calle ?? 'ID '.$validated['propiedad_id']))
                 ->withInput();
         }
 
@@ -111,7 +111,7 @@ class MaquinariaController extends Controller
 
     public function edit($id)
     {
-        $maquinaria = Maquinaria::findOrFail($id);
+        $maquinaria = Maquinaria::whereHas('propiedad', fn($q) => $q->where('usuario_id', auth()->id()))->findOrFail($id);
         $propiedades = Propiedad::where('usuario_id', auth()->id())
             ->where(function ($q) use ($maquinaria) {
                 $q->whereDoesntHave('maquinaria')
@@ -124,17 +124,12 @@ class MaquinariaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $maquinaria = Maquinaria::findOrFail($id);
+        $maquinaria = Maquinaria::whereHas('propiedad', fn($q) => $q->where('usuario_id', auth()->id()))->findOrFail($id);
 
         $validated = $request->validate([
             'propiedad_id' => 'required|exists:propiedades,id',
             'modelo_tractor' => 'nullable|integer|min:1900|max:'.date('Y'),
         ]);
-
-        // Asegurar que la propiedad pertenece al usuario autenticado
-        if (! Propiedad::where('id', $validated['propiedad_id'])->where('usuario_id', auth()->id())->exists()) {
-            return redirect()->back()->withInput()->withErrors(['propiedad_id' => 'Propiedad inválida.']);
-        }
 
         // Verificar si ya existe otra maquinaria para esta propiedad (excluyendo la actual)
         $existente = Maquinaria::where('propiedad_id', $validated['propiedad_id'])
@@ -145,7 +140,7 @@ class MaquinariaController extends Controller
             $propiedad = Propiedad::find($validated['propiedad_id']);
 
             return redirect()->back()
-                ->with('error', 'Ya existe otra maquinaria registrada para la propiedad: '.($propiedad->direccion ?? 'ID '.$validated['propiedad_id']))
+                ->with('error', 'Ya existe otra maquinaria registrada para la propiedad: '.($propiedad->calle ?? 'ID '.$validated['propiedad_id']))
                 ->withInput();
         }
 

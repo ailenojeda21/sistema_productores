@@ -141,14 +141,6 @@ class Propiedad extends Model
     }
 
     /**
-     * Relación: Una propiedad tiene muchos archivos
-     */
-    public function archivos()
-    {
-        return $this->hasMany(Archivo::class, 'propiedad_id');
-    }
-
-    /**
      * Relación: Una propiedad tiene una maquinaria
      */
     public function maquinaria()

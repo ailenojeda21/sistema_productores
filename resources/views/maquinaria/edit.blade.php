@@ -42,21 +42,6 @@
     @endforeach
 </select>
             </div>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var tractorCheckbox = document.getElementById('tractor');
-    var modeloInput = document.getElementById('modelo_tractor');
-    if (tractorCheckbox && modeloInput) {
-        tractorCheckbox.addEventListener('change', function() {
-            if (!tractorCheckbox.checked) {
-                modeloInput.value = '';
-            }
-        });
-    }
-});
-</script>
             <!-- Tractor -->
             <div class="mb-4">
                 <label class="flex items-center">
@@ -121,13 +106,29 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
     const tractorCheckbox = document.getElementById('tractor');
     const modeloField = document.getElementById('modelo_tractor_field');
+    const modeloInput = document.getElementById('modelo_tractor');
 
     function toggleModeloField() {
-        modeloField.style.display = tractorCheckbox.checked ? 'block' : 'none';
+        const checked = tractorCheckbox.checked;
+        modeloField.style.display = checked ? 'block' : 'none';
+        if (checked) {
+            modeloInput.required = true;
+        } else {
+            modeloInput.required = false;
+            modeloInput.value = '';
+        }
     }
 
-    // Ejecutar al cargar y al cambiar
     toggleModeloField();
     tractorCheckbox.addEventListener('change', toggleModeloField);
+
+    if (modeloInput) {
+        modeloInput.addEventListener('invalid', function() {
+            if (this.validity.valueMissing) {
+                this.setCustomValidity('Debe ingresar el año del tractor.');
+            }
+        });
+        modeloInput.addEventListener('input', function() { this.setCustomValidity(''); });
+    }
 </script>
 @endsection

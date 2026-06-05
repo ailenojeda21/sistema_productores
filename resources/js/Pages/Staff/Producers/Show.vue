@@ -15,7 +15,7 @@
             </svg>
           </button>
           <nav class="flex items-center text-sm text-slate-500">
-            <button @click="router.visit('/staff/dashboard')" class="hover:text-slate-800 transition">Dashboard</button>
+            <button @click="router.visit('/staff/dashboard')" class="hover:text-slate-800 transition">Inicio</button>
             <span class="mx-2">/</span>
             <button @click="router.visit('/staff/producers')" class="hover:text-slate-800 transition">Productores</button>
             <span class="mx-2">/</span>
