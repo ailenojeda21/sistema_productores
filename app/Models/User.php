@@ -54,11 +54,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Comercio::class, 'usuario_id');
     }
 
-    public function archivos()
-    {
-        return $this->hasMany(Archivo::class, 'usuario_id');
-    }
-
     /**
      * The attributes that are mass assignable.
      */

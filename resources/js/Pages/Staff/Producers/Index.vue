@@ -10,7 +10,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z" />
           </svg>
-          Dashboard
+          Inicio
         </button>
         <span class="mx-2">/</span>
         <span class="text-slate-800 font-medium">Productores</span>
