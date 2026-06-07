@@ -49,6 +49,7 @@ test('user puede actualizar maquinaria', function () {
 
     $response = $this->actingAs($user)->put("/maquinaria/{$maquinaria->id}", [
         'propiedad_id' => $propiedad->id,
+        'tractor' => false,
         'arado' => true,
         'rastra' => true,
     ]);

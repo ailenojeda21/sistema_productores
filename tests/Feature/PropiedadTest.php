@@ -28,6 +28,8 @@ test('user puede crear propiedad', function () {
         'tipo_derecho_riego' => 'Subterráneo',
         'rut' => false,
         'tipo_tenencia' => 'propietario',
+        'lat' => '-33.0',
+        'lng' => '-68.5',
     ]);
 
     $response->assertRedirect('/propiedades');
@@ -59,6 +61,8 @@ test('user puede actualizar propiedad', function () {
         'tipo_derecho_riego' => $propiedad->tipo_derecho_riego,
         'rut' => $propiedad->rut,
         'tipo_tenencia' => 'propietario',
+        'lat' => $propiedad->lat,
+        'lng' => $propiedad->lng,
     ]);
 
     $response->assertRedirect('/propiedades');
@@ -83,7 +87,7 @@ test('propiedad requiere campos obligatorios', function () {
 
     $response = $this->actingAs($user)->post('/propiedades', []);
 
-    $response->assertSessionHasErrors(['calle', 'hectareas', 'tipo_tenencia']);
+    $response->assertSessionHasErrors(['calle', 'numeracion', 'distrito', 'hectareas', 'lat', 'lng', 'tipo_tenencia']);
 });
 
 test('usuario no puede editar propiedad de otro usuario', function () {

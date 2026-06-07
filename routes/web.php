@@ -101,7 +101,7 @@ Route::middleware('web')->group(function () {
         $request->session()->regenerate();
 
         return redirect('/dashboard');
-    });
+    })->middleware('throttle:register');
 
     // Rutas de recuperacion de contrasena
     require __DIR__.'/auth.php';

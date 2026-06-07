@@ -34,79 +34,68 @@ class MaquinariaController extends Controller
 
     public function store(Request $request)
     {
-        // Si viene el bulk (maquinarias[]), procesar como múltiples registros
-        if ($request->has('maquinarias') && is_array($request->input('maquinarias'))) {
-            $implements = [
-                'arado', 'rastra', 'niveleta_comun', 'niveleta_laser', 'cincel_cultivadora',
-                'desmalezadora', 'pulverizadora_tractor', 'mochila_pulverizadora',
-                'cosechadora', 'enfardadora', 'retroexcavadora', 'carro_carreton', 'multiple',
-            ];
+        $items = $request->input('maquinarias');
+        $isBulk = is_array($items);
 
-            foreach ($request->input('maquinarias') as $i => $item) {
-                $validator = Validator::make($item, [
-                    'propiedad_id' => 'required|exists:propiedades,id',
-                    'modelo_tractor' => 'nullable|integer|min:1900|max:'.date('Y'),
-                ]);
+        $entries = $isBulk ? $items : [$request->all()];
 
-                if ($validator->fails()) {
-                    return redirect()->back()->withErrors($validator)->withInput();
-                }
+        foreach ($entries as $index => $entry) {
+            $validator = Validator::make($entry, [
+                'propiedad_id' => 'required|exists:propiedades,id',
+                'modelo_tractor' => [
+                    'nullable',
+                    'integer',
+                    'min:1900',
+                    'max:'.date('Y'),
+                    function ($attr, $value, $fail) use ($entry) {
+                        if (! empty($entry['tractor']) && empty($value)) {
+                            $fail('El año del tractor es obligatorio cuando se marca la opción tractor.');
+                        }
+                    },
+                ],
+            ], [
+                'modelo_tractor.integer' => 'El año del tractor debe ser un número entero.',
+            ]);
 
-                // Verificar si ya existe una maquinaria para esta propiedad
-                $existente = Maquinaria::where('propiedad_id', $item['propiedad_id'])->first();
-                if ($existente) {
-                    $propiedad = Propiedad::find($item['propiedad_id']);
-
-                    return redirect()->back()
-                        ->with('error', 'Ya existe una maquinaria registrada para la propiedad: '.($propiedad->calle ?? 'ID '.$item['propiedad_id']))
-                        ->withInput();
-                }
-
-                $ma = new Maquinaria;
-                $ma->propiedad_id = $item['propiedad_id'];
-                $ma->tractor = isset($item['tractor']) && $item['tractor'] ? 1 : 0;
-                $ma->modelo_tractor = $item['modelo_tractor'] ?? null;
-
-                // Asignar implementos booleanos
-                foreach ($implements as $field) {
-                    $ma->$field = isset($item[$field]) && $item[$field] ? 1 : 0;
-                }
-
-                $ma->save();
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            return redirect()->route('maquinaria.index')->with('success', 'Maquinarias creadas correctamente.');
+            // Verificar que la propiedad pertenece al usuario autenticado
+            $propiedad = Propiedad::where('id', $entry['propiedad_id'])
+                ->where('usuario_id', auth()->id())
+                ->first();
+
+            if (! $propiedad) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['propiedad_id' => 'La propiedad seleccionada no es válida.']);
+            }
+
+            $existente = Maquinaria::where('propiedad_id', $entry['propiedad_id'])->first();
+            if ($existente) {
+                return redirect()->back()
+                    ->with('error', 'Ya existe una maquinaria registrada para la propiedad: '.($propiedad->calle ?? 'ID '.$entry['propiedad_id']))
+                    ->withInput();
+            }
+
+            $ma = new Maquinaria;
+            $ma->propiedad_id = $entry['propiedad_id'];
+            $ma->tractor = ! empty($entry['tractor']) ? 1 : 0;
+            $ma->modelo_tractor = ! empty($entry['tractor']) ? ($entry['modelo_tractor'] ?? null) : null;
+
+            foreach (Maquinaria::implementosKeys() as $field) {
+                $ma->$field = ! empty($entry[$field]) ? 1 : 0;
+            }
+
+            $ma->save();
         }
 
-        // Caso single (forma antigua / compatibilidad)
-        $validated = $request->validate([
-            'propiedad_id' => 'required|exists:propiedades,id',
-            'modelo_tractor' => 'nullable|integer|min:1900|max:'.date('Y'),
-        ]);
+        $msg = $isBulk
+            ? 'Maquinarias creadas correctamente.'
+            : 'Maquinaria creada correctamente.';
 
-        // Verificar si ya existe una maquinaria para esta propiedad
-        $existente = Maquinaria::where('propiedad_id', $validated['propiedad_id'])->first();
-        if ($existente) {
-            $propiedad = Propiedad::find($validated['propiedad_id']);
-
-            return redirect()->back()
-                ->with('error', 'Ya existe una maquinaria registrada para la propiedad: '.($propiedad->calle ?? 'ID '.$validated['propiedad_id']))
-                ->withInput();
-        }
-
-        $ma = new Maquinaria;
-        $ma->propiedad_id = $validated['propiedad_id'];
-        $ma->tractor = $request->has('tractor') ? 1 : 0;
-        $ma->modelo_tractor = $validated['modelo_tractor'] ?? null;
-
-        // asignar implementos (compatibilidad simple)
-        foreach (['arado', 'rastra', 'niveleta_comun', 'niveleta_laser', 'cincel_cultivadora', 'desmalezadora', 'pulverizadora_tractor', 'mochila_pulverizadora', 'cosechadora', 'enfardadora', 'retroexcavadora', 'carro_carreton', 'multiple'] as $f) {
-            $ma->$f = $request->has($f) ? 1 : 0;
-        }
-
-        $ma->save();
-
-        return redirect()->route('maquinaria.index')->with('info', 'Maquinaria creada correctamente.');
+        return redirect()->route('maquinaria.index')->with('success', $msg);
     }
 
     public function edit($id)
@@ -128,8 +117,31 @@ class MaquinariaController extends Controller
 
         $validated = $request->validate([
             'propiedad_id' => 'required|exists:propiedades,id',
-            'modelo_tractor' => 'nullable|integer|min:1900|max:'.date('Y'),
+            'modelo_tractor' => [
+                'nullable',
+                'integer',
+                'min:1900',
+                'max:'.date('Y'),
+                function ($attr, $value, $fail) use ($request) {
+                    if ($request->has('tractor') && empty($value)) {
+                        $fail('El año del tractor es obligatorio cuando se marca la opción tractor.');
+                    }
+                },
+            ],
+        ], [
+            'modelo_tractor.integer' => 'El año del tractor debe ser un número entero.',
         ]);
+
+        // Verificar que la propiedad pertenece al usuario autenticado
+        $propiedad = Propiedad::where('id', $validated['propiedad_id'])
+            ->where('usuario_id', auth()->id())
+            ->first();
+
+        if (! $propiedad) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['propiedad_id' => 'La propiedad seleccionada no es válida.']);
+        }
 
         // Verificar si ya existe otra maquinaria para esta propiedad (excluyendo la actual)
         $existente = Maquinaria::where('propiedad_id', $validated['propiedad_id'])
@@ -137,19 +149,19 @@ class MaquinariaController extends Controller
             ->first();
 
         if ($existente) {
-            $propiedad = Propiedad::find($validated['propiedad_id']);
-
             return redirect()->back()
                 ->with('error', 'Ya existe otra maquinaria registrada para la propiedad: '.($propiedad->calle ?? 'ID '.$validated['propiedad_id']))
                 ->withInput();
         }
 
-        foreach ([
-            'tractor', 'arado', 'rastra', 'niveleta_comun', 'niveleta_laser',
-            'cincel_cultivadora', 'desmalezadora', 'pulverizadora_tractor',
-            'mochila_pulverizadora', 'cosechadora', 'enfardadora', 'retroexcavadora', 'carro_carreton', 'multiple',
-        ] as $campo) {
+        foreach (Maquinaria::implementosKeys() as $campo) {
             $validated[$campo] = $request->has($campo) ? 1 : 0;
+        }
+
+        $validated['tractor'] = $request->boolean('tractor') ? 1 : 0;
+
+        if (! $request->boolean('tractor')) {
+            $validated['modelo_tractor'] = null;
         }
 
         try {

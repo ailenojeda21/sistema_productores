@@ -9,7 +9,7 @@
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Máquinaria</h2>
 
-        <form method="POST" action="{{ route('maquinaria.store') }}">
+        <form method="POST" action="{{ route('maquinaria.store') }}" id="maquinariaForm">
             @csrf
 
             @if(session('error'))

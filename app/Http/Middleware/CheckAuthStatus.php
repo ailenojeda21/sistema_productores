@@ -10,6 +10,11 @@ class CheckAuthStatus
 {
     public function handle(Request $request, Closure $next)
     {
+        // Excluir rutas staff — son manejadas por auth:staff + staff.role
+        if ($request->routeIs('staff.*')) {
+            return $next($request);
+        }
+
         $loginRoutes = ['login', 'register', 'logout', 'password.', 'verification.'];
 
         if (Auth::check()) {
