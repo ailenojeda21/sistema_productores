@@ -17,13 +17,13 @@ class WelcomeVerificationMail extends Mailable
         public User $user,
         public string $verificationUrl,
     ) {
-        $this->to($user->email);
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
             subject: 'Bienvenido a RUPAL - Verifica tu correo electrónico',
+            to: [$this->user->email],
         );
     }
 

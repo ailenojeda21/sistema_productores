@@ -21,19 +21,9 @@ class StaffProducerController extends Controller
             ->select('users.id', 'users.name', 'users.dni', 'users.email')
             ->distinct()
 
-            ->when($dni !== '', function ($q) use ($dni) {
-                $q->whereRaw(
-                    'LOWER(users.dni) LIKE ?',
-                    ['%'.strtolower($dni).'%']
-                );
-            })
+            ->when($dni !== '', fn ($q) => $q->where('users.dni', 'like', "%{$dni}%"))
 
-            ->when($name !== '', function ($q) use ($name) {
-                $q->whereRaw(
-                    'LOWER(users.name) LIKE ?',
-                    ['%'.strtolower($name).'%']
-                );
-            })
+            ->when($name !== '', fn ($q) => $q->where('users.name', 'like', "%{$name}%"))
 
             ->when($distrito !== '', function ($q) use ($distrito) {
                 $normalized = strtolower(str_replace(' ', '-', trim($distrito)));
@@ -48,21 +38,11 @@ class StaffProducerController extends Controller
             })
 
             ->when($variedad !== '', function ($q) use ($variedad) {
-                $q->whereHas('propiedades.cultivos', function ($sub) use ($variedad) {
-                    $sub->whereRaw(
-                        'LOWER(variedad) LIKE ?',
-                        ['%'.strtolower($variedad).'%']
-                    );
-                });
+                $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('variedad', 'like', "%{$variedad}%"));
             })
 
             ->when($tipo !== '', function ($q) use ($tipo) {
-                $q->whereHas('propiedades.cultivos', function ($sub) use ($tipo) {
-                    $sub->whereRaw(
-                        'LOWER(tipo) LIKE ?',
-                        ['%'.strtolower($tipo).'%']
-                    );
-                });
+                $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('tipo', 'like', "%{$tipo}%"));
             })
 
             ->when($rut !== '', function ($q) use ($rut) {
@@ -254,14 +234,13 @@ class StaffProducerController extends Controller
             });
         }
 
-        // Búsqueda por variedad o tipo requiere join con cultivos
         if ($variedad || $tipo) {
             $query->whereHas('propiedades.cultivos', function ($q) use ($variedad, $tipo) {
                 if ($variedad) {
-                    $q->whereRaw('LOWER(variedad) LIKE ?', ['%'.strtolower($variedad).'%']);
+                    $q->where('variedad', 'like', "%{$variedad}%");
                 }
                 if ($tipo) {
-                    $q->whereRaw('LOWER(tipo) LIKE ?', ['%'.strtolower($tipo).'%']);
+                    $q->where('tipo', 'like', "%{$tipo}%");
                 }
             });
         }

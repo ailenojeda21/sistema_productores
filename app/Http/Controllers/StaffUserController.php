@@ -157,6 +157,14 @@ class StaffUserController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        if ((int) $id === (int) $request->user()->id) {
+            if ($this->isApiRequest($request)) {
+                return response()->json(['message' => 'No puedes eliminarte a ti mismo.'], 403);
+            }
+
+            return back()->with('error', 'No puedes eliminarte a ti mismo.');
+        }
+
         $staffUser = StaffUser::findOrFail($id);
         $staffUser->delete();
 

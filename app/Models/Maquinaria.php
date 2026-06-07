@@ -48,6 +48,11 @@ class Maquinaria extends Model
         return self::IMPLEMENTOS_LABELS;
     }
 
+    public static function implementosKeys(): array
+    {
+        return array_keys(self::IMPLEMENTOS_LABELS);
+    }
+
     public function getImplementosActivosAttribute(): array
     {
         $activos = [];

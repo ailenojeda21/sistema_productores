@@ -16,7 +16,9 @@ test('user puede ver listado de cultivos', function () {
 
 test('user puede crear cultivo', function () {
     $user = User::factory()->create();
-    $propiedad = Propiedad::factory()->for($user, 'usuario')->create();
+    $propiedad = Propiedad::factory()->for($user, 'usuario')->create([
+        'hectareas' => 100,
+    ]);
 
     $response = $this->actingAs($user)->post('/cultivos', [
         'propiedad_id' => $propiedad->id,
@@ -47,7 +49,9 @@ test('user puede ver formulario de edicion de cultivo', function () {
 
 test('user puede actualizar cultivo', function () {
     $user = User::factory()->create();
-    $propiedad = Propiedad::factory()->for($user, 'usuario')->create();
+    $propiedad = Propiedad::factory()->for($user, 'usuario')->create([
+        'hectareas' => 100,
+    ]);
     $cultivo = Cultivo::factory()->for($propiedad, 'propiedad')->create();
 
     $response = $this->actingAs($user)->put("/cultivos/{$cultivo->id}", [
