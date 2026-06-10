@@ -9,10 +9,16 @@
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Editar Comercio</h2>
 
-        <form method="POST" action="{{ route('comercios.update', $comercio) }}">
+        <form method="POST" action="{{ route('comercios.update', $comercio) }}" id="comercio-form">
             @csrf
             @method('PUT')
 
+            <div id="comercializacion-error" class="hidden mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                Debe seleccionar al menos una opción de comercialización: vende en finca, vende en mercados o comercializa en cooperativas.
+            </div>
+            @error('comercializacion')
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">{{ $message }}</div>
+            @enderror
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="flex items-center mt-6">
                     <input type="checkbox"
@@ -119,6 +125,8 @@
         const mercadoFields = document.getElementById('mercado-fields');
         const cooperativaCheckbox = document.getElementById('tiene_cooperativas');
         const cooperativaFields = document.getElementById('cooperativa-fields');
+        const form = document.getElementById('comercio-form');
+        const errorDiv = document.getElementById('comercializacion-error');
 
         function toggleMercadoFields() {
             mercadoFields.classList.toggle('hidden', !mercadoCheckbox.checked);
@@ -128,8 +136,28 @@
             cooperativaFields.classList.toggle('hidden', !cooperativaCheckbox.checked);
         }
 
+        function validarComercializacion() {
+            const vendeEnFinca = document.getElementById('vende_en_finca').checked;
+            const tieneMercados = mercadoCheckbox.checked && mercadoFields.querySelectorAll('input[type="checkbox"]:checked').length > 0;
+            const tieneCooperativas = cooperativaCheckbox.checked && cooperativaFields.querySelectorAll('input[type="checkbox"]:checked').length > 0;
+
+            if (!vendeEnFinca && !tieneMercados && !tieneCooperativas) {
+                errorDiv.classList.remove('hidden');
+                return false;
+            }
+            errorDiv.classList.add('hidden');
+            return true;
+        }
+
         mercadoCheckbox.addEventListener('change', toggleMercadoFields);
         cooperativaCheckbox.addEventListener('change', toggleCooperativaFields);
+
+        form.addEventListener('submit', function(e) {
+            if (!validarComercializacion()) {
+                e.preventDefault();
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
 
         toggleMercadoFields();
         toggleCooperativaFields();
