@@ -11,6 +11,8 @@ class MaquinariaController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Maquinaria::class);
+
         $maquinarias = Maquinaria::with('propiedad')
             ->whereHas('propiedad', function ($query) {
                 $query->where('usuario_id', auth()->id());
@@ -24,7 +26,8 @@ class MaquinariaController extends Controller
 
     public function create()
     {
-        // obtener propiedades del usuario para el select
+        $this->authorize('create', Maquinaria::class);
+
         $propiedades = Propiedad::where('usuario_id', auth()->id())
             ->whereDoesntHave('maquinaria')
             ->get();
@@ -34,6 +37,8 @@ class MaquinariaController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Maquinaria::class);
+
         $items = $request->input('maquinarias');
         $isBulk = is_array($items);
 
@@ -61,7 +66,6 @@ class MaquinariaController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // Verificar que la propiedad pertenece al usuario autenticado
             $propiedad = Propiedad::where('id', $entry['propiedad_id'])
                 ->where('usuario_id', auth()->id())
                 ->first();
@@ -100,7 +104,10 @@ class MaquinariaController extends Controller
 
     public function edit($id)
     {
-        $maquinaria = Maquinaria::whereHas('propiedad', fn($q) => $q->where('usuario_id', auth()->id()))->findOrFail($id);
+        $maquinaria = Maquinaria::with('propiedad')->findOrFail($id);
+
+        $this->authorize('update', $maquinaria);
+
         $propiedades = Propiedad::where('usuario_id', auth()->id())
             ->where(function ($q) use ($maquinaria) {
                 $q->whereDoesntHave('maquinaria')
@@ -113,7 +120,9 @@ class MaquinariaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $maquinaria = Maquinaria::whereHas('propiedad', fn($q) => $q->where('usuario_id', auth()->id()))->findOrFail($id);
+        $maquinaria = Maquinaria::with('propiedad')->findOrFail($id);
+
+        $this->authorize('update', $maquinaria);
 
         $validated = $request->validate([
             'propiedad_id' => 'required|exists:propiedades,id',
@@ -132,7 +141,6 @@ class MaquinariaController extends Controller
             'modelo_tractor.integer' => 'El año del tractor debe ser un número entero.',
         ]);
 
-        // Verificar que la propiedad pertenece al usuario autenticado
         $propiedad = Propiedad::where('id', $validated['propiedad_id'])
             ->where('usuario_id', auth()->id())
             ->first();
@@ -143,7 +151,6 @@ class MaquinariaController extends Controller
                 ->withErrors(['propiedad_id' => 'La propiedad seleccionada no es válida.']);
         }
 
-        // Verificar si ya existe otra maquinaria para esta propiedad (excluyendo la actual)
         $existente = Maquinaria::where('propiedad_id', $validated['propiedad_id'])
             ->where('id', '!=', $id)
             ->first();
@@ -178,9 +185,10 @@ class MaquinariaController extends Controller
 
     public function destroy($id)
     {
-        $maquinaria = Maquinaria::whereHas('propiedad', function ($q) {
-            $q->where('usuario_id', auth()->id());
-        })->findOrFail($id);
+        $maquinaria = Maquinaria::with('propiedad')->findOrFail($id);
+
+        $this->authorize('delete', $maquinaria);
+
         $maquinaria->delete();
 
         return redirect()->route('maquinaria.index')

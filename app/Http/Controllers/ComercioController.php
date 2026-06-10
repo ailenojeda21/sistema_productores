@@ -8,11 +8,10 @@ use Illuminate\Support\Facades\Auth;
 
 class ComercioController extends Controller
 {
-    /**
-     * Listar todos los comercios con su usuario relacionado.
-     */
     public function index()
     {
+        $this->authorize('viewAny', Comercio::class);
+
         $comercios = Comercio::with('usuario')
             ->where('usuario_id', Auth::id())
             ->get();
@@ -20,12 +19,10 @@ class ComercioController extends Controller
         return view('comercios.index', compact('comercios'));
     }
 
-    /**
-     * Mostrar el formulario para crear un nuevo comercio.
-     */
     public function create()
     {
-        // Si ya existe un comercio asociado al usuario, redirigir a editar
+        $this->authorize('create', Comercio::class);
+
         $existing = Comercio::where('usuario_id', Auth::id())->first();
         if ($existing) {
             return redirect()->route('comercios.edit', $existing->id)
@@ -35,11 +32,10 @@ class ComercioController extends Controller
         return view('comercios.create');
     }
 
-    /**
-     * Almacenar un nuevo comercio.
-     */
     public function store(Request $request)
     {
+        $this->authorize('create', Comercio::class);
+
         $validated = $request->validate([
             'infraestructura_empaque' => 'nullable',
             'vende_en_finca' => 'nullable',
@@ -61,36 +57,29 @@ class ComercioController extends Controller
         return redirect()->route('comercios.index')->with('success', 'Comercio creado correctamente');
     }
 
-    /**
-     * Mostrar un comercio específico con sus relaciones.
-     */
     public function show($id)
     {
-        $comercio = Comercio::with('usuario')
-            ->where('usuario_id', Auth::id())
-            ->findOrFail($id);
+        $comercio = Comercio::with('usuario')->findOrFail($id);
+
+        $this->authorize('view', $comercio);
 
         return view('comercios.show', compact('comercio'));
     }
 
-    /**
-     * Mostrar el formulario para editar un comercio existente.
-     */
     public function edit($id)
     {
-        $comercio = Comercio::where('usuario_id', Auth::id())
-            ->findOrFail($id);
+        $comercio = Comercio::findOrFail($id);
+
+        $this->authorize('update', $comercio);
 
         return view('comercios.edit', compact('comercio'));
     }
 
-    /**
-     * Actualizar un comercio existente.
-     */
     public function update(Request $request, $id)
     {
-        $comercio = Comercio::where('usuario_id', Auth::id())
-            ->findOrFail($id);
+        $comercio = Comercio::findOrFail($id);
+
+        $this->authorize('update', $comercio);
 
         $validated = $request->validate([
             'infraestructura_empaque' => 'nullable',
@@ -111,13 +100,12 @@ class ComercioController extends Controller
         return redirect()->route('comercios.index')->with('success', 'Comercio actualizado correctamente');
     }
 
-    /**
-     * Eliminar un comercio.
-     */
     public function destroy($id)
     {
-        $comercio = Comercio::where('usuario_id', Auth::id())
-            ->findOrFail($id);
+        $comercio = Comercio::findOrFail($id);
+
+        $this->authorize('delete', $comercio);
+
         $comercio->delete();
 
         return redirect()->route('comercios.index')->with('success', 'Comercio eliminado correctamente');

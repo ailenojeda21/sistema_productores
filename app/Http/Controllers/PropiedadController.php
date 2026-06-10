@@ -9,19 +9,17 @@ use Illuminate\Support\Facades\Storage;
 
 class PropiedadController extends Controller
 {
-    /**
-     * Mostrar formulario de creación
-     */
     public function create()
     {
+        $this->authorize('create', Propiedad::class);
+
         return view('propiedades.create');
     }
 
-    /**
-     * Listar propiedades
-     */
     public function index()
     {
+        $this->authorize('viewAny', Propiedad::class);
+
         $propiedades = Propiedad::with(['usuario', 'maquinaria', 'cultivos'])
             ->where('usuario_id', Auth::id())
             ->get();
@@ -29,11 +27,10 @@ class PropiedadController extends Controller
         return view('propiedades.index', compact('propiedades'));
     }
 
-    /**
-     * Guardar nueva propiedad
-     */
     public function store(Request $request)
     {
+        $this->authorize('create', Propiedad::class);
+
         $validated = $request->validate([
             'calle' => 'required|string|max:255',
             'numeracion' => 'required|string|max:20',
@@ -54,7 +51,6 @@ class PropiedadController extends Controller
             'hectareas_malla' => 'nullable|numeric|lte:hectareas',
             'cierre_perimetral' => 'nullable',
 
-            // ✅ NUEVO SISTEMA DE TENENCIA
             'tipo_tenencia' => 'required|in:propietario,arrendatario,otros',
             'especificar_tenencia' => 'nullable|required_if:tipo_tenencia,otros|string|max:255',
         ], [
@@ -62,15 +58,11 @@ class PropiedadController extends Controller
             'rut_valor.required_with' => 'El número de RUT es obligatorio cuando se adjunta un archivo.',
         ]);
 
-        // Checkboxes
         $validated['malla'] = $request->has('malla');
         $validated['derecho_riego'] = $request->has('derecho_riego');
         $validated['rut'] = $request->has('rut');
         $validated['cierre_perimetral'] = $request->has('cierre_perimetral');
 
-        $validated['usuario_id'] = Auth::id();
-
-        // Archivo RUT
         if ($request->hasFile('rut_archivo_file')) {
             $validated['rut_archivo'] = $request->file('rut_archivo_file')
                 ->store('rut_files', 'public');
@@ -81,46 +73,39 @@ class PropiedadController extends Controller
             $validated['rut_archivo'] = null;
         }
 
-        Propiedad::create($validated);
+        $propiedad = new Propiedad();
+        $propiedad->fill($validated);
+        $propiedad->usuario_id = Auth::id();
+        $propiedad->save();
 
         return redirect()->route('propiedades.index')
             ->with('success', 'Propiedad creada correctamente');
     }
 
-    /**
-     * Mostrar propiedad individual
-     */
     public function show(string $id)
     {
-        $propiedad = Propiedad::with(['usuario', 'maquinaria', 'cultivos'])
-            ->where('usuario_id', Auth::id())
-            ->findOrFail($id);
+        $propiedad = Propiedad::with(['usuario', 'maquinaria', 'cultivos'])->findOrFail($id);
+
+        $this->authorize('view', $propiedad);
 
         return view('propiedades.show', compact('propiedad'));
     }
 
-    /**
-     * Mostrar formulario de edición
-     */
     public function edit(string $id)
     {
-        $propiedad = Propiedad::where('usuario_id', Auth::id())
-            ->findOrFail($id);
+        $propiedad = Propiedad::findOrFail($id);
+
+        $this->authorize('update', $propiedad);
 
         return view('propiedades.edit', compact('propiedad'));
     }
 
-    /**
-     * Actualizar propiedad
-     */
     public function update(Request $request, string $id)
     {
-        $propiedad = Propiedad::where('usuario_id', Auth::id())
-            ->findOrFail($id);
+        $propiedad = Propiedad::findOrFail($id);
 
-        // =========================
-        // VALIDACIÓN
-        // =========================
+        $this->authorize('update', $propiedad);
+
         $validated = $request->validate([
             'calle' => 'required|string|max:255',
             'numeracion' => 'required|string|max:20',
@@ -141,7 +126,6 @@ class PropiedadController extends Controller
             'hectareas_malla' => 'nullable|numeric|lte:hectareas',
             'cierre_perimetral' => 'nullable',
 
-            // TENENCIA
             'tipo_tenencia' => 'required|in:propietario,arrendatario,otros',
             'especificar_tenencia' => 'nullable|required_if:tipo_tenencia,otros|string|max:255',
         ], [
@@ -149,51 +133,31 @@ class PropiedadController extends Controller
             'rut_valor.required_with' => 'El número de RUT es obligatorio cuando se adjunta un archivo.',
         ]);
 
-        // =========================
-        // LIMPIEZA DE TENENCIA
-        // =========================
         if ($validated['tipo_tenencia'] !== 'otros') {
             $validated['especificar_tenencia'] = null;
         }
 
-        // =========================
-        // CHECKBOXES
-        // =========================
         $validated['malla'] = $request->has('malla');
         $validated['derecho_riego'] = $request->has('derecho_riego');
         $validated['rut'] = $request->has('rut');
         $validated['cierre_perimetral'] = $request->has('cierre_perimetral');
 
-        // =========================
-        // MANEJO DE DERECHO DE RIEGO
-        // =========================
         if (! $validated['derecho_riego']) {
-            // Si se desmarca derecho de riego → limpiar tipo
             $validated['tipo_derecho_riego'] = null;
         }
 
-        // =========================
-        // MANEJO DE MALLA
-        // =========================
         if (! $validated['malla']) {
-            // Si se desmarca malla → limpiar hectáreas
             $validated['hectareas_malla'] = null;
         }
 
-        // =========================
-        // MANEJO DE RUT Y ARCHIVO
-        // =========================
         if ($validated['rut']) {
 
-            // Si RUT está marcado, pero no hay valor → limpiar
             if (! $request->filled('rut_valor')) {
                 $validated['rut_valor'] = null;
             }
 
-            // Subir nuevo archivo si existe
             if ($request->hasFile('rut_archivo_file')) {
 
-                // Eliminar archivo anterior
                 if ($propiedad->rut_archivo &&
                     Storage::disk('public')->exists($propiedad->rut_archivo)) {
                     Storage::disk('public')->delete($propiedad->rut_archivo);
@@ -205,7 +169,6 @@ class PropiedadController extends Controller
             }
 
         } else {
-            // Si se desmarca RUT → eliminar todo
             if ($propiedad->rut_archivo &&
                 Storage::disk('public')->exists($propiedad->rut_archivo)) {
                 Storage::disk('public')->delete($propiedad->rut_archivo);
@@ -215,9 +178,6 @@ class PropiedadController extends Controller
             $validated['rut_archivo'] = null;
         }
 
-        // =========================
-        // UPDATE FINAL
-        // =========================
         $propiedad->update($validated);
 
         return redirect()
@@ -225,13 +185,12 @@ class PropiedadController extends Controller
             ->with('success', 'Propiedad actualizada correctamente');
     }
 
-    /**
-     * Eliminar propiedad
-     */
     public function destroy(string $id)
     {
-        $propiedad = Propiedad::where('usuario_id', Auth::id())
-            ->findOrFail($id);
+        $propiedad = Propiedad::findOrFail($id);
+
+        $this->authorize('delete', $propiedad);
+
         $propiedad->delete();
 
         return redirect()->route('propiedades.index')

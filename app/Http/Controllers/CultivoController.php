@@ -8,10 +8,6 @@ use Illuminate\Http\Request;
 
 class CultivoController extends Controller
 {
-    /**
-     * Normaliza el tipo de cultivo para evitar duplicados por mayúsculas/espacios.
-     * Ej: "  SOJA  " -> "Soja"
-     */
     private function normalizarTipo(?string $tipo): ?string
     {
         if ($tipo === null) {
@@ -19,18 +15,17 @@ class CultivoController extends Controller
         }
 
         $tipo = trim($tipo);
-        $tipo = preg_replace('/\s+/', ' ', $tipo); // colapsa espacios múltiples
+        $tipo = preg_replace('/\s+/', ' ', $tipo);
         $tipo = mb_strtolower($tipo, 'UTF-8');
-        $tipo = mb_convert_case($tipo, MB_CASE_TITLE, 'UTF-8'); // Title Case
+        $tipo = mb_convert_case($tipo, MB_CASE_TITLE, 'UTF-8');
 
         return $tipo;
     }
 
-    /**
-     * Listado de cultivos.
-     */
     public function index()
     {
+        $this->authorize('viewAny', Cultivo::class);
+
         $cultivos = Cultivo::with('propiedad')
             ->whereHas('propiedad', function ($query) {
                 $query->where('usuario_id', auth()->id());
@@ -40,9 +35,6 @@ class CultivoController extends Controller
         return view('cultivos.index', compact('cultivos'));
     }
 
-    /**
-     * Obtener hectáreas disponibles de una propiedad (API)
-     */
     public function hectareasDisponibles(Request $request)
     {
         $propiedad = Propiedad::where('id', $request->propiedad_id)
@@ -53,7 +45,6 @@ class CultivoController extends Controller
             return response()->json(['error' => 'Propiedad no encontrada'], 404);
         }
 
-        // Si se proporciona un cultivo_id, excluir sus hectáreas del cálculo (para edición)
         $hectareasUsadas = $propiedad->cultivos()
             ->when($request->cultivo_id, function ($query) use ($request) {
                 return $query->where('id', '!=', $request->cultivo_id);
@@ -68,21 +59,19 @@ class CultivoController extends Controller
         ]);
     }
 
-    /**
-     * Mostrar formulario de creación.
-     */
     public function create()
     {
-        $propiedades = \App\Models\Propiedad::where('usuario_id', auth()->id())->get();
+        $this->authorize('create', Cultivo::class);
+
+        $propiedades = Propiedad::where('usuario_id', auth()->id())->get();
 
         return view('cultivos.create', compact('propiedades'));
     }
 
-    /**
-     * Guardar un cultivo nuevo.
-     */
     public function store(Request $request)
     {
+        $this->authorize('create', Cultivo::class);
+
         $propiedad = Propiedad::where('id', $request->propiedad_id)
             ->where('usuario_id', auth()->id())
             ->first();
@@ -106,7 +95,6 @@ class CultivoController extends Controller
             'tipo.regex' => 'El tipo contiene caracteres no permitidos.',
         ]);
 
-        // Normalizar tipo
         $validated['tipo'] = $this->normalizarTipo($validated['tipo'] ?? null);
 
         Cultivo::create($validated);
@@ -115,30 +103,22 @@ class CultivoController extends Controller
             ->with('success', 'Cultivo creado correctamente');
     }
 
-    /**
-     * Mostrar formulario de edición.
-     */
     public function edit(string $id)
     {
-        $cultivo = Cultivo::whereHas('propiedad', function ($q) {
-            $q->where('usuario_id', auth()->id());
-        })->findOrFail($id);
+        $cultivo = Cultivo::with('propiedad')->findOrFail($id);
+
+        $this->authorize('update', $cultivo);
+
         $propiedades = Propiedad::where('usuario_id', auth()->id())->get();
 
         return view('cultivos.edit', compact('cultivo', 'propiedades'));
     }
 
-    /**
-     * Actualizar un cultivo.
-     */
     public function update(Request $request, string $id)
     {
-        $cultivo = Cultivo::findOrFail($id);
+        $cultivo = Cultivo::with('propiedad')->findOrFail($id);
 
-        // Verificar que el usuario tenga acceso al cultivo
-        if ($cultivo->propiedad->usuario_id !== auth()->id()) {
-            abort(403, 'No tienes permiso para editar este cultivo');
-        }
+        $this->authorize('update', $cultivo);
 
         $propiedad = Propiedad::where('id', $request->propiedad_id ?: $cultivo->propiedad_id)
             ->where('usuario_id', auth()->id())
@@ -148,7 +128,6 @@ class CultivoController extends Controller
             return back()->withErrors(['propiedad_id' => 'La propiedad seleccionada no es válida'])->withInput();
         }
 
-        // Calcular hectáreas disponibles excluyendo el cultivo actual
         $hectareasUsadas = $propiedad->cultivos()
             ->where('id', '!=', $id)
             ->sum('hectareas');
@@ -168,7 +147,6 @@ class CultivoController extends Controller
             'tipo.regex' => 'El tipo contiene caracteres no permitidos.',
         ]);
 
-        // Normalizar tipo si viene en el request
         if (array_key_exists('tipo', $validated)) {
             $validated['tipo'] = $this->normalizarTipo($validated['tipo']);
         }
@@ -179,14 +157,12 @@ class CultivoController extends Controller
             ->with('success', 'Cultivo actualizado correctamente');
     }
 
-    /**
-     * Eliminar un cultivo.
-     */
     public function destroy(string $id)
     {
-        $cultivo = Cultivo::whereHas('propiedad', function ($q) {
-            $q->where('usuario_id', auth()->id());
-        })->findOrFail($id);
+        $cultivo = Cultivo::with('propiedad')->findOrFail($id);
+
+        $this->authorize('delete', $cultivo);
+
         $cultivo->delete();
 
         return redirect()->route('cultivos.index')
