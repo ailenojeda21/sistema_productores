@@ -2,8 +2,19 @@
 
 namespace App\Providers;
 
+use App\Models\Comercio;
+use App\Models\Cultivo;
+use App\Models\Maquinaria;
+use App\Models\Propiedad;
+use App\Models\User;
+use App\Policies\ComercioPolicy;
+use App\Policies\CultivoPolicy;
+use App\Policies\MaquinariaPolicy;
+use App\Policies\PropiedadPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
@@ -24,6 +35,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(Propiedad::class, PropiedadPolicy::class);
+        Gate::policy(Cultivo::class, CultivoPolicy::class);
+        Gate::policy(Maquinaria::class, MaquinariaPolicy::class);
+        Gate::policy(Comercio::class, ComercioPolicy::class);
+
         Vite::prefetch(concurrency: 3);
 
         // Fuerza el esquema HTTPS si estamos en producción (Railway)

@@ -99,7 +99,27 @@ test('usuario no puede editar cultivo de otro usuario', function () {
     $response = $this->actingAs($attacker)
         ->get("/cultivos/{$cultivo->id}/edit");
 
-    $response->assertNotFound();
+    $response->assertForbidden();
+});
+
+test('usuario no puede actualizar cultivo de otro usuario', function () {
+    $owner = User::factory()->create();
+    $attacker = User::factory()->create();
+    $propiedad = Propiedad::factory()->for($owner, 'usuario')->create(['hectareas' => 100]);
+    $cultivo = Cultivo::factory()->for($propiedad, 'propiedad')->create();
+
+    $response = $this->actingAs($attacker)
+        ->put("/cultivos/{$cultivo->id}", [
+            'propiedad_id' => $propiedad->id,
+            'tipo' => 'Hortícola',
+            'variedad' => 'Tomate Redondo',
+            'estacion' => 'Verano',
+            'hectareas' => '3.0',
+            'manejo_cultivo' => 'Convencional',
+            'tecnologia_riego' => 'Goteo',
+        ]);
+
+    $response->assertForbidden();
 });
 
 test('usuario no puede eliminar cultivo de otro usuario', function () {
@@ -111,5 +131,5 @@ test('usuario no puede eliminar cultivo de otro usuario', function () {
     $response = $this->actingAs($attacker)
         ->delete("/cultivos/{$cultivo->id}");
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });

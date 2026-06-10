@@ -81,6 +81,33 @@ test('maquinaria requiere propiedad_id', function () {
     $response->assertSessionHasErrors(['propiedad_id']);
 });
 
+test('usuario no puede editar maquinaria de otro usuario', function () {
+    $owner = User::factory()->create();
+    $attacker = User::factory()->create();
+    $propiedad = Propiedad::factory()->for($owner, 'usuario')->create();
+    $maquinaria = Maquinaria::factory()->for($propiedad, 'propiedad')->create();
+
+    $response = $this->actingAs($attacker)
+        ->get("/maquinaria/{$maquinaria->id}/edit");
+
+    $response->assertForbidden();
+});
+
+test('usuario no puede actualizar maquinaria de otro usuario', function () {
+    $owner = User::factory()->create();
+    $attacker = User::factory()->create();
+    $propiedad = Propiedad::factory()->for($owner, 'usuario')->create();
+    $maquinaria = Maquinaria::factory()->for($propiedad, 'propiedad')->create();
+
+    $response = $this->actingAs($attacker)
+        ->put("/maquinaria/{$maquinaria->id}", [
+            'propiedad_id' => $propiedad->id,
+            'arado' => true,
+        ]);
+
+    $response->assertForbidden();
+});
+
 test('usuario no puede eliminar maquinaria de otro usuario', function () {
     $owner = User::factory()->create();
     $attacker = User::factory()->create();
@@ -90,5 +117,5 @@ test('usuario no puede eliminar maquinaria de otro usuario', function () {
     $response = $this->actingAs($attacker)
         ->delete("/maquinaria/{$maquinaria->id}");
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });

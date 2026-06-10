@@ -9,19 +9,15 @@ use Illuminate\Support\Facades\Redirect;
 
 class ProfileController extends Controller
 {
-    /**
-     * Mostrar formulario de edición del perfil general.
-     */
     public function edit(Request $request)
     {
         $user = Auth::user();
 
+        $this->authorize('update', $user);
+
         return view('profile.edit', compact('user'));
     }
 
-    /**
-     * Actualizar información general del perfil.
-     */
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -33,12 +29,14 @@ class ProfileController extends Controller
             'cooperativas.*' => ['string'],
         ]);
 
-        // Si el checkbox "tiene_cooperativas" no está marcado, limpiar las cooperativas
         if (! $request->has('tiene_cooperativas')) {
             $validated['cooperativas'] = null;
         }
 
         $user = auth()->user();
+
+        $this->authorize('update', $user);
+
         $validated['email'] = $user->email;
         $user->update($validated);
 
@@ -46,19 +44,15 @@ class ProfileController extends Controller
             ->with('success', 'Perfil actualizado correctamente.');
     }
 
-    /**
-     * Mostrar formulario para cambiar avatar.
-     */
     public function editAvatar()
     {
         $user = Auth::user();
 
+        $this->authorize('update', $user);
+
         return view('profile.avatar', compact('user'));
     }
 
-    /**
-     * Actualizar avatar (solo seleccionar entre 5 predefinidos).
-     */
     public function updateAvatar(Request $request)
     {
         $validAvatars = [
@@ -74,6 +68,9 @@ class ProfileController extends Controller
         ]);
 
         $user = Auth::user();
+
+        $this->authorize('update', $user);
+
         $user->avatar = $request->avatar;
         $user->save();
 
@@ -81,9 +78,6 @@ class ProfileController extends Controller
             ->with('success', 'Avatar actualizado correctamente.');
     }
 
-    /**
-     * Eliminar cuenta.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validate([
@@ -91,6 +85,8 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        $this->authorize('delete', $user);
 
         Auth::logout();
         $user->delete();
@@ -101,12 +97,11 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 
-    /**
-     * Ver perfil público.
-     */
     public function show()
     {
         $user = Auth::user();
+
+        $this->authorize('view', $user);
 
         return view('profile.show', compact('user'));
     }

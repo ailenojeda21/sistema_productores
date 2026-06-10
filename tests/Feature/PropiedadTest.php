@@ -98,7 +98,7 @@ test('usuario no puede editar propiedad de otro usuario', function () {
     $response = $this->actingAs($attacker)
         ->get("/propiedades/{$propiedad->id}/edit");
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });
 
 test('usuario no puede actualizar propiedad de otro usuario', function () {
@@ -113,7 +113,7 @@ test('usuario no puede actualizar propiedad de otro usuario', function () {
             'tipo_tenencia' => 'propietario',
         ]);
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });
 
 test('usuario no puede eliminar propiedad de otro usuario', function () {
@@ -124,5 +124,5 @@ test('usuario no puede eliminar propiedad de otro usuario', function () {
     $response = $this->actingAs($attacker)
         ->delete("/propiedades/{$propiedad->id}");
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });

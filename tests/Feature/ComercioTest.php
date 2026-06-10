@@ -69,7 +69,7 @@ test('usuario no puede editar comercio de otro usuario', function () {
     $response = $this->actingAs($attacker)
         ->get("/comercios/{$comercio->id}/edit");
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });
 
 test('usuario no puede actualizar comercio de otro usuario', function () {
@@ -85,7 +85,7 @@ test('usuario no puede actualizar comercio de otro usuario', function () {
             'cooperativas' => [],
         ]);
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });
 
 test('usuario no puede eliminar comercio de otro usuario', function () {
@@ -96,5 +96,5 @@ test('usuario no puede eliminar comercio de otro usuario', function () {
     $response = $this->actingAs($attacker)
         ->delete("/comercios/{$comercio->id}");
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });

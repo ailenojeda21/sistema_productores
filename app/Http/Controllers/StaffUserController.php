@@ -91,19 +91,28 @@ class StaffUserController extends Controller
     {
         $staffUser = StaffUser::findOrFail($id);
 
+        $isSelf = (int) $id === (int) $request->user()->id;
+
         if (
             $request->has('active')
             && ! $request->filled('name')
             && ! $request->filled('email')
             && ! $request->filled('role')
         ) {
+            if ($isSelf && ! (bool) $request->input('active')) {
+                if ($this->isApiRequest($request)) {
+                    return response()->json(['message' => 'No puedes desactivarte a ti mismo.'], 403);
+                }
+
+                return back()->with('error', 'No puedes desactivarte a ti mismo.');
+            }
+
             $validated = $request->validate([
                 'active' => ['required', 'boolean'],
             ]);
 
-            $staffUser->update([
-                'active' => (bool) $validated['active'],
-            ]);
+            $staffUser->active = (bool) $validated['active'];
+            $staffUser->save();
 
             if ($this->isApiRequest($request)) {
                 return response()->json([
@@ -128,10 +137,17 @@ class StaffUserController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
+        if ($isSelf && $validated['role'] !== $staffUser->role) {
+            if ($this->isApiRequest($request)) {
+                return response()->json(['message' => 'No puedes cambiar tu propio rol.'], 403);
+            }
+
+            return back()->with('error', 'No puedes cambiar tu propio rol.');
+        }
+
         $updateData = [
             'name' => $validated['name'],
             'email' => strtolower($validated['email']),
-            'role' => $validated['role'],
         ];
 
         if (! empty($validated['password'])) {
@@ -139,6 +155,8 @@ class StaffUserController extends Controller
         }
 
         $staffUser->update($updateData);
+        $staffUser->role = $validated['role'];
+        $staffUser->save();
 
         if ($this->isApiRequest($request)) {
             return response()->json([
@@ -214,8 +232,10 @@ class StaffUserController extends Controller
             'name' => $validated['name'],
             'email' => strtolower($validated['email']),
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
         ]);
+
+        $staffUser->role = $validated['role'];
+        $staffUser->save();
 
         if ($this->isApiRequest($request)) {
             return response()->json([
