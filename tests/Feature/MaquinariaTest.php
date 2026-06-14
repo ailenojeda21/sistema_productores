@@ -119,3 +119,19 @@ test('usuario no puede eliminar maquinaria de otro usuario', function () {
 
     $response->assertForbidden();
 });
+
+test('invitado no puede ver listado de maquinaria', function () {
+    $response = $this->get('/maquinaria');
+
+    $response->assertRedirect('/login');
+});
+
+test('invitado no puede crear maquinaria', function () {
+    $response = $this->post('/maquinaria', [
+        'propiedad_id' => 1,
+        'tractor' => true,
+        'modelo_tractor' => '2020',
+    ]);
+
+    $response->assertRedirect('/login');
+});

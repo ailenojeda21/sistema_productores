@@ -55,7 +55,13 @@
                 </div>
 
                 {{-- Mapa (2 columnas) --}}
-                <div class="md:col-span-2 location-map-field">
+                @php
+                    $selectedLat = old('lat', $propiedad->lat);
+                    $selectedLng = old('lng', $propiedad->lng);
+                    $hasSelectedLocation = $selectedLat && $selectedLng;
+                    $hasCoordinateError = $errors->has('lat') || $errors->has('lng');
+                @endphp
+                <div class="md:col-span-2 location-map-field scroll-mt-24" data-has-coordinate-error="{{ $hasCoordinateError ? '1' : '0' }}">
                     <label class="block font-semibold mb-1">Ubicación</label>
                     <div class="mb-4 rounded-md border-l-4 border-blue-600 bg-blue-50 p-4 text-blue-950 shadow-sm">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
@@ -68,16 +74,15 @@
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" name="lat" class="lat-input" value="{{ old('lat', $propiedad->lat) }}">
-                    <input type="hidden" name="lng" class="lng-input" value="{{ old('lng', $propiedad->lng) }}">
-                    @php($hasSelectedLocation = old('lat', $propiedad->lat) && old('lng', $propiedad->lng))
+                    <input type="hidden" name="lat" class="lat-input" value="{{ $selectedLat }}">
+                    <input type="hidden" name="lng" class="lng-input" value="{{ $selectedLng }}">
                     <div class="mb-3">
                         <span class="location-status-badge inline-flex rounded-full px-3 py-1 text-sm font-bold {{ $hasSelectedLocation ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                             {{ $hasSelectedLocation ? '✅ Ubicación seleccionada correctamente' : '⚠️ Ubicación pendiente de seleccionar' }}
                         </span>
                     </div>
                     <div class="relative">
-                        <div class="map-element w-full h-56 rounded border" aria-label="Mapa para seleccionar la ubicación exacta de la propiedad"></div>
+                        <div class="map-element w-full h-56 rounded border {{ $hasCoordinateError ? 'border-2 border-red-500' : '' }}" tabindex="-1" aria-label="Mapa para seleccionar la ubicación exacta de la propiedad"></div>
                         <div class="location-map-help {{ $hasSelectedLocation ? 'hidden' : '' }} pointer-events-none absolute left-3 right-3 top-3 z-[1000] rounded-lg bg-yellow-200 px-4 py-3 text-sm font-bold text-yellow-950 shadow-lg sm:left-4 sm:right-auto">
                             📍 Haga clic en el mapa para marcar la ubicación
                         </div>
@@ -85,9 +90,11 @@
                     <p class="text-sm text-gray-500 mt-2">
                         Coordenadas:
                         <span class="coordenadas-display font-semibold">
-                            {{ $propiedad->lat ? $propiedad->lat.', '.$propiedad->lng : 'No seleccionada' }}
+                            {{ $hasSelectedLocation ? $selectedLat.', '.$selectedLng : 'No seleccionada' }}
                         </span>
-                        <span id="map-error" class="text-red-600 font-semibold hidden">(Obligatorio)</span>
+                        <span id="map-error" class="text-red-600 font-semibold {{ $hasCoordinateError ? '' : 'hidden' }}">
+                            {{ $errors->first('lat') ?: $errors->first('lng') ?: '(Obligatorio)' }}
+                        </span>
                     </p>
                 </div>
 
@@ -278,6 +285,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const totInput = document.getElementById('hectareas');
     const mallaInput = document.getElementById('hectareas_malla');
     const hint = document.getElementById('hectareas-malla-hint');
+    const locationField = document.querySelector('.location-map-field');
+    const scrollToLocationField = () => {
+        if (!locationField) return;
+
+        locationField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        locationField.querySelector('.map-element')?.focus({ preventScroll: true });
+    };
 
     const toggle = (check, div) => div?.classList.toggle('hidden', !check.checked);
 
@@ -356,15 +370,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const mapError = document.getElementById('map-error');
             const mapEl = document.querySelector('.map-element');
             if (mapError) mapError.classList.add('hidden');
-            if (mapEl) mapEl.classList.remove('border-red-500');
+            if (mapEl) mapEl.classList.remove('border-red-500', 'border-2');
 
             if (!lat?.value || !lng?.value) {
                 e.preventDefault();
                 if (mapEl) {
-                    mapEl.classList.add('border-red-500');
-                    mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    mapEl.classList.add('border-red-500', 'border-2');
                 }
                 if (mapError) mapError.classList.remove('hidden');
+                scrollToLocationField();
                 return false;
             }
 
@@ -451,6 +465,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (mallaChk && mallaDiv) toggle(mallaChk, mallaDiv);
     if (mallaChk?.checked) validarMalla();
+
+    if (locationField?.dataset.hasCoordinateError === '1') {
+        window.setTimeout(scrollToLocationField, 150);
+    }
 });
 </script>
 
@@ -528,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const mapError = document.getElementById('map-error');
             if (mapError) mapError.classList.add('hidden');
             const mapEl = mapElement;
-            if (mapEl) mapEl.classList.remove('border-red-500');
+            if (mapEl) mapEl.classList.remove('border-red-500', 'border-2');
         }
     });
 });

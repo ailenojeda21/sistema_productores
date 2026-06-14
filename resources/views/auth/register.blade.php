@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('no_header', true)
-
 @section('content')
 <div class="min-h-screen flex flex-col md:flex-row">
    <!-- Mitad Izquierda -->

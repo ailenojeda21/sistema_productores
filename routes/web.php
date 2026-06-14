@@ -129,7 +129,7 @@ Route::middleware('auth')->group(function () {
     // Cultivos
     Route::get('/cultivos/hectareas-disponibles', [CultivoController::class, 'hectareasDisponibles'])
         ->name('cultivos.hectareas-disponibles');
-    Route::resource('cultivos', CultivoController::class);
+    Route::resource('cultivos', CultivoController::class)->except(['show']);
 
     // Propiedades
     Route::resource('propiedades', PropiedadController::class);
@@ -138,7 +138,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('comercios', ComercioController::class);
 
     // Maquinaria
-    Route::resource('maquinaria', MaquinariaController::class);
+    Route::resource('maquinaria', MaquinariaController::class)->except(['show']);
 });
 
 /*

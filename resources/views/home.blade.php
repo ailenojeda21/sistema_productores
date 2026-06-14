@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('no_header', true)
-
 @section('content')
 <div class="min-h-screen flex flex-col md:flex-row">
     <div class="hidden md:flex md:w-1/2 w-full bg-gray-100 items-center justify-center p-0 overflow-hidden" style="height: 100vh; max-height: 100vh;">

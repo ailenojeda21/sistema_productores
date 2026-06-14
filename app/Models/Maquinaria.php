@@ -8,6 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 class Maquinaria extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'tractor' => 'boolean',
+        'modelo_tractor' => 'integer',
+        'arado' => 'boolean',
+        'rastra' => 'boolean',
+        'niveleta_comun' => 'boolean',
+        'niveleta_laser' => 'boolean',
+        'cincel_cultivadora' => 'boolean',
+        'desmalezadora' => 'boolean',
+        'pulverizadora_tractor' => 'boolean',
+        'mochila_pulverizadora' => 'boolean',
+        'cosechadora' => 'boolean',
+        'enfardadora' => 'boolean',
+        'retroexcavadora' => 'boolean',
+        'carro_carreton' => 'boolean',
+        'multiple' => 'boolean',
+    ];
+
     protected $fillable = [
         'propiedad_id',
         'tractor',
