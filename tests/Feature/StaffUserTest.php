@@ -87,3 +87,30 @@ test('admin puede eliminar (soft delete) usuario staff', function () {
     $response->assertSessionHas('success', 'Usuario eliminado');
     $this->assertSoftDeleted($staffUser);
 });
+
+test('admin no puede eliminar su propio usuario', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+
+    $response = $this->actingAs($admin, 'staff')
+        ->delete(route('staff.users.destroy', $admin->id));
+
+    $response->assertSessionHas('error', 'No puedes eliminarte a ti mismo.');
+    $this->assertNotSoftDeleted($admin);
+});
+
+test('admin no puede cambiar su propio rol', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+
+    $response = $this->actingAs($admin, 'staff')
+        ->patch(route('staff.users.update', $admin->id), [
+            'name' => $admin->name,
+            'email' => $admin->email,
+            'role' => 'auditor',
+        ]);
+
+    $response->assertSessionHas('error', 'No puedes cambiar tu propio rol.');
+    $this->assertDatabaseHas('staff_users', [
+        'id' => $admin->id,
+        'role' => 'admin',
+    ]);
+});

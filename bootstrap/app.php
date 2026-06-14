@@ -22,8 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // ✅ AGREGÁ ESTO
         $middleware->alias([
             'staff.role' => \App\Http\Middleware\StaffRoleMiddleware::class,
-            // (opcional si lo usás en rutas)
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

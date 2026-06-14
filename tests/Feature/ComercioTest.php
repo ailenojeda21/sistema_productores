@@ -98,3 +98,28 @@ test('usuario no puede eliminar comercio de otro usuario', function () {
 
     $response->assertForbidden();
 });
+
+test('invitado no puede ver listado de comercios', function () {
+    $response = $this->get('/comercios');
+
+    $response->assertRedirect('/login');
+});
+
+test('invitado no puede crear comercio', function () {
+    $response = $this->post('/comercios', [
+        'infraestructura_empaque' => true,
+        'vende_en_finca' => true,
+    ]);
+
+    $response->assertRedirect('/login');
+});
+
+test('comercio requiere al menos una opcion de comercializacion', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post('/comercios', [
+        'infraestructura_empaque' => true,
+    ]);
+
+    $response->assertSessionHasErrors(['comercializacion']);
+});

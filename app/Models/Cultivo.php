@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Cultivo extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'hectareas' => 'decimal:2',
+    ];
+
     protected $fillable = [
         'propiedad_id',
         'variedad',

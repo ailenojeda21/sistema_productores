@@ -133,3 +133,23 @@ test('usuario no puede eliminar cultivo de otro usuario', function () {
 
     $response->assertForbidden();
 });
+
+test('invitado no puede ver listado de cultivos', function () {
+    $response = $this->get('/cultivos');
+
+    $response->assertRedirect('/login');
+});
+
+test('invitado no puede crear cultivo', function () {
+    $response = $this->post('/cultivos', [
+        'propiedad_id' => 1,
+        'tipo' => 'Hortícola',
+        'variedad' => 'Tomate Redondo',
+        'estacion' => 'Verano',
+        'hectareas' => '5.0',
+        'manejo_cultivo' => 'Convencional',
+        'tecnologia_riego' => 'Goteo',
+    ]);
+
+    $response->assertRedirect('/login');
+});

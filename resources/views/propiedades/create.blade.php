@@ -17,25 +17,26 @@
                     <select id="distrito" name="distrito" class="w-full p-2 border border-gray-300 rounded" required>
                         <option value="">Seleccione un distrito</option>
                         @foreach(\App\Models\Propiedad::getDistritosForForm() as $value => $label)
-                            <option value="{{ $value }}">{{ $label }}</option>
+                            <option value="{{ $value }}" {{ old('distrito') == $value ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="calle">Calle</label>
-                    <input id="calle" name="calle" type="text" class="w-full p-2 border border-gray-300 rounded" required>
+                    <input id="calle" name="calle" type="text" class="w-full p-2 border border-gray-300 rounded" value="{{ old('calle') }}" required>
                 </div>
 
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="numeracion">Numeración</label>
-                    <input id="numeracion" name="numeracion" type="number" class="w-full p-2 border border-gray-300 rounded" required>
+                    <input id="numeracion" name="numeracion" type="number" class="w-full p-2 border border-gray-300 rounded" value="{{ old('numeracion') }}" required>
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>
-                    <input id="hectareas" name="hectareas" type="text" inputmode="decimal" class="w-full p-2 border border-gray-300 rounded" required>
+                    <input id="hectareas" name="hectareas" type="text" inputmode="decimal" class="w-full p-2 border border-gray-300 rounded" value="{{ old('hectareas') }}" required>
                 </div>
 
-                <div class="md:col-span-2 location-map-field">
+                @php($hasCoordinateError = $errors->has('lat') || $errors->has('lng'))
+                <div class="md:col-span-2 location-map-field scroll-mt-24" data-has-coordinate-error="{{ $hasCoordinateError ? '1' : '0' }}">
                     <label class="block text-gray-700 font-semibold mb-1">Ubicación</label>
                     <div class="mb-4 rounded-md border-l-4 border-blue-600 bg-blue-50 p-4 text-blue-950 shadow-sm">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
@@ -50,24 +51,17 @@
                     </div>
                     <input type="hidden" name="lat" class="lat-input" value="{{ old('lat', '') }}">
                     <input type="hidden" name="lng" class="lng-input" value="{{ old('lng', '') }}">
-                    @php($hasSelectedLocation = old('lat', '') && old('lng', ''))
-                    <div class="mb-3">
-                        <span class="location-status-badge inline-flex rounded-full px-3 py-1 text-sm font-bold {{ $hasSelectedLocation ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                            {{ $hasSelectedLocation ? '✅ Ubicación seleccionada correctamente' : '⚠️ Ubicación pendiente de seleccionar' }}
-                        </span>
-                    </div>
                     <div class="relative">
-                        <div class="map-element w-full h-56 rounded border" aria-label="Mapa para seleccionar la ubicación exacta de la propiedad"></div>
-                        <div class="location-map-help {{ $hasSelectedLocation ? 'hidden' : '' }} pointer-events-none absolute left-3 right-3 top-3 z-[1000] rounded-lg bg-yellow-200 px-4 py-3 text-sm font-bold text-yellow-950 shadow-lg sm:left-4 sm:right-auto">
-                            📍 Haga clic en el mapa para marcar la ubicación
-                        </div>
+                        <div class="map-element w-full h-56 rounded border {{ $hasCoordinateError ? 'border-2 border-red-500' : '' }}" tabindex="-1" aria-label="Mapa para seleccionar la ubicación exacta de la propiedad"></div>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
                         Coordenadas:
-                        <span class="coordenadas-display font-semibold">No seleccionada</span>
+                        <span class="coordenadas-display font-semibold">
+                            {{ old('lat') && old('lng') ? old('lat').', '.old('lng') : 'No seleccionada' }}
+                        </span>
                     </p>
                     {{-- Mensaje de error de coordenadas --}}
-                    <p id="map-error" class="hidden mt-1 text-sm font-semibold text-red-600 flex items-center gap-1">
+                    <p id="map-error" class="{{ $hasCoordinateError ? '' : 'hidden' }} mt-1 text-sm font-semibold text-red-600 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
@@ -232,6 +226,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const hint = document.getElementById('hectareas-malla-hint');
     const rutValor = document.getElementById('rut_valor');
     const rutArchivo = document.getElementById('rut_archivo_file');
+    const locationField = document.querySelector('.location-map-field');
+    const scrollToLocationField = () => {
+        if (!locationField) return;
+
+        locationField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        locationField.querySelector('.map-element')?.focus({ preventScroll: true });
+    };
 
     const toggle = (check, div) => div?.classList.toggle('hidden', !check.checked);
 
@@ -320,9 +321,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.preventDefault();
                 if (mapEl) {
                     mapEl.classList.add('border-red-500', 'border-2');
-                    mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 if (mapError) mapError.classList.remove('hidden');
+                scrollToLocationField();
                 return false;
             }
 
@@ -390,6 +391,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (mallaChk && mallaDiv) toggle(mallaChk, mallaDiv);
     if (mallaChk?.checked) validarMalla();
 
+    if (locationField?.dataset.hasCoordinateError === '1') {
+        window.setTimeout(scrollToLocationField, 150);
+    }
+
     if (rutValor) {
         rutValor.addEventListener('invalid', function() {
             if (this.validity.valueMissing) {
@@ -413,8 +418,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const latInput = locationField?.querySelector('.lat-input');
         const lngInput = locationField?.querySelector('.lng-input');
         const coordDisplay = locationField?.querySelector('.coordenadas-display');
-        const statusBadge = locationField?.querySelector('.location-status-badge');
-        const mapHelp = locationField?.querySelector('.location-map-help');
         
         const initialLat = parseFloat(latInput?.value) || -31.5;
         const initialLng = parseFloat(lngInput?.value) || -68.5;
@@ -465,12 +468,6 @@ document.addEventListener('DOMContentLoaded', function() {
             latInput.setCustomValidity('');
             lngInput.setCustomValidity('');
             coordDisplay.textContent = latlng.lat.toFixed(7) + ', ' + latlng.lng.toFixed(7);
-
-            if (statusBadge) {
-                statusBadge.className = 'location-status-badge inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-green-800';
-                statusBadge.textContent = '✅ Ubicación seleccionada correctamente';
-            }
-            if (mapHelp) mapHelp.classList.add('hidden');
 
             // Limpiar error del mapa al seleccionar coordenadas válidas
             const mapError = document.getElementById('map-error');

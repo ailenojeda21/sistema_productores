@@ -126,3 +126,49 @@ test('usuario no puede eliminar propiedad de otro usuario', function () {
 
     $response->assertForbidden();
 });
+
+test('invitado no puede ver listado de propiedades', function () {
+    $response = $this->get('/propiedades');
+
+    $response->assertRedirect('/login');
+});
+
+test('invitado no puede crear propiedad', function () {
+    $response = $this->post('/propiedades', [
+        'calle' => 'Calle Falsa',
+        'numeracion' => '123',
+        'distrito' => 'san-jose',
+        'hectareas' => '10',
+        'tipo_tenencia' => 'propietario',
+        'lat' => '-33.0',
+        'lng' => '-68.5',
+    ]);
+
+    $response->assertRedirect('/login');
+});
+
+test('usuario no puede crear propiedad para otro usuario', function () {
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+    $distritos = array_keys(Propiedad::DISTRITOS);
+
+    $response = $this->actingAs($user)->post('/propiedades', [
+        'calle' => 'Calle Falsa',
+        'numeracion' => '123',
+        'distrito' => $distritos[0],
+        'hectareas' => '10.5',
+        'tipo_tenencia' => 'propietario',
+        'lat' => '-33.0',
+        'lng' => '-68.5',
+    ]);
+
+    $response->assertRedirect('/propiedades');
+    $this->assertDatabaseHas('propiedades', [
+        'calle' => 'Calle Falsa',
+        'usuario_id' => $user->id,
+    ]);
+    $this->assertDatabaseMissing('propiedades', [
+        'calle' => 'Calle Falsa',
+        'usuario_id' => $other->id,
+    ]);
+});

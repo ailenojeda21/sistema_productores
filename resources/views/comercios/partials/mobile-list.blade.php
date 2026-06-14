@@ -24,16 +24,16 @@
                 <span class="text-gray-800">{{ $comercio->infraestructura_empaque ? 'Sí' : 'No' }}</span>
             </div>
             <div class="flex items-center text-sm">
-                <span class="font-medium text-gray-600 w-40">Comercio mercado:</span>
-                <span class="text-gray-800">{{ $comercio->comercio_mercado ? 'Sí' : 'No' }}</span>
-            </div>
-            <div class="flex items-center text-sm">
                 <span class="font-medium text-gray-600 w-40">Vende en finca:</span>
                 <span class="text-gray-800">{{ $comercio->vende_en_finca ? 'Sí' : 'No' }}</span>
             </div>
             <div class="flex items-center text-sm">
+                <span class="font-medium text-gray-600 w-40">Comercio mercado:</span>
+                <span class="text-gray-800">{{ count(array_filter((array) ($comercio->mercados ?? []))) > 0 ? 'Sí' : 'No' }}</span>
+            </div>
+            <div class="flex items-center text-sm">
                 <span class="font-medium text-gray-600 w-40">Cooperativas:</span>
-                <span class="text-gray-800">{{ $comercio->comercializa_cooperativas ? 'Sí' : 'No' }}</span>
+                <span class="text-gray-800">{{ count(array_filter((array) ($comercio->cooperativas ?? []))) > 0 ? 'Sí' : 'No' }}</span>
             </div>
             
             @php
@@ -124,25 +124,32 @@
                         <span class="text-gray-800">{{ $comercio->infraestructura_empaque ? 'Sí' : 'No' }}</span>
                     </div>
                     <div class="flex items-center text-sm">
-                        <span class="font-medium text-gray-600 w-40">Comercio mercado:</span>
-                        <span class="text-gray-800">{{ $comercio->comercio_mercado ? 'Sí' : 'No' }}</span>
-                    </div>
-                    <div class="flex items-center text-sm">
                         <span class="font-medium text-gray-600 w-40">Vende en finca:</span>
                         <span class="text-gray-800">{{ $comercio->vende_en_finca ? 'Sí' : 'No' }}</span>
                     </div>
                     <div class="flex items-center text-sm">
+                        <span class="font-medium text-gray-600 w-40">Comercio mercado:</span>
+                        <span class="text-gray-800">{{ count(array_filter((array) ($comercio->mercados ?? []))) > 0 ? 'Sí' : 'No' }}</span>
+                    </div>
+                    <div class="flex items-center text-sm">
                         <span class="font-medium text-gray-600 w-40">Cooperativas:</span>
-                        <span class="text-gray-800">{{ $comercio->comercializa_cooperativas ? 'Sí' : 'No' }}</span>
+                        <span class="text-gray-800">{{ count(array_filter((array) ($comercio->cooperativas ?? []))) > 0 ? 'Sí' : 'No' }}</span>
                     </div>
                     
                     @php
-                        $mercados = array_filter([
-                            $comercio->mercado_local ? 'Local' : null,
-                            $comercio->mercado_regional ? 'Regional' : null,
-                            $comercio->mercado_nacional ? 'Nacional' : null,
-                            $comercio->mercado_internacional ? 'Internacional' : null,
-                        ]);
+                        $mercados = isset($comercio->mercados)
+                            ? (is_array($comercio->mercados)
+                                ? $comercio->mercados
+                                : json_decode($comercio->mercados, true))
+                            : [];
+                        $mercados = array_filter($mercados);
+
+                        $cooperativas = isset($comercio->cooperativas)
+                            ? (is_array($comercio->cooperativas)
+                                ? $comercio->cooperativas
+                                : json_decode($comercio->cooperativas, true))
+                            : [];
+                        $cooperativas = array_filter($cooperativas);
                     @endphp
                     
                     @if(count($mercados) > 0)
@@ -155,15 +162,6 @@
                         </div>
                     </div>
                     @endif
-
-                    @php
-                        $cooperativas = isset($comercio->cooperativas)
-                            ? (is_array($comercio->cooperativas)
-                                ? $comercio->cooperativas
-                                : json_decode($comercio->cooperativas, true))
-                            : [];
-                        $cooperativas = array_filter($cooperativas);
-                    @endphp
 
                     @if(count($cooperativas) > 0)
                     <div class="text-sm">

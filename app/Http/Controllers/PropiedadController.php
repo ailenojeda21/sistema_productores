@@ -107,10 +107,10 @@ class PropiedadController extends Controller
         $this->authorize('update', $propiedad);
 
         $validated = $request->validate([
-            'calle' => 'required|string|max:255',
-            'numeracion' => 'required|string|max:20',
-            'distrito' => 'required|string|max:100',
-            'hectareas' => 'required|numeric|min:0',
+            'calle' => 'sometimes|required|string|max:255',
+            'numeracion' => 'sometimes|required|string|max:20',
+            'distrito' => 'sometimes|required|string|max:100',
+            'hectareas' => 'sometimes|required|numeric|min:0',
 
             'malla' => 'nullable',
             'derecho_riego' => 'nullable',
@@ -120,13 +120,13 @@ class PropiedadController extends Controller
             'rut_valor' => 'nullable|required_with:rut_archivo_file',
             'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240',
 
-            'lat' => 'required|numeric|between:-90,90',
-            'lng' => 'required|numeric|between:-180,180',
+            'lat' => 'sometimes|required|numeric|between:-90,90',
+            'lng' => 'sometimes|required|numeric|between:-180,180',
 
             'hectareas_malla' => 'nullable|numeric|lte:hectareas',
             'cierre_perimetral' => 'nullable',
 
-            'tipo_tenencia' => 'required|in:propietario,arrendatario,otros',
+            'tipo_tenencia' => 'sometimes|required|in:propietario,arrendatario,otros',
             'especificar_tenencia' => 'nullable|required_if:tipo_tenencia,otros|string|max:255',
         ], [
             'especificar_tenencia.required_if' => 'Debe especificar la condición cuando selecciona "Otro".',
