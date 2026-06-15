@@ -50,7 +50,9 @@ const submit = async (e) => {
         <p class="text-gray-500 text-sm">Por favor ingrese sus credenciales para continuar</p>
       </header>
       <div v-if="page.props.flash?.status" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center gap-2 text-sm">
-        <span class="material-symbols-outlined text-green-600">check_circle</span>
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
         <span>{{ page.props.flash.status }}</span>
       </div>
       <form @submit="submit">
