@@ -52,7 +52,7 @@
 | M8 | Login staff revela "Usuario inactivo" — confirma existencia del email (info disclosure) | Auth | 27002 A.9.4.2 | Developer | ok |
 | M9 | Auditores y admin ven mismos datos PII en panel staff | PII | 27701 PII.1 | Developer | cancelado |
 | M10 | Log level `debug` — loguea consultas SQL y datos; subir a `warning` | Infra | 27002 A.12.4.1 | DevOps | manual |
-| M11 | Password min: 6 (productores) vs 8 (staff) — inconsistencia | Auth | 27002 A.9.2.1 | Developer | pendiente |
+| M11 | Password min: 6 (productores) vs 8 (staff) — inconsistencia | Auth | 27002 A.9.2.1 | Developer | ok |
 | M12 | No hay endpoint de portabilidad (`GET /api/profile/export`) | PII | 27701 PII.6 | Developer | pendiente |
 | M13 | Sanctum token prefix vacío — tokens sin identificar si leaked | Auth | 27002 A.8.13 | Developer | pendiente |
 | M14 | Token expiration 24h — considerar reducirlo | Auth | 27002 A.9.1.2 | Developer | pendiente |
@@ -111,7 +111,7 @@
 |---|---|---|---|---|
 | 🔴 Críticos | 3 | 0 | 0 | 3 |
 | 🟠 Altos | 6 | 6 | 0 | 0 |
-| 🟡 Medios | 16 | 1 | 13 | 1 |
+| 🟡 Medios | 16 | 2 | 12 | 1 |
 | 🔵 Bajos | 10 | 1 | 8 | 1 |
 | ✅ Pas | 20 | 20 | 0 | 0 |
-| **Total** | **55** | **28** | **21** | **5** |
+| **Total** | **55** | **29** | **20** | **5** |
