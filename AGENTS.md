@@ -438,6 +438,174 @@ export default {
 - Implement proper error handling without exposing sensitive information
 - Use HTTPS in production
 
+## ISO 27001 / 27002 / 27701 / 27017 / 27018 — Security & Privacy by Design
+
+### Principios generales
+Todo código nuevo debe cumplir con los controles aplicables de las cinco normas ISO. La implementación se evalúa en cada code review.
+
+### ISO 27001 — Sistema de Gestión de Seguridad de la Información (ISMS)
+
+| Control | Implementación en el proyecto |
+|---|---|
+| A.9 (Control de acceso) | Autenticación con Laravel Sanctum + Spatie roles. Políticas por recurso (ownership checks). |
+| A.12 (Seguridad operativa) | Tests automatizados (Pest), rate limiting en login/register, logging de accesos. |
+| A.14 (Seguridad en desarrollo) | Revisión de dependencias (`composer audit`, `npm audit`), validación en Form Requests. |
+| A.16 (Gestión de incidentes) | Exception handler global con respuestas diferenciadas (JSON / redirect). |
+| A.18 (Cumplimiento) | Datos personales manejados según lineamientos de 27701 / 27018. |
+
+#### Checklist obligatorio por feature
+- [ ] Autenticación y autorización definidas antes de implementar
+- [ ] Pruebas de éxito y fracaso escritas (Pest)
+- [ ] Rate limiting aplicado en endpoints públicos
+- [ ] `$fillable` / `$guarded` definido en nuevos modelos
+- [ ] Auditoría de datos personales realizada (ISO 27701)
+
+### ISO 27002 — Controles de seguridad detallados
+
+| Sección | Práctica obligatoria |
+|---|---|
+| **5.1-5.6** (Políticas) | No hardcodear credenciales, URLs, o tokens. Usar `.env` + `config/`. |
+| **6.1-6.3** (Organización) | Separación de guards: `web` (productores), `staff` (sesión staff), `staff-api` (tokens Sanctum). |
+| **8.1-8.12** (Activos) | Cachear respuestas de API cuando sea posible; documentar esquemas de BD en migraciones. |
+| **8.13-8.18** (Controles criptográficos) | `APP_KEY` rotada en producción, contraseñas hasheadas con bcrypt, HTTPS forzado en Railway. |
+| **9.1-9.4** (Control de acceso) | Mínimo privilegio: `staff.role:admin` para operaciones administrativas; ownership checks en policies. |
+| **10.1** (Cifrado) | Sesiones con `session.secure` en producción; tokens Sanctum expiran 1440 min. |
+| **11.1-11.2** (Seguridad física) | N/A (delegado a Railway / cloud provider). |
+| **12.1-12.7** (Operaciones) | Logging de eventos críticos (login, logout, creación/eliminación de usuarios). Logs sin datos sensibles. |
+| **13.1-13.2** (Comunicaciones) | HTTPS siempre; Content-Security-Policy definida; cookies `HttpOnly` + `SameSite`. |
+| **14.1-14.3** (Adquisición/desarrollo) | Migraciones versionadas; validación server-side + client-side; pruebas de seguridad. |
+| **15.1-15.2** (Proveedores) | `composer.lock` / `package-lock.json` commitheados para trazabilidad. |
+| **16.1** (Incidentes) | Respuesta a 419 (CSRF), 403 (rol), 422 (validación), 500 (error global) manejadas. |
+| **18.1-18.2** (Cumplimiento) | Revisión de licencias de dependencias; no usar paquetes con licencias GPL si el proyecto es propietario. |
+
+#### Reglas de código para 27002
+```php
+// ✅ Correcto: validación con Form Request + saneamiento
+use App\Http\Requests\StoreUserRequest;
+
+public function store(StoreUserRequest $request)
+{
+    $user = User::create($request->validated());
+}
+
+// ❌ Incorrecto: confiar en $request->all() sin filtrar
+$user = User::create($request->all());
+```
+
+```php
+// ✅ Correcto: owner check en Policy
+public function update(User $user, Propiedad $propiedad): bool
+{
+    return $user->id === $propiedad->usuario_id
+        || $user->hasRole('admin');
+}
+
+// ❌ Incorrecto: permitir sin verificar ownership
+return true;
+```
+
+### ISO 27701 — Gestión de Información de Privacidad (PIMS)
+
+#### Datos personales identificados en el sistema
+| Entidad | Datos personales | Propósito | Retención |
+|---|---|---|---|
+| `users` | nombre, email, teléfono, password (hash) | Identificación del productor | Mientras la cuenta esté activa + 1 año |
+| `staff_users` | nombre, email, password (hash) | Acceso staff al sistema | Mientras el staff esté activo |
+| `propiedades` | calle, localidad, coordenadas (mapa) | Geolocalización de fincas | Indefinido mientras el productor exista |
+| `cultivos` | variedad, fecha siembra | Historial productivo | Asociado al productor |
+| `comercios` | nombre, dirección, contacto | Puntos de venta | Indefinido |
+
+#### Reglas obligatorias (27701)
+1. **Minimización**: solo recolectar datos estrictamente necesarios para la funcionalidad
+2. **Consentimiento**: el registro implica aceptación de términos; no compartir datos con terceros
+3. **Portabilidad**: el productor puede solicitar exportación de sus datos (endpoint `GET /api/profile/export`)
+4. **Eliminación**: `SoftDeletes` en `StaffUser`; eliminación lógica con purge programado
+5. **Notificación de brechas**: el sistema debe poder identificar qué datos de qué usuarios fueron expuestos
+6. **Data Protection Impact Assessment (DPIA)**: documentar antes de agregar nuevas entidades que recolecten datos personales
+
+```php
+// ✅ Correcto: exponer solo campos necesarios en APIs
+return response()->json([
+    'id' => $user->id,
+    'name' => $user->name,
+    'email' => $user->email,
+    // ❌ Nunca exponer: password, remember_token, api tokens
+]);
+
+// ✅ Correcto: soft delete + anonimización al purgar
+$user->delete(); // SoftDeletes
+// En purge job:
+$user->forceDelete(); // Solo si ha pasado el período de retención
+```
+
+### ISO 27017 — Controles de seguridad en cloud
+
+Aplica a la infraestructura en Railway (o cualquier cloud provider).
+
+| Control | Implementación |
+|---|---|
+| **17.1** (Responsabilidades compartidas) | El proveedor (Railway) maneja seguridad de red/física; el equipo maneja seguridad de aplicación y datos. |
+| **17.2** (Aislamiento) | Base de datos con credenciales separadas por entorno; contenedores sin acceso a host. |
+| **17.3** (Configuración de cloud) | Variables de entorno para todas las credenciales; no commitear `.env`. |
+| **17.4** (Monitoreo) | Logs de acceso a Railway; rate limiting por IP. |
+| **17.5** (Virtualización) | N/A (Railway maneja la capa de contenedores). |
+
+#### Prácticas cloud obligatorias
+```bash
+# ✅ Correcto: usar variables de entorno
+DB_PASSWORD=secret
+
+# ❌ Incorrecto: valores hardcodeados en config/database.php
+'password' => 'root'
+```
+
+```php
+// ✅ Correcto: forzar HTTPS en producción
+if (app()->environment('production')) {
+    URL::forceScheme('https');
+}
+
+// ✅ Correcto: sesiones seguras en producción
+// config/session.php
+'secure' => env('SESSION_SECURE_COOKIE', true),
+'same_site' => 'lax',
+```
+
+### ISO 27018 — Protección de datos personales identificables (PII) en clouds públicos
+
+| Requisito | Implementación |
+|---|---|
+| **PII.1** (Consentimiento) | Términos y condiciones aceptados al registrarse. |
+| **PII.2** (Propósito) | Los datos solo se usan para la operación del sistema RUPAL. |
+| **PII.3** (Retención mínima) | Período de retención definido por entidad; purge job pendiente. |
+| **PII.4** (Cifrado en tránsito) | HTTPS forzado en producción (Railway). |
+| **PII.5** (Cifrado en reposo) | Base de datos cifrada a nivel de disco por Railway. |
+| **PII.6** (Notificación al titular) | Endpoint de exportación de datos implementado. |
+| **PII.7** (Eliminación segura) | SoftDeletes + forceDelete diferido en StaffUser. |
+| **PII.8** (Registro de procesamiento) | Logging de accesos a datos personales (login/logout). |
+
+#### Reglas para endpoints que sirven PII
+```php
+// ✅ Correcto: paginar + ocultar datos sensibles
+public function index()
+{
+    return User::select('id', 'name', 'email')
+        ->paginate(20);
+}
+
+// ❌ Incorrecto: exponer datos sensibles sin filtrar
+return User::all(); // Expone password, remember_token, etc.
+```
+
+#### Resumen de responsabilidades por norma
+| Norma | Ámbito | Responsable |
+|---|---|---|
+| ISO 27001 | SGSI general | Equipo de desarrollo + CISO |
+| ISO 27002 | Controles de seguridad | Developer (code review) |
+| ISO 27701 | Privacidad de datos | Developer + DPO |
+| ISO 27017 | Seguridad cloud | DevOps / Railway admin |
+| ISO 27018 | PII en cloud pública | Developer + DPO |
+
 ## Development Workflow
 
 ### Git Workflow
