@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class StaffProducerController extends Controller
 {
+    private function isAuditor(Request $request): bool
+    {
+        $staffUser = $request->user('staff') ?? $request->user('staff-api');
+
+        return $staffUser && $staffUser->role === 'auditor';
+    }
+
     public function index(Request $request)
     {
         $dni = trim((string) $request->get('dni', ''));
@@ -60,11 +67,13 @@ class StaffProducerController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        $isAuditor = $this->isAuditor($request);
+
         $producers->getCollection()->transform(fn ($u) => [
             'id' => $u->id,
             'name' => $u->name,
-            'dni' => $u->dni,
-            'email' => $u->email,
+            'dni' => $isAuditor ? null : $u->dni,
+            'email' => $isAuditor ? null : $u->email,
         ]);
 
         $user = $request->user();
@@ -101,12 +110,13 @@ class StaffProducerController extends Controller
         ])->findOrFail($id);
 
         $user = $request->user();
+        $isAuditor = $this->isAuditor($request);
 
         // Preparar propiedades con dirección completa
-        $propiedades = $producer->propiedades->map(function ($prop) {
+        $propiedades = $producer->propiedades->map(function ($prop) use ($isAuditor) {
             return [
                 'id' => $prop->id,
-                'direccion' => $prop->direccion_completa,
+                'direccion' => $isAuditor ? null : $prop->direccion_completa,
                 'hectareas' => $prop->hectareas,
                 'tipo_tenencia' => $prop->tipo_tenencia,
                 'especificar_tenencia' => $prop->especificar_tenencia,
@@ -116,10 +126,10 @@ class StaffProducerController extends Controller
                 'hectareas_malla' => $prop->hectareas_malla,
                 'cierre_perimetral' => $prop->cierre_perimetral,
                 'rut' => $prop->rut,
-                'rut_valor' => $prop->rut_valor,
-                'rut_archivo_url' => $prop->rut_archivo ? route('propiedades.rut', $prop) : null,
-                'lat' => $prop->lat,
-                'lng' => $prop->lng,
+                'rut_valor' => $isAuditor ? null : $prop->rut_valor,
+                'rut_archivo_url' => $isAuditor ? null : ($prop->rut_archivo ? route('propiedades.rut', $prop) : null),
+                'lat' => $isAuditor ? null : $prop->lat,
+                'lng' => $isAuditor ? null : $prop->lng,
             ];
         });
 
@@ -181,9 +191,9 @@ class StaffProducerController extends Controller
             'producer' => [
                 'id' => $producer->id,
                 'name' => $producer->name,
-                'dni' => $producer->dni,
-                'email' => $producer->email,
-                'telefono' => $producer->telefono,
+                'dni' => $isAuditor ? null : $producer->dni,
+                'email' => $isAuditor ? null : $producer->email,
+                'telefono' => $isAuditor ? null : $producer->telefono,
                 'cooperativas' => $producer->cooperativas,
             ],
             'propiedades' => $propiedades,
