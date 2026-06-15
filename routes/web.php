@@ -133,6 +133,8 @@ Route::middleware('auth')->group(function () {
 
     // Propiedades
     Route::resource('propiedades', PropiedadController::class);
+    Route::get('/propiedades/{propiedad}/rut', [PropiedadController::class, 'downloadRut'])
+        ->name('propiedades.rut');
 
     // Comercios
     Route::resource('comercios', ComercioController::class);

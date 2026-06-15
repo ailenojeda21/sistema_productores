@@ -65,7 +65,7 @@ class PropiedadController extends Controller
 
         if ($request->hasFile('rut_archivo_file')) {
             $validated['rut_archivo'] = $request->file('rut_archivo_file')
-                ->store('rut_files', 'public');
+                ->store('/', 'rut_files');
         }
 
         if (! $validated['rut']) {
@@ -159,19 +159,19 @@ class PropiedadController extends Controller
             if ($request->hasFile('rut_archivo_file')) {
 
                 if ($propiedad->rut_archivo &&
-                    Storage::disk('public')->exists($propiedad->rut_archivo)) {
-                    Storage::disk('public')->delete($propiedad->rut_archivo);
+                    Storage::disk('rut_files')->exists($propiedad->rut_archivo)) {
+                    Storage::disk('rut_files')->delete($propiedad->rut_archivo);
                 }
 
                 $validated['rut_archivo'] =
                     $request->file('rut_archivo_file')
-                        ->store('rut_files', 'public');
+                        ->store('/', 'rut_files');
             }
 
         } else {
             if ($propiedad->rut_archivo &&
-                Storage::disk('public')->exists($propiedad->rut_archivo)) {
-                Storage::disk('public')->delete($propiedad->rut_archivo);
+                Storage::disk('rut_files')->exists($propiedad->rut_archivo)) {
+                Storage::disk('rut_files')->delete($propiedad->rut_archivo);
             }
 
             $validated['rut_valor'] = null;
@@ -191,9 +191,28 @@ class PropiedadController extends Controller
 
         $this->authorize('delete', $propiedad);
 
+        if ($propiedad->rut_archivo &&
+            Storage::disk('rut_files')->exists($propiedad->rut_archivo)) {
+            Storage::disk('rut_files')->delete($propiedad->rut_archivo);
+        }
+
         $propiedad->delete();
 
         return redirect()->route('propiedades.index')
             ->with('success', 'Propiedad eliminada correctamente');
+    }
+
+    public function downloadRut(Propiedad $propiedad)
+    {
+        if ($propiedad->usuario_id !== Auth::id() && ! Auth::guard('staff')->check()) {
+            abort(403, 'No autorizado');
+        }
+
+        if (! $propiedad->rut_archivo ||
+            ! Storage::disk('rut_files')->exists($propiedad->rut_archivo)) {
+            abort(404, 'Archivo no encontrado');
+        }
+
+        return Storage::disk('rut_files')->download($propiedad->rut_archivo);
     }
 }
