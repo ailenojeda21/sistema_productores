@@ -133,8 +133,6 @@ Route::middleware('auth')->group(function () {
 
     // Propiedades
     Route::resource('propiedades', PropiedadController::class);
-    Route::get('/propiedades/{propiedad}/rut', [PropiedadController::class, 'downloadRut'])
-        ->name('propiedades.rut');
 
     // Comercios
     Route::resource('comercios', ComercioController::class);
@@ -142,6 +140,10 @@ Route::middleware('auth')->group(function () {
     // Maquinaria
     Route::resource('maquinaria', MaquinariaController::class)->except(['show']);
 });
+
+// RUT files (fuera del grupo auth para permitir ambas guardas: web y staff)
+Route::get('/propiedades/{propiedad}/rut', [PropiedadController::class, 'downloadRut'])
+    ->name('propiedades.rut');
 
 /*
 |--------------------------------------------------------------------------

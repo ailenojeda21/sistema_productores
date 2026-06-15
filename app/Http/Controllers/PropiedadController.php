@@ -204,6 +204,10 @@ class PropiedadController extends Controller
 
     public function downloadRut(Propiedad $propiedad)
     {
+        if (Auth::guard('web')->guest() && Auth::guard('staff')->guest()) {
+            abort(401);
+        }
+
         if ($propiedad->usuario_id !== Auth::id() && ! Auth::guard('staff')->check()) {
             abort(403, 'No autorizado');
         }
