@@ -208,6 +208,10 @@ Route::prefix('staff')->group(function () {
             Route::delete('/auditors/{id}', function ($id) {
                 // baja auditor
             })->name('staff.auditors.destroy');
+
+            // Export productores (solo admin)
+            Route::get('/producers/export', [StaffProducerController::class, 'export'])
+                ->name('staff.producers.export');
         });
 
         /*
@@ -217,9 +221,6 @@ Route::prefix('staff')->group(function () {
         */
         Route::get('/producers', [StaffProducerController::class, 'index'])
             ->name('staff.producers.index');
-
-        Route::get('/producers/export', [StaffProducerController::class, 'export'])
-            ->name('staff.producers.export');
 
         Route::get('/producers/{id}', [StaffProducerController::class, 'show'])
             ->name('staff.producers.show');
