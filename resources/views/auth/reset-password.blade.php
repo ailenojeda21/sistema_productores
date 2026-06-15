@@ -12,8 +12,8 @@
     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="absolute top-8 right-8 h-20">
 
         <div class="max-w-md w-full mx-auto">
-            <h1 class="text-3xl font-bold text-center text-naranja-oscuro mb-2">Nueva contrasena</h1>
-            <p class="text-gray-600 text-center mb-8">Ingresa tu nueva contrasena a continuacion.</p>
+            <h1 class="text-3xl font-bold text-center text-naranja-oscuro mb-2">Nueva contraseña</h1>
+            <p class="text-gray-600 text-center mb-8">Ingresa tu nueva contraseña a continuación.</p>
             
             <!-- Errores de validacion -->
             @if($errors->any())
@@ -36,16 +36,16 @@
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Nueva contrasena</label>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Nueva contraseña</label>
                     <input id="password" name="password" type="password" required minlength="8" class="mt-1 block w-full rounded border-gray-300 focus:border-naranja-oscuro focus:ring focus:ring-naranja-oscuro/30">
                 </div>
 
                 <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar contrasena</label>
+                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar contraseña</label>
                     <input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" class="mt-1 block w-full rounded border-gray-300 focus:border-naranja-oscuro focus:ring focus:ring-naranja-oscuro/30">
                 </div>
                 
-                <button type="submit" class="w-full py-2 px-4 bg-naranja-oscuro text-white font-bold rounded hover:bg-amarillo-claro transition">Restablecer contrasena</button>
+                <button type="submit" class="w-full py-2 px-4 bg-naranja-oscuro text-white font-bold rounded hover:bg-amarillo-claro transition">Restablecer contraseña</button>
             </form>
             <div class="mt-6 text-center">
                 <a href="{{ route('login') }}" class="text-gray-500 font-semibold hover:underline hover:text-blue-600 transition">Volver a iniciar sesion</a>

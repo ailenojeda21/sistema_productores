@@ -93,6 +93,11 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new \App\Notifications\RupalWelcomeVerification);
     }
 
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\UserResetPassword($token));
+    }
+
     /**
      * Accesor: URL del avatar.
      * Si el usuario tiene avatar, devuelve la imagen elegida.
