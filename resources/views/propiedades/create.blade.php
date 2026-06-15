@@ -179,7 +179,7 @@
 @endsection
 
 @section('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ asset('vendor/leaflet/leaflet.css') }}" />
 <style>
     .custom-checkbox {
         width: 1.25rem;
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ asset('vendor/leaflet/leaflet.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const mapElements = document.querySelectorAll('.map-element');
@@ -433,9 +433,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map),
             'Satelital': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: ''
-            })
-        }).addTo(map);
+            attribution: '&copy; Esri, Maxar, Earthstar Geographics'
+        }).addTo(map),
+    }).addTo(map);
 
         if (latInput?.value && lngInput?.value) {
             updateMarker(L.latLng(parseFloat(latInput.value), parseFloat(lngInput.value)));
