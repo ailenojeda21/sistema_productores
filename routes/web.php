@@ -8,6 +8,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropiedadController;
 use App\Http\Controllers\StaffAuthController;
 use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\StaffNewPasswordController;
+use App\Http\Controllers\StaffPasswordResetLinkController;
 use App\Http\Controllers\StaffProducerController;
 use App\Http\Controllers\StaffUserController;
 use App\Models\User;
