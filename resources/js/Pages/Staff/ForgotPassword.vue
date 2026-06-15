@@ -20,9 +20,7 @@ const submit = async (e) => {
       onError: (errors) => {
         validationErrors.value = errors
       },
-      onSuccess: () => {
-        formData.value.email = ''
-      },
+      preserveState: true,
     })
   } catch {
     // handled by Inertia
@@ -45,7 +43,7 @@ const submit = async (e) => {
         </p>
       </header>
 
-      <div v-if="page.props.flash?.status" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm text-center font-medium">
+      <div v-if="page.props.flash?.status" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center gap-2 text-sm">
         <span>{{ page.props.flash.status }}</span>
       </div>
 
