@@ -48,7 +48,7 @@
 | M4 | `SESSION_SECURE_COOKIE` no seteado explícitamente | Session | 27002 A.10.1 | DevOps | manual |
 | M5 | No existe `AuthServiceProvider` — policies en `AppServiceProvider` | Authz | 27002 A.14.2.1 | Developer | pendiente |
 | M6 | No existe `StaffUserPolicy` — `StaffUserController` sin `authorize()` | Authz | 27002 A.9.1.2 | Developer | pendiente |
-| M7 | `$hidden` incompleto en `User` — faltan `dni`, `telefono`, `direccion`, `email` | PII | 27701 PII.1 / 27018 PII.6 | Developer | pendiente |
+| M7 | `$hidden` incompleto en `User` — faltan `dni`, `telefono`, `direccion` | PII | 27701 PII.1 / 27018 PII.6 | Developer | ok |
 | M8 | Login staff revela "Usuario inactivo" — confirma existencia del email (info disclosure) | Auth | 27002 A.9.4.2 | Developer | ok |
 | M9 | Auditores y admin ven mismos datos PII en panel staff | PII | 27701 PII.1 | Developer | cancelado |
 | M10 | Log level `debug` — loguea consultas SQL y datos; subir a `warning` | Infra | 27002 A.12.4.1 | DevOps | manual |
@@ -111,7 +111,7 @@
 |---|---|---|---|---|
 | 🔴 Críticos | 3 | 0 | 0 | 3 |
 | 🟠 Altos | 6 | 6 | 0 | 0 |
-| 🟡 Medios | 16 | 2 | 12 | 1 |
+| 🟡 Medios | 16 | 3 | 11 | 1 |
 | 🔵 Bajos | 10 | 1 | 8 | 1 |
 | ✅ Pas | 20 | 20 | 0 | 0 |
-| **Total** | **55** | **29** | **20** | **5** |
+| **Total** | **55** | **30** | **19** | **5** |
