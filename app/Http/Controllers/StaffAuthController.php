@@ -19,7 +19,9 @@ class StaffAuthController extends Controller
             'password' => ['required'],
         ]);
 
-        $staffUser = \App\Models\StaffUser::where('email', strtolower($credentials['email']))->first();
+        $credentials['email'] = strtolower($credentials['email']);
+
+        $staffUser = \App\Models\StaffUser::where('email', $credentials['email'])->first();
 
         if (! $staffUser) {
             return back()->withErrors([
