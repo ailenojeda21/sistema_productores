@@ -20,12 +20,17 @@ class StaffPasswordResetLinkController extends Controller
         ]);
 
         $status = Password::broker('staff_users')->sendResetLink(
-            $request->only('email')
+            ['email' => strtolower($request->email)]
         );
 
         if ($status == Password::RESET_LINK_SENT) {
-            return redirect()->route('staff.password.request')
-                ->with('status', 'Hemos enviado por correo electrónico el enlace para restablecer tu contraseña.');
+            return back()->with('status', 'Hemos enviado por correo electrónico el enlace para restablecer tu contraseña.');
+        }
+
+        if ($status == Password::RESET_THROTTLED) {
+            throw ValidationException::withMessages([
+                'email' => ['Ya has solicitado un enlace recientemente. Intenta de nuevo más tarde.'],
+            ]);
         }
 
         throw ValidationException::withMessages([
