@@ -176,6 +176,28 @@
         </main>
       </div>
     </div>
+    <!-- Logout Confirmation Dialog -->
+    <div v-if="isLogoutDialogOpen" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="absolute inset-0 bg-black/40" @click="cancelLogout"></div>
+      <div class="relative bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Cerrar sesión</h3>
+        <p class="text-sm text-gray-600 mb-6">¿Estás seguro de que deseas cerrar la sesión?</p>
+        <div class="flex gap-3 justify-end">
+          <button
+            class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+            @click="cancelLogout"
+          >
+            Cancelar
+          </button>
+          <button
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition"
+            @click="confirmLogout"
+          >
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -198,8 +220,19 @@ const navigate = (path) => {
   router.visit(path)
 }
 
+const isLogoutDialogOpen = ref(false)
+
 const logout = () => {
   closeSidebar()
+  isLogoutDialogOpen.value = true
+}
+
+const confirmLogout = () => {
+  isLogoutDialogOpen.value = false
   router.post('/staff/logout')
+}
+
+const cancelLogout = () => {
+  isLogoutDialogOpen.value = false
 }
 </script>

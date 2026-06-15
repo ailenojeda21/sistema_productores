@@ -46,6 +46,12 @@ class StaffAuthController extends Controller
 
     public function logout(Request $request)
     {
+        $user = $request->user();
+
+        if ($user) {
+            $user->tokens()->delete();
+        }
+
         Auth::guard('staff')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
