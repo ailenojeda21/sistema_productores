@@ -12,8 +12,8 @@
     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="absolute top-8 right-8 h-20">
 
         <div class="max-w-md w-full mx-auto">
-            <h1 class="text-3xl font-bold text-center text-naranja-oscuro mb-2">Recuperar contrasena</h1>
-            <p class="text-gray-600 text-center mb-8">Ingresa tu correo electronico y te enviaremos un enlace para restablecer tu contrasena.</p>
+            <h1 class="text-3xl font-bold text-center text-naranja-oscuro mb-2">Recuperar contraseña</h1>
+            <p class="text-gray-600 text-center mb-8">Ingresa tu correo electronico y te enviaremos un enlace para restablecer tu contraseña.</p>
             
             <!-- Mensaje de exito -->
             @if(session('status'))
