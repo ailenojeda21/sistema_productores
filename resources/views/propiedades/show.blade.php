@@ -13,7 +13,7 @@
     <div class="bg-white rounded-lg shadow p-4 md:p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Detalle de Propiedad</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="mb-4"><strong>Dirección:</strong> {{ $propiedad->direccion }}</div>
+            <div class="mb-4"><strong>Dirección:</strong> {{ $propiedad->direccion_completa }}</div>
             <div class="mb-4"><strong>Hectáreas:</strong> {{ number_format($propiedad->hectareas, 2, ',', '.') }}</div>
             
             @if($propiedad->lat && $propiedad->lng)

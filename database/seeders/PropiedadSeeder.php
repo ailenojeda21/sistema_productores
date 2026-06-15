@@ -12,22 +12,31 @@ class PropiedadSeeder extends Seeder
     {
         $usuario = User::where('email', 'productor@demo.com')->first();
         if ($usuario) {
-            Propiedad::firstOrCreate([
-                'usuario_id' => $usuario->id,
-                'calle' => 'Campo Norte',
-                'hectareas' => 15.5,
-                'malla' => true,
-                'tipo_tenencia' => 'Propio',
-                'derecho_riego' => true,
-            ]);
-            Propiedad::firstOrCreate([
-                'usuario_id' => $usuario->id,
-                'calle' => 'Campo Sur',
-                'hectareas' => 8.2,
-                'malla' => false,
-                'tipo_tenencia' => 'Arrendado',
-                'derecho_riego' => false,
-            ]);
+            $data = [
+                [
+                    'usuario_id' => $usuario->id,
+                    'calle' => 'Campo Norte',
+                    'hectareas' => 15.5,
+                    'malla' => true,
+                    'tipo_tenencia' => 'propietario',
+                    'derecho_riego' => true,
+                ],
+                [
+                    'usuario_id' => $usuario->id,
+                    'calle' => 'Campo Sur',
+                    'hectareas' => 8.2,
+                    'malla' => false,
+                    'tipo_tenencia' => 'arrendatario',
+                    'derecho_riego' => false,
+                ],
+            ];
+
+            foreach ($data as $attrs) {
+                $prop = Propiedad::firstOrNew(['calle' => $attrs['calle'], 'usuario_id' => $attrs['usuario_id']]);
+                if (!$prop->exists) {
+                    $prop->forceFill($attrs)->save();
+                }
+            }
         }
     }
 }
