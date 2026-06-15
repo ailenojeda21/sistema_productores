@@ -15,7 +15,7 @@ class MaquinariaFactory extends Factory
         return [
             'propiedad_id' => Propiedad::factory(),
             'tractor' => fake()->boolean(),
-            'modelo_tractor' => fake()->optional()->year(),
+            'modelo_tractor' => fake()->optional()->numberBetween(1990, (int) date('Y')),
             'arado' => fake()->boolean(),
             'rastra' => fake()->boolean(),
             'niveleta_comun' => fake()->boolean(),

@@ -43,9 +43,9 @@
                            name="tiene_mercados"
                            id="tiene_mercados"
                            class="mr-2 custom-checkbox"
-                           @php
-                               $mercadosExistentes = isset($comercio->mercados) && (is_array($comercio->mercados) ? count($comercio->mercados) > 0 : count(json_decode($comercio->mercados, true)) > 0);
-                           @endphp
+                            @php
+                                $mercadosExistentes = isset($comercio->mercados) && is_array($comercio->mercados) && count($comercio->mercados) > 0;
+                            @endphp
                            {{ old('tiene_mercados', $mercadosExistentes) ? 'checked' : '' }}>
                     <label for="tiene_mercados">¿Vende en mercados?¿Cuál?</label>
                 </div>
@@ -55,7 +55,7 @@
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Seleccione el mercado</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
                     @php
-                        $selectedMercados = old('mercados', isset($comercio->mercados) ? (is_array($comercio->mercados) ? $comercio->mercados : json_decode($comercio->mercados, true)) : []);
+                        $selectedMercados = old('mercados', $comercio->mercados ?? []);
                     @endphp
                     @foreach(\App\Models\Comercio::getMercadosForForm() as $field => $label)
                         <label class="flex items-center space-x-1">
@@ -70,8 +70,8 @@
             <div class="flex items-center mt-8">
                 <input type="checkbox" name="tiene_cooperativas" id="tiene_cooperativas" class="mr-2 custom-checkbox"
                        @php
-                           $cooperativasExistentes = isset($comercio->cooperativas) && (is_array($comercio->cooperativas) ? count($comercio->cooperativas) > 0 : count(json_decode($comercio->cooperativas, true)) > 0);
-                       @endphp
+                            $cooperativasExistentes = isset($comercio->cooperativas) && is_array($comercio->cooperativas) && count($comercio->cooperativas) > 0;
+                        @endphp
                        {{ old('tiene_cooperativas', $cooperativasExistentes) ? 'checked' : '' }}>
                 <label for="tiene_cooperativas">¿Comercializa en cooperativas?¿Cuál?</label>
             </div>
@@ -80,7 +80,7 @@
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Seleccione la cooperativa</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
                     @php
-                        $selectedCooperativas = old('cooperativas', isset($comercio->cooperativas) ? (is_array($comercio->cooperativas) ? $comercio->cooperativas : json_decode($comercio->cooperativas, true)) : []);
+                        $selectedCooperativas = old('cooperativas', $comercio->cooperativas ?? []);
                     @endphp
                     @foreach(\App\Models\Comercio::getCooperativasForForm() as $field => $label)
                         <label class="flex items-center space-x-1">

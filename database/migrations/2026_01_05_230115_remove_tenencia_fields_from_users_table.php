@@ -8,23 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            // Verificamos si las columnas existen antes de intentar borrarlas
-            if (Schema::hasColumn('users', 'tipo_tenencia')) {
-                $table->dropColumn('tipo_tenencia');
-            }
-
-            if (Schema::hasColumn('users', 'especificar_tenencia')) {
-                $table->dropColumn('especificar_tenencia');
-            }
-        });
+        // No-op: estas columnas nunca existieron en la tabla users,
+        // fueron agregadas directamente a propiedades.
     }
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('tipo_tenencia')->nullable();
-            $table->string('especificar_tenencia')->nullable();
-        });
     }
 };

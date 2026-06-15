@@ -23,7 +23,7 @@ class PropiedadFactory extends Factory
             'derecho_riego' => fake()->boolean(),
             'tipo_derecho_riego' => fake()->randomElement(['Subterráneo', 'Superficial', 'Ambos']),
             'rut' => fake()->boolean(),
-            'rut_valor' => fake()->optional()->numberBetween(10000000, 99999999),
+            'rut_valor' => fake()->optional()->numerify('########'),
             'tipo_tenencia' => fake()->randomElement(['propietario', 'arrendatario', 'otros']),
             'especificar_tenencia' => null,
             'malla' => fake()->boolean(),
