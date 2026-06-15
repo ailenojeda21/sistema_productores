@@ -11,10 +11,6 @@ const formData = ref({
 })
 const validationErrors = ref({})
 
-function dismissFlash() {
-  page.props.flash.status = null
-}
-
 const submit = async (e) => {
   e.preventDefault()
   isLoading.value = true
@@ -47,9 +43,8 @@ const submit = async (e) => {
         </p>
       </header>
 
-      <div v-if="page.props.flash?.status" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm text-center relative cursor-pointer" @click="dismissFlash">
-        {{ page.props.flash.status }}
-        <button type="button" class="absolute top-1 right-2 text-green-600 hover:text-green-800 text-lg leading-none" @click.stop="dismissFlash">&times;</button>
+      <div v-if="page.props.flash?.status" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center gap-2 text-sm">
+        <span>{{ page.props.flash.status }}</span>
       </div>
 
       <form @submit="submit">
