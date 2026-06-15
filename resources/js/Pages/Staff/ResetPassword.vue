@@ -1,38 +1,38 @@
 <script setup>
-// 1. Imports
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
-import { usePage } from '@inertiajs/vue3'
 
-const page = usePage()
+const props = defineProps({
+  token: String,
+  email: String,
+})
 
-// 4. Reactive state
 const isLoading = ref(false)
 const formData = ref({
-  email: '',
-  password: ''
+  token: props.token,
+  email: props.email,
+  password: '',
+  password_confirmation: '',
 })
 const validationErrors = ref({})
 const errorMessage = ref('')
 
-// 6. Methods
 const submit = async (e) => {
   e.preventDefault()
   isLoading.value = true
   validationErrors.value = {}
   errorMessage.value = ''
   try {
-    await router.post('/staff/login', formData.value, {
+    await router.post('/staff/reset-password', formData.value, {
       onError: (errors) => {
         validationErrors.value = errors
       },
       onSuccess: () => {
-        // Redirige al dashboard o página principal del staff
-        router.visit('/staff/dashboard')
+        router.visit('/staff/login')
       }
     })
-  } catch (error) {
-    errorMessage.value = 'Error al iniciar sesión'
+  } catch {
+    errorMessage.value = 'Error al restablecer la contraseña'
   } finally {
     isLoading.value = false
   }
@@ -45,13 +45,13 @@ const submit = async (e) => {
       <header class="mb-6 text-center">
         <img src="/images/encabezado-azul.png" alt="RUPAL Logo" class="mx-auto mb-4 w-full max-w-md h-auto rounded-xl shadow" />
         <h1 class="text-2xl font-bold text-gray-900 mb-2">
-          Bienvenido al Administrador del Sistema RUPAL
+          Nueva contraseña
         </h1>
-        <p class="text-gray-500 text-sm">Por favor ingrese sus credenciales para continuar</p>
+        <p class="text-gray-500 text-sm">
+          Ingresa tu nueva contraseña a continuación.
+        </p>
       </header>
-      <div v-if="page.props.flash?.status" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm text-center">
-        {{ page.props.flash.status }}
-      </div>
+
       <form @submit="submit">
         <div class="mb-4">
           <label for="email" class="block text-gray-700 font-medium mb-1">Correo electrónico</label>
@@ -59,28 +59,42 @@ const submit = async (e) => {
             id="email"
             type="email"
             v-model="formData.email"
-            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="usuario@rupal.com"
-            autocomplete="username"
+            class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            readonly
             :disabled="isLoading"
           />
           <div v-if="validationErrors.email" class="text-red-500 text-xs mt-1">
             {{ validationErrors.email }}
           </div>
         </div>
-        <div class="mb-6">
-          <label for="password" class="block text-gray-700 font-medium mb-1">Contraseña</label>
+        <div class="mb-4">
+          <label for="password" class="block text-gray-700 font-medium mb-1">Nueva contraseña</label>
           <input
             id="password"
             type="password"
             v-model="formData.password"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="********"
-            autocomplete="current-password"
+            placeholder="Mínimo 8 caracteres"
+            autocomplete="new-password"
             :disabled="isLoading"
           />
           <div v-if="validationErrors.password" class="text-red-500 text-xs mt-1">
             {{ validationErrors.password }}
+          </div>
+        </div>
+        <div class="mb-6">
+          <label for="password_confirmation" class="block text-gray-700 font-medium mb-1">Confirmar contraseña</label>
+          <input
+            id="password_confirmation"
+            type="password"
+            v-model="formData.password_confirmation"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Repite la contraseña"
+            autocomplete="new-password"
+            :disabled="isLoading"
+          />
+          <div v-if="validationErrors.password_confirmation" class="text-red-500 text-xs mt-1">
+            {{ validationErrors.password_confirmation }}
           </div>
         </div>
         <button
@@ -89,19 +103,16 @@ const submit = async (e) => {
           :disabled="isLoading"
         >
           <span v-if="isLoading" class="loader mr-2"></span>
-          Iniciar sesión
+          Restablecer contraseña
         </button>
-        <div class="mt-4 text-center">
-          <a href="/staff/forgot-password" class="text-sm text-blue-600 hover:text-blue-800 underline">
-            ¿Olvidaste tu contraseña?
-          </a>
-        </div>
         <div v-if="errorMessage" class="text-red-600 text-sm mt-4 text-center">
           {{ errorMessage }}
         </div>
       </form>
-      <footer class="mt-6 text-center text-xs text-gray-400">
-        &copy; {{ new Date().getFullYear() }} RUPAL. Todos los derechos reservados.
+      <footer class="mt-6 text-center">
+        <a href="/staff/login" class="text-sm text-blue-600 hover:text-blue-800 underline">
+          Volver a iniciar sesión
+        </a>
       </footer>
     </div>
   </div>
