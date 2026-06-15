@@ -41,6 +41,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Maquinaria::class, MaquinariaPolicy::class);
         Gate::policy(Comercio::class, ComercioPolicy::class);
 
+        Gate::before(function ($user, $ability) {
+            if (method_exists($user, 'hasRole') && $user->hasRole('admin')) {
+                return true;
+            }
+        });
+
         Vite::prefetch(concurrency: 3);
 
         // Fuerza el esquema HTTPS si estamos en producción (Railway)
