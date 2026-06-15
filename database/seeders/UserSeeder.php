@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin Demo',
             'password' => Hash::make('admin123'),
         ]);
+        $admin->markEmailAsVerified();
         $admin->assignRole($adminRole);
 
         // Crear usuario productor
@@ -31,6 +32,7 @@ class UserSeeder extends Seeder
             'name' => 'Productor Demo',
             'password' => Hash::make('productor123'),
         ]);
+        $productor->markEmailAsVerified();
         $productor->assignRole($productorRole);
     }
 }
