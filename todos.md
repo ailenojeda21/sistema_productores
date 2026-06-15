@@ -21,7 +21,7 @@
 | C1 | `APP_DEBUG=true` en `.env` — expone stack traces con credenciales en producción | Infra | 27002 A.14.2.1 | DevOps | manual |
 | C2 | `APP_ENV=local` en `.env` — debe ser `production` en producción | Infra | 27002 A.14.2.1 | DevOps | manual |
 | C3 | `APP_KEY` nunca rotada — ejecutar `php artisan key:generate` | Infra | 27002 A.10.1 | DevOps | manual |
-| C4 | Dockerfile usa `php artisan serve` (dev server) — no apto para producción | Infra | 27017 A.17.1 | DevOps | pendiente |
+| C4 | ~~Dockerfile usa `php artisan serve` (dev server) — no apto para~~ _No aplica (sin Docker)_ | Infra | 27017 A.17.1 | DevOps | cancelado |
 
 ---
 
@@ -49,8 +49,8 @@
 | M5 | No existe `AuthServiceProvider` — policies en `AppServiceProvider` | Authz | 27002 A.14.2.1 | Developer | pendiente |
 | M6 | No existe `StaffUserPolicy` — `StaffUserController` sin `authorize()` | Authz | 27002 A.9.1.2 | Developer | pendiente |
 | M7 | `$hidden` incompleto en `User` — faltan `dni`, `telefono`, `direccion`, `email` | PII | 27701 PII.1 / 27018 PII.6 | Developer | pendiente |
-| M8 | Login staff revela "Usuario inactivo" — confirma existencia del email (info disclosure) | Auth | 27002 A.9.4.2 | Developer | pendiente |
-| M9 | Auditores y admin ven mismos datos PII en panel staff | PII | 27701 PII.1 | Developer | pendiente |
+| M8 | Login staff revela "Usuario inactivo" — confirma existencia del email (info disclosure) | Auth | 27002 A.9.4.2 | Developer | ok |
+| M9 | Auditores y admin ven mismos datos PII en panel staff | PII | 27701 PII.1 | Developer | ok |
 | M10 | Log level `debug` — loguea consultas SQL y datos; subir a `warning` | Infra | 27002 A.12.4.1 | DevOps | manual |
 | M11 | Password min: 6 (productores) vs 8 (staff) — inconsistencia | Auth | 27002 A.9.2.1 | Developer | pendiente |
 | M12 | No hay endpoint de portabilidad (`GET /api/profile/export`) | PII | 27701 PII.6 | Developer | pendiente |
@@ -109,9 +109,9 @@
 
 | Severidad | Total | Resueltos | Pendientes | Manuales |
 |---|---|---|---|---|
-| 🔴 Críticos | 4 | 0 | 1 | 3 |
+| 🔴 Críticos | 3 | 0 | 0 | 3 |
 | 🟠 Altos | 6 | 5 | 1 | 0 |
-| 🟡 Medios | 16 | 0 | 15 | 1 |
+| 🟡 Medios | 16 | 2 | 13 | 1 |
 | 🔵 Bajos | 10 | 1 | 8 | 1 |
 | ✅ Pas | 20 | 20 | 0 | 0 |
-| **Total** | **56** | **26** | **25** | **5** |
+| **Total** | **55** | **28** | **22** | **5** |
