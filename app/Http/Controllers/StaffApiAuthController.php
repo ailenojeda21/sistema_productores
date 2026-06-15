@@ -49,7 +49,7 @@ class StaffApiAuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->user()?->tokens()->delete();
 
         return response()->json(['message' => 'Sesión cerrada correctamente.']);
     }
