@@ -47,6 +47,13 @@ return [
             'report' => false,
         ],
 
+        'rut_files' => [
+            'driver' => 'local',
+            'root' => storage_path('app/rut_files'),
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

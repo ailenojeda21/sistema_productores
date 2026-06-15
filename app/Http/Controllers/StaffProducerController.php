@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class StaffProducerController extends Controller
 {
@@ -118,7 +117,7 @@ class StaffProducerController extends Controller
                 'cierre_perimetral' => $prop->cierre_perimetral,
                 'rut' => $prop->rut,
                 'rut_valor' => $prop->rut_valor,
-                'rut_archivo_url' => $prop->rut_archivo ? Storage::url($prop->rut_archivo) : null,
+                'rut_archivo_url' => $prop->rut_archivo ? route('propiedades.rut', $prop) : null,
                 'lat' => $prop->lat,
                 'lng' => $prop->lng,
             ];

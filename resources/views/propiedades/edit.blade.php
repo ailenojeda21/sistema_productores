@@ -196,7 +196,7 @@
                         @if ($propiedad->rut_archivo)
                             <p class="text-sm text-gray-500 mb-2">
                                 Archivo actual: 
-                                <a href="{{ Storage::url($propiedad->rut_archivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                                <a href="{{ route('propiedades.rut', $propiedad) }}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
                                     Ver archivo
                                 </a>
                             </p>

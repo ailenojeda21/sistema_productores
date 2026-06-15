@@ -113,7 +113,7 @@
 
         <td class="px-2 py-2 text-base text-gray-700 text-center whitespace-nowrap">
             @if($propiedad->rut_archivo)
-                <a href="{{ Storage::url($propiedad->rut_archivo) }}"
+                <a href="{{ route('propiedades.rut', $propiedad) }}"
                    target="_blank"
                    class="text-blue-600 hover:text-blue-800 underline">
                     RUT
