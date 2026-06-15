@@ -74,7 +74,7 @@
 | B7 | Form Request infrautilizado — solo 1 (`LoginRequest`) | Data | 27002 A.14.2.1 | Developer | pendiente |
 | B8 | Mailtrap credenciales en `.env` — rotar si `.env` se filtra | Infra | 27002 A.8.13 | DevOps | manual |
 | B9 | `User` hard-delete — sin SoftDeletes ni anonimización | PII | 27701 PII.7 | Developer | pendiente |
-| B10 | Sin confirmación de logout en productores — AuthenticatedLayout dispara inmediato | Session | 27002 A.9.4.2 | Developer | pendiente |
+| B10 | Sin confirmación de logout en productores — AuthenticatedLayout dispara inmediato | Session | 27002 A.9.4.2 | Developer | ok |
 
 ---
 
@@ -112,6 +112,6 @@
 | 🔴 Críticos | 4 | 0 | 1 | 3 |
 | 🟠 Altos | 6 | 5 | 1 | 0 |
 | 🟡 Medios | 16 | 0 | 15 | 1 |
-| 🔵 Bajos | 10 | 0 | 9 | 1 |
+| 🔵 Bajos | 10 | 1 | 8 | 1 |
 | ✅ Pas | 20 | 20 | 0 | 0 |
-| **Total** | **56** | **25** | **26** | **5** |
+| **Total** | **56** | **26** | **25** | **5** |
