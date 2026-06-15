@@ -219,10 +219,12 @@ class PropiedadController extends Controller
 
         $nombre = preg_replace('/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/', '', $propiedad->usuario->name ?? 'productor');
         $nombre = str_replace(' ', '_', trim($nombre));
-        $calle = preg_replace('/[^a-zA-Z0-9\s]/', '', $propiedad->calle ?? '');
-        $calle = str_replace(' ', '_', trim($calle));
+        $distrito = preg_replace('/[^a-zA-Z0-9\s]/', '', $propiedad->distrito ? ucwords(str_replace('-', ' ', $propiedad->distrito)) : '');
+        $calle = preg_replace('/[^a-zA-Z0-9\s]/', '', $propiedad->calle ? ucwords(str_replace('-', ' ', $propiedad->calle)) : '');
         $numeracion = preg_replace('/[^a-zA-Z0-9]/', '', $propiedad->numeracion ?? '');
-        $propStr = $numeracion ? "{$calle}_{$numeracion}" : $calle;
+        $calleNumero = $numeracion ? "{$calle}_{$numeracion}" : $calle;
+        $propStr = $distrito ? "{$distrito}_{$calleNumero}" : $calleNumero;
+        $propStr = str_replace(' ', '_', trim($propStr));
         $fecha = now()->format('Y-m-d');
         $filename = "{$nombre}_{$propStr}_rut_{$fecha}.pdf";
 
