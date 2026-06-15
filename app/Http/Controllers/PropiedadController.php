@@ -217,6 +217,11 @@ class PropiedadController extends Controller
             abort(404, 'Archivo no encontrado');
         }
 
-        return Storage::disk('rut_files')->download($propiedad->rut_archivo);
+        $nombre = preg_replace('/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/', '', $propiedad->usuario->name ?? 'productor');
+        $nombre = str_replace(' ', '_', trim($nombre));
+        $fecha = now()->format('Y-m-d');
+        $filename = "{$nombre}_rut_{$fecha}.pdf";
+
+        return Storage::disk('rut_files')->download($propiedad->rut_archivo, $filename);
     }
 }
