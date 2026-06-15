@@ -45,11 +45,11 @@ Route::middleware(['auth:staff-api'])->prefix('staff')->group(function () {
 
     // Productores (admin + auditor)
     Route::get('/producers', [App\Http\Controllers\StaffProducerController::class, 'index']);
-    Route::get('/producers/export', [App\Http\Controllers\StaffProducerController::class, 'export']);
     Route::get('/producers/{id}', [App\Http\Controllers\StaffProducerController::class, 'show']);
 
     // Solo admin
     Route::middleware('staff.role:admin')->group(function () {
+        Route::get('/producers/export', [App\Http\Controllers\StaffProducerController::class, 'export']);
         Route::get('/users', [App\Http\Controllers\StaffUserController::class, 'index']);
         Route::get('/users/create', [App\Http\Controllers\StaffUserController::class, 'create']);
         Route::post('/users', [App\Http\Controllers\StaffUserController::class, 'store']);
