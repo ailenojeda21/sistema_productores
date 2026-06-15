@@ -166,6 +166,24 @@ Route::prefix('staff')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | STAFF PASSWORD RESET
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/forgot-password', [StaffPasswordResetLinkController::class, 'create'])
+        ->name('staff.password.request');
+
+    Route::post('/forgot-password', [StaffPasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:login-staff')
+        ->name('staff.password.email');
+
+    Route::get('/reset-password/{token}', [StaffNewPasswordController::class, 'create'])
+        ->name('staff.password.reset');
+
+    Route::post('/reset-password', [StaffNewPasswordController::class, 'store'])
+        ->name('staff.password.store');
+
+    /*
+    |--------------------------------------------------------------------------
     | RUTAS PROTEGIDAS STAFF
     |--------------------------------------------------------------------------
     */

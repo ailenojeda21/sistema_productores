@@ -31,7 +31,7 @@
 |---|---|---|---|---|---|
 | A1 | Sin logging de intentos de login — no se registran accesos fallidos ni exitosos | Auth | 27001 A.12.4 / 27002 12.4.1 | Developer | ok |
 | A2 | Spatie `HasRoles` es código muerto — roles existen en BD pero nunca se verifican | Authz | 27002 A.9.1.2 | Developer | ok |
-| A3 | Staff no puede resetear su contraseña — `staff_users` password broker definido pero sin rutas | Auth | 27002 A.9.4.2 | Developer | pendiente |
+| A3 | Staff no puede resetear su contraseña — `staff_users` password broker definido pero sin rutas | Auth | 27002 A.9.4.2 | Developer | ok |
 | A4 | Export endpoint (`GET /staff/producers/export`) accesible a auditores (no solo admin) | PII | 27701 PII.6 / 27002 A.9.2.3 | Developer | ok |
 | A5 | `$request->all()` loggeado en `MaquinariaController@update:177` — posible PII en logs | Data | 27002 A.12.4.2 | Developer | ok |
 | A6 | esbuild CVE (5 high) — RCE vía `NPM_CONFIG_REGISTRY`; requiere upgrade vite v6→v8 | Deps | 27002 A.8.8 | Developer | ok |
@@ -50,7 +50,7 @@
 | M6 | No existe `StaffUserPolicy` — `StaffUserController` sin `authorize()` | Authz | 27002 A.9.1.2 | Developer | pendiente |
 | M7 | `$hidden` incompleto en `User` — faltan `dni`, `telefono`, `direccion`, `email` | PII | 27701 PII.1 / 27018 PII.6 | Developer | pendiente |
 | M8 | Login staff revela "Usuario inactivo" — confirma existencia del email (info disclosure) | Auth | 27002 A.9.4.2 | Developer | ok |
-| M9 | Auditores y admin ven mismos datos PII en panel staff | PII | 27701 PII.1 | Developer | ok |
+| M9 | Auditores y admin ven mismos datos PII en panel staff | PII | 27701 PII.1 | Developer | cancelado |
 | M10 | Log level `debug` — loguea consultas SQL y datos; subir a `warning` | Infra | 27002 A.12.4.1 | DevOps | manual |
 | M11 | Password min: 6 (productores) vs 8 (staff) — inconsistencia | Auth | 27002 A.9.2.1 | Developer | pendiente |
 | M12 | No hay endpoint de portabilidad (`GET /api/profile/export`) | PII | 27701 PII.6 | Developer | pendiente |
@@ -110,8 +110,8 @@
 | Severidad | Total | Resueltos | Pendientes | Manuales |
 |---|---|---|---|---|
 | 🔴 Críticos | 3 | 0 | 0 | 3 |
-| 🟠 Altos | 6 | 5 | 1 | 0 |
-| 🟡 Medios | 16 | 2 | 13 | 1 |
+| 🟠 Altos | 6 | 6 | 0 | 0 |
+| 🟡 Medios | 16 | 1 | 13 | 1 |
 | 🔵 Bajos | 10 | 1 | 8 | 1 |
 | ✅ Pas | 20 | 20 | 0 | 0 |
-| **Total** | **55** | **28** | **22** | **5** |
+| **Total** | **55** | **28** | **21** | **5** |

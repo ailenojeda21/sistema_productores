@@ -56,7 +56,7 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
-                  {{ producer.email || '-' }}
+                  {{ producer.email }}
                 </span>
                 <span class="flex items-center gap-1">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -101,7 +101,7 @@
           </div>
           <div class="divide-y divide-slate-200">
             <div v-for="prop in propiedades" :key="prop.id" class="px-6 py-4">
-              <h3 class="font-semibold text-slate-900 mb-3">{{ prop.direccion || 'Propiedad' }}</h3>
+              <h3 class="font-semibold text-slate-900 mb-3">{{ prop.direccion }}</h3>
               <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div class="flex justify-between py-1 border-b border-slate-100">
                   <span class="text-slate-500 text-sm">Hectáreas:</span>
