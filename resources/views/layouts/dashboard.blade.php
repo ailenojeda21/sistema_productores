@@ -62,9 +62,9 @@
                 </a>
             </nav>
 
-            <form method="POST" action="{{ route('logout') }}" class="pt-3 flex-shrink-0">
+            <form method="POST" action="{{ route('logout') }}" class="pt-3 flex-shrink-0" id="logout-form-desktop">
                 @csrf
-                <button type="submit"
+                <button type="button" onclick="confirmLogout('logout-form-desktop')"
                         class="w-full flex items-center px-3 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-300 text-base">
                     <span class="material-symbols-outlined mr-2">logout</span> Cerrar sesión
                 </button>
@@ -119,9 +119,9 @@
                 </a>
             </nav>
 
-            <form method="POST" action="{{ route('logout') }}" class="pt-2 flex-shrink-0">
+            <form method="POST" action="{{ route('logout') }}" class="pt-2 flex-shrink-0" id="logout-form-mobile">
                 @csrf
-                <button type="submit"
+                <button type="button" onclick="confirmLogout('logout-form-mobile')"
                         class="w-full flex items-center px-3 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-300">
                     <span class="material-symbols-outlined mr-2 text-xl">logout</span> Cerrar sesión
                 </button>
@@ -152,11 +152,43 @@
     </div>
 </div>
 
+<div id="logout-dialog" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/40" onclick="cancelLogout()"></div>
+    <div class="relative bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Cerrar sesión</h3>
+        <p class="text-sm text-gray-600 mb-6">¿Estás seguro de que deseas cerrar la sesión?</p>
+        <div class="flex gap-3 justify-end">
+            <button class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition" onclick="cancelLogout()">Cancelar</button>
+            <button class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition" onclick="submitLogout()">Cerrar sesión</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const drawer = document.getElementById('drawer');
     const overlay = document.getElementById('drawer-overlay');
     const menuBtn = document.getElementById('mobile-menu-btn');
     const closeBtn = document.getElementById('drawer-close');
+
+    let pendingLogoutForm = null;
+
+    function confirmLogout(formId) {
+        pendingLogoutForm = document.getElementById(formId);
+        document.getElementById('logout-dialog').classList.remove('hidden');
+    }
+
+    function cancelLogout() {
+        pendingLogoutForm = null;
+        document.getElementById('logout-dialog').classList.add('hidden');
+    }
+
+    function submitLogout() {
+        if (pendingLogoutForm) {
+            pendingLogoutForm.submit();
+        }
+        pendingLogoutForm = null;
+        document.getElementById('logout-dialog').classList.add('hidden');
+    }
 
     function openDrawer() {
         drawer.classList.remove('-translate-x-full');
@@ -177,7 +209,7 @@
     overlay?.addEventListener('click', closeDrawer);
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeDrawer();
+        if (e.key === 'Escape') { closeDrawer(); cancelLogout(); }
     });
 
     drawer?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
