@@ -102,7 +102,6 @@ class Propiedad extends Model
         'lng' => 'decimal:7',
         'hectareas' => 'decimal:2',
         'hectareas_malla' => 'decimal:2',
-        'rut_valor' => 'decimal:2',
         'cierre_perimetral' => 'boolean',
         'malla' => 'boolean',
         'derecho_riego' => 'boolean',

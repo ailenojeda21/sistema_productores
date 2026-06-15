@@ -107,7 +107,7 @@ class StaffProducerController extends Controller
         $propiedades = $producer->propiedades->map(function ($prop) {
             return [
                 'id' => $prop->id,
-                'direccion' => $prop->direccion,
+                'direccion' => $prop->direccion_completa,
                 'hectareas' => $prop->hectareas,
                 'tipo_tenencia' => $prop->tipo_tenencia,
                 'especificar_tenencia' => $prop->especificar_tenencia,
@@ -130,13 +130,13 @@ class StaffProducerController extends Controller
             foreach ($prop->cultivos as $cult) {
                 $cultivos[] = [
                     'id' => $cult->id,
-                    'nombre' => $cult->nombre,
+                    'nombre' => $cult->variedad,
                     'tipo' => $cult->tipo,
                     'hectareas' => $cult->hectareas,
                     'manejo_cultivo' => $cult->manejo_cultivo,
                     'tecnologia_riego' => $cult->tecnologia_riego,
                     'propiedad' => [
-                        'direccion' => $prop->direccion,
+                        'direccion' => $prop->direccion_completa,
                     ],
                 ];
             }
