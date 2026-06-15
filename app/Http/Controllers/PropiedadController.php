@@ -219,8 +219,12 @@ class PropiedadController extends Controller
 
         $nombre = preg_replace('/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/', '', $propiedad->usuario->name ?? 'productor');
         $nombre = str_replace(' ', '_', trim($nombre));
+        $calle = preg_replace('/[^a-zA-Z0-9\s]/', '', $propiedad->calle ?? '');
+        $calle = str_replace(' ', '_', trim($calle));
+        $numeracion = preg_replace('/[^a-zA-Z0-9]/', '', $propiedad->numeracion ?? '');
+        $propStr = $numeracion ? "{$calle}_{$numeracion}" : $calle;
         $fecha = now()->format('Y-m-d');
-        $filename = "{$nombre}_rut_{$fecha}.pdf";
+        $filename = "{$nombre}_{$propStr}_rut_{$fecha}.pdf";
 
         return Storage::disk('rut_files')->download($propiedad->rut_archivo, $filename);
     }
