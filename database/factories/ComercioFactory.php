@@ -16,8 +16,8 @@ class ComercioFactory extends Factory
             'usuario_id' => User::factory(),
             'infraestructura_empaque' => fake()->boolean(),
             'vende_en_finca' => fake()->boolean(),
-            'mercados' => fake()->randomElements(['Mercado local', 'Mercado nacional', 'Exportación'], rand(1, 3)),
-            'cooperativas' => fake()->randomElements(['Coop Nueva California', 'Coop Tulumaya', 'Coop Mendoza'], rand(0, 2)),
+            'mercados' => fake()->randomElements(array_values(Comercio::MERCADOS), fake()->numberBetween(1, 3)),
+            'cooperativas' => fake()->randomElements(array_values(Comercio::COOPERATIVAS), fake()->numberBetween(0, 2)),
         ];
     }
 }
