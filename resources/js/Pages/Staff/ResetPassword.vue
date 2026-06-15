@@ -27,9 +27,7 @@ const submit = async (e) => {
       onError: (errors) => {
         validationErrors.value = errors
       },
-      onSuccess: () => {
-        router.visit('/staff/login')
-      }
+      preserveState: false,
     })
   } catch {
     errorMessage.value = 'Error al restablecer la contraseña'

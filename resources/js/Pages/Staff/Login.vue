@@ -6,10 +6,6 @@ import { usePage } from '@inertiajs/vue3'
 
 const page = usePage()
 
-function dismissFlash() {
-  page.props.flash.status = null
-}
-
 // 4. Reactive state
 const isLoading = ref(false)
 const formData = ref({
@@ -53,9 +49,8 @@ const submit = async (e) => {
         </h1>
         <p class="text-gray-500 text-sm">Por favor ingrese sus credenciales para continuar</p>
       </header>
-      <div v-if="page.props.flash?.status" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm text-center relative cursor-pointer" @click="dismissFlash">
+      <div v-if="page.props.flash?.status" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm text-center">
         {{ page.props.flash.status }}
-        <button type="button" class="absolute top-1 right-2 text-green-600 hover:text-green-800 text-lg leading-none" @click.stop="dismissFlash">&times;</button>
       </div>
       <form @submit="submit">
         <div class="mb-4">
