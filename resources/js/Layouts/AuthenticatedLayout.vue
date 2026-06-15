@@ -1,13 +1,23 @@
 <script setup>
 import { ref } from 'vue';
+import { Link, router } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+const showLogoutDialog = ref(false);
+
+const confirmLogout = () => {
+    showLogoutDialog.value = false;
+    router.post(route('logout'));
+};
+
+const cancelLogout = () => {
+    showLogoutDialog.value = false;
+};
 </script>
 
 <template>
@@ -76,13 +86,12 @@ const showingNavigationDropdown = ref(false);
                                         >
                                             Profile
                                         </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('logout')"
-                                            method="post"
-                                            as="button"
+                                        <button
+                                            class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:bg-gray-800"
+                                            @click="showLogoutDialog = true"
                                         >
                                             Log Out
-                                        </DropdownLink>
+                                        </button>
                                     </template>
                                 </Dropdown>
                             </div>
@@ -167,13 +176,12 @@ const showingNavigationDropdown = ref(false);
                             <ResponsiveNavLink :href="route('profile.edit')">
                                 Profile
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
+                            <button
+                                class="block w-full border-l-4 border-transparent px-4 py-2 text-start text-base font-medium text-gray-600 transition duration-150 ease-in-out hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800 focus:outline-none dark:text-gray-400 dark:hover:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+                                @click="showLogoutDialog = true"
                             >
                                 Log Out
-                            </ResponsiveNavLink>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -193,6 +201,41 @@ const showingNavigationDropdown = ref(false);
             <main>
                 <slot />
             </main>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Dialog -->
+    <div
+        v-if="showLogoutDialog"
+        class="fixed inset-0 z-50 flex items-center justify-center"
+    >
+        <div
+            class="absolute inset-0 bg-black/40"
+            @click="cancelLogout"
+        ></div>
+        <div
+            class="relative mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+        >
+            <h3 class="mb-2 text-lg font-bold text-gray-900 dark:text-gray-100">
+                Cerrar sesión
+            </h3>
+            <p class="mb-6 text-sm text-gray-600 dark:text-gray-400">
+                ¿Estás seguro de que deseas cerrar la sesión?
+            </p>
+            <div class="flex justify-end gap-3">
+                <button
+                    class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                    @click="cancelLogout"
+                >
+                    Cancelar
+                </button>
+                <button
+                    class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+                    @click="confirmLogout"
+                >
+                    Cerrar sesión
+                </button>
+            </div>
         </div>
     </div>
 </template>
