@@ -42,7 +42,7 @@ class MaquinariaController extends Controller
         $items = $request->input('maquinarias');
         $isBulk = is_array($items);
 
-        $entries = $isBulk ? $items : [$request->all()];
+        $entries = $isBulk ? $items : [$request->only(array_merge(['propiedad_id', 'modelo_tractor', 'tractor'], Maquinaria::implementosKeys()))];
 
         foreach ($entries as $index => $entry) {
             $validator = Validator::make($entry, [

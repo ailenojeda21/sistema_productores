@@ -37,7 +37,7 @@
 
             @if($propiedad->rut_valor)
             <span class="font-medium text-gray-600 text-xs">Nº RUT:</span>
-            <span class="text-gray-800">{{ number_format($propiedad->rut_valor, 0, '', '') }}</span>
+            <span class="text-gray-800">{{ $propiedad->rut_valor }}</span>
             @endif
 
             @if($propiedad->rut_archivo)

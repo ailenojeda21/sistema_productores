@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
 @push('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ asset('vendor/leaflet/leaflet.css') }}" />
 @endpush
 
 @section('dashboard-content')
@@ -50,7 +50,7 @@
             @endif
             <div class="mb-4"><strong>RUT:</strong> {{ $propiedad->rut ? 'Sí' : 'No' }}</div>
             @if($propiedad->rut && $propiedad->rut_valor)
-            <div class="mb-4"><strong>Nº RUT:</strong> {{ number_format($propiedad->rut_valor, 0, '', '') }}</div>
+            <div class="mb-4"><strong>Nº RUT:</strong> {{ $propiedad->rut_valor }}</div>
             @endif
             <div class="mb-4"><strong>Malla antigranizo:</strong> {{ $propiedad->malla ? 'Sí' : 'No' }}</div>
             @if($propiedad->malla && $propiedad->hectareas_malla)
@@ -74,7 +74,7 @@
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ asset('vendor/leaflet/leaflet.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('=== DOM Content Loaded ===');

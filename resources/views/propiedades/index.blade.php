@@ -108,7 +108,7 @@
         </td>
 
         <td class="px-2 py-2 text-base text-gray-700 text-center">
-            {{ $propiedad->rut_valor ? number_format($propiedad->rut_valor, 0, '', '') : '-' }}
+            {{ $propiedad->rut_valor ?? '-' }}
         </td>
 
         <td class="px-2 py-2 text-base text-gray-700 text-center whitespace-nowrap">
@@ -233,11 +233,11 @@
 
 <!-- Leaflet CSS y JS -->
 @section('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ asset('vendor/leaflet/leaflet.css') }}" />
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ asset('vendor/leaflet/leaflet.js') }}"></script>
 
 <script>
 let modalMap = null;

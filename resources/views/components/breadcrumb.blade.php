@@ -22,7 +22,7 @@
                     $item = ['name' => $item];
                 }
                 $isLast = $loop->last;
-                $hasRoute = !empty($item['route']) && route($item['route'], $item['params'] ?? [], false) !== false;
+                $hasRoute = !empty($item['route']) && \Illuminate\Support\Facades\Route::has($item['route']);
                 $url = $hasRoute ? route($item['route'], $item['params'] ?? [], false) : ($item['url'] ?? '#');
             @endphp
 
