@@ -9,7 +9,7 @@
     <div class="bg-white rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold text-azul-marino mb-6">Detalle de Cultivo</h2>
         <div class="mb-4">
-            <strong>Propiedad:</strong> {{ $cultivo->propiedad_id }}
+            <strong>Propiedad:</strong> {{ $cultivo->propiedad->direccion_completa ?? 'Sin asignar' }}
         </div>
         <div class="mb-4">
             <strong>Manejo de Cultivos:</strong> {{ $cultivo->manejo_cultivo }}
