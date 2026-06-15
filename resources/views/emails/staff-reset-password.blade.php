@@ -21,7 +21,7 @@
                                 Restablece tu contraseña
                             </h1>
                             <p style="font-size:14px;color:#64748b;line-height:1.6;margin:0 0 24px;">
-                                Has solicitado restablecer tu contraseña de administrador del sistema
+                                Has solicitado restablecer tu contraseña de usuario del sistema
                                 <strong style="color:#2563eb;">RUPAL</strong>.
                                 Haz clic en el botón de abajo para continuar.
                             </p>

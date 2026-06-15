@@ -24,7 +24,8 @@ class StaffPasswordResetLinkController extends Controller
         );
 
         if ($status == Password::RESET_LINK_SENT) {
-            return back()->with('status', 'Hemos enviado por correo electrónico el enlace para restablecer tu contraseña.');
+            return redirect()->route('staff.password.request')
+                ->with('status', 'Hemos enviado por correo electrónico el enlace para restablecer tu contraseña.');
         }
 
         throw ValidationException::withMessages([
