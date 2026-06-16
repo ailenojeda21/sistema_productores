@@ -55,7 +55,7 @@
 | M11 | Password min: 6 (productores) vs 8 (staff) — inconsistencia | Auth | 27002 A.9.2.1 | Developer | ok |
 | M12 | No hay endpoint de portabilidad (`GET /api/profile/export`) | PII | 27701 PII.6 | Developer | pendiente |
 | M13 | Sanctum token prefix vacío — tokens sin identificar si leaked | Auth | 27002 A.8.13 | Developer | pendiente |
-| M14 | Token expiration 24h — considerar reducirlo | Auth | 27002 A.9.1.2 | Developer | pendiente |
+| M14 | Token expiration 24h → 2h | Auth | 27002 A.9.1.2 | Developer | ok |
 | M15 | No hay `config/hashing.php` — todo por defecto del framework | Infra | 27002 A.8.13 | Developer | pendiente |
 | M16 | No hay purge job para soft-deletes de `StaffUser` | PII | 27701 PII.7 | Developer | pendiente |
 
@@ -111,7 +111,7 @@
 |---|---|---|---|---|
 | 🔴 Críticos | 3 | 0 | 0 | 3 |
 | 🟠 Altos | 6 | 6 | 0 | 0 |
-| 🟡 Medios | 16 | 3 | 11 | 1 |
+| 🟡 Medios | 16 | 4 | 9 | 2 |
 | 🔵 Bajos | 10 | 1 | 8 | 1 |
 | ✅ Pas | 20 | 20 | 0 | 0 |
-| **Total** | **55** | **30** | **19** | **5** |
+| **Total** | **55** | **31** | **17** | **6** |

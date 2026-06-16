@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class StaffProducerController extends Controller
 {
@@ -212,39 +217,47 @@ class StaffProducerController extends Controller
         $tipo = trim((string) $request->get('tipo', ''));
         $rut = trim((string) $request->get('rut', ''));
 
-        $query = User::query();
+        $producers = User::query()
+            ->distinct()
 
-        if ($dni) {
-            $query->where('dni', 'like', "%{$dni}%");
-        }
-        if ($name) {
-            $query->where('name', 'like', "%{$name}%");
-        }
-        if ($distrito) {
-            $query->whereHas('propiedades', function ($q) use ($distrito) {
-                $normalizedDistrito = strtolower(str_replace(' ', '-', $distrito));
-                $q->whereRaw("LOWER(REPLACE(distrito, ' ', '-')) = ?", [$normalizedDistrito]);
-            });
-        }
-        if ($rut) {
-            $query->whereHas('propiedades', function ($q) use ($rut) {
-                $q->where('rut', true)
-                    ->where('rut_valor', 'like', "%{$rut}%");
-            });
-        }
+            ->when($dni !== '', fn ($q) => $q->where('users.dni', 'like', "%{$dni}%"))
 
-        if ($variedad || $tipo) {
-            $query->whereHas('propiedades.cultivos', function ($q) use ($variedad, $tipo) {
-                if ($variedad) {
-                    $q->where('variedad', 'like', "%{$variedad}%");
-                }
-                if ($tipo) {
-                    $q->where('tipo', 'like', "%{$tipo}%");
-                }
-            });
-        }
+            ->when($name !== '', fn ($q) => $q->where('users.name', 'like', "%{$name}%"))
 
-        $producers = $query->with(['propiedades.cultivos'])->get();
+            ->when($distrito !== '', function ($q) use ($distrito) {
+                $normalized = strtolower(str_replace(' ', '-', trim($distrito)));
+                $search = str_replace('-', '', $normalized);
+
+                $q->whereHas('propiedades', function ($sub) use ($search) {
+                    $sub->whereRaw(
+                        "LOWER(REPLACE(REPLACE(distrito, '-', ''), ' ', '')) LIKE ?",
+                        ["%{$search}%"]
+                    );
+                });
+            })
+
+            ->when($variedad !== '', function ($q) use ($variedad) {
+                $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('variedad', 'like', "%{$variedad}%"));
+            })
+
+            ->when($tipo !== '', function ($q) use ($tipo) {
+                $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('tipo', 'like', "%{$tipo}%"));
+            })
+
+            ->when($rut !== '', function ($q) use ($rut) {
+                $search = preg_replace('/\D/', '', $rut);
+
+                $q->whereHas('propiedades', function ($sub) use ($search) {
+                    $sub->where('rut', 1)
+                        ->whereRaw(
+                            'CAST(rut_valor AS CHAR) LIKE ?',
+                            ["%{$search}%"]
+                        );
+                });
+            })
+
+            ->with(['propiedades.cultivos'])
+            ->get();
 
         // Determinar tipo de búsqueda para headers adicionales
         $searchType = null;
@@ -260,7 +273,6 @@ class StaffProducerController extends Controller
             $searchValue = $distrito;
         }
 
-        // Generar Excel (HTML table que Excel puede abrir)
         $headers = ['Nombre', 'DNI', 'RUT', 'Teléfono', 'Email'];
 
         if ($searchType === 'variedad') {
@@ -281,10 +293,8 @@ class StaffProducerController extends Controller
             $titulo = 'Productores de tipo '.$searchValue;
         }
 
-        // Fecha y hora de exportación
         $fechaExport = date('d/m/Y H:i').' hs';
 
-        // Nombre de archivo dinámico
         $dateStr = date('Y-m-d');
         if ($searchType && $searchValue) {
             $filename = 'productores_'.strtolower(str_replace(' ', '_', $searchValue)).'_'.$dateStr.'.xlsx';
@@ -292,61 +302,94 @@ class StaffProducerController extends Controller
             $filename = 'productores_todos_'.$dateStr.'.xlsx';
         }
 
-        $html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-        <head>
-            <meta charset="UTF-8">
-            <style>
-                table { border-collapse: collapse; width: 100%; }
-                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-                th { background-color: #1e40af; color: white; }
-                tr:nth-child(even) { background-color: #f8fafc; }
-                .title { font-size: 18px; font-weight: bold; color: #1e40af; margin-bottom: 10px; }
-                .date { font-size: 12px; color: #64748b; margin-bottom: 20px; }
-            </style>
-        </head>
-        <body>
-        <div class="title">'.htmlspecialchars($titulo).'</div>
-        <div class="date">Fecha de exportación: '.$fechaExport.'</div>
-        <table>
-        <thead>
-        <tr>';
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Productores');
 
+        $lastCol = $this->colLetter(count($headers));
+
+        // Título
+        $sheet->setCellValue('A1', $titulo);
+        $sheet->mergeCells("A1:{$lastCol}1");
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+
+        // Fecha
+        $sheet->setCellValue('A2', "Fecha de exportación: {$fechaExport}");
+        $sheet->mergeCells("A2:{$lastCol}2");
+        $sheet->getStyle('A2')->getFont()->setSize(10)->getColor()->setARGB('FF64748B');
+
+        // Headers fila 4 con estilo
+        $headerRow = 4;
+        $col = 'A';
         foreach ($headers as $header) {
-            $html .= '<th>'.htmlspecialchars($header).'</th>';
+            $sheet->setCellValue("{$col}{$headerRow}", $header);
+            $sheet->getStyle("{$col}{$headerRow}")->applyFromArray([
+                'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF1E40AF']],
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+            ]);
+            $col++;
         }
-        $html .= '</tr></thead><tbody>';
 
+        // Datos desde fila 5
+        $rowNum = 5;
         foreach ($producers as $producer) {
-            $row = [
-                htmlspecialchars($producer->name),
-                htmlspecialchars($producer->dni ?? ''),
-                htmlspecialchars($producer->propiedades->where('rut', true)->first()?->rut_valor ?? ''),
-                htmlspecialchars($producer->telefono ?? ''),
-                htmlspecialchars($producer->email),
+            $data = [
+                $producer->name,
+                $producer->dni ?? '',
+                $producer->propiedades->where('rut', true)->first()?->rut_valor ?? '',
+                $producer->telefono ?? '',
+                $producer->email,
             ];
 
             if ($searchType === 'variedad') {
                 $variedadData = $this->getVariedadData($producer, $variedad);
-                $row[] = htmlspecialchars($variedadData['variedad']);
-                $row[] = $variedadData['hectareas'];
+                $data[] = $variedadData['variedad'];
+                $data[] = $variedadData['hectareas'];
             } elseif ($searchType === 'tipo') {
                 $tipoData = $this->getTipoData($producer, $tipo);
-                $row[] = htmlspecialchars($tipoData['tipo']);
-                $row[] = $tipoData['hectareas'];
+                $data[] = $tipoData['tipo'];
+                $data[] = $tipoData['hectareas'];
             } elseif ($searchType === 'distrito') {
                 $distritos = $producer->propiedades->pluck('distrito')->filter()->unique()->values()->toArray();
-                $row[] = htmlspecialchars(implode(', ', $distritos));
+                $data[] = implode(', ', $distritos);
             }
 
-            $html .= '<tr><td>'.implode('</td><td>', $row).'</td></tr>';
+            $col = 'A';
+            foreach ($data as $value) {
+                $cell = $sheet->getCell("{$col}{$rowNum}");
+                if (is_float($value) || is_int($value)) {
+                    $cell->setValueExplicit($value, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                } else {
+                    $cell->setValue($value);
+                }
+                $col++;
+            }
+            $rowNum++;
         }
 
-        $html .= '</tbody></table></body></html>';
+        // Auto-size columns
+        $col = 'A';
+        for ($i = 0; $i < count($headers); $i++) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+            $col++;
+        }
 
-        return response($html, 200, [
-            'Content-Type' => 'application/vnd.ms-excel',
+        $writer = new Xlsx($spreadsheet);
+        ob_start();
+        $writer->save('php://output');
+        $content = ob_get_clean();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
+    }
+
+    private function colLetter(int $index): string
+    {
+        return chr(64 + $index);
     }
 
     private function getVariedadData($producer, $variedad)
