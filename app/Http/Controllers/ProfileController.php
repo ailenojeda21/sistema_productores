@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -104,5 +105,40 @@ class ProfileController extends Controller
         $this->authorize('view', $user);
 
         return view('profile.show', compact('user'));
+    }
+
+    public function export(): JsonResponse
+    {
+        $user = Auth::user();
+
+        $this->authorize('view', $user);
+
+        $user->load([
+            'propiedades',
+            'propiedades.cultivos',
+            'propiedades.maquinarias',
+            'comercios',
+        ]);
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'dni' => $user->dni,
+                'telefono' => $user->telefono,
+                'direccion' => $user->direccion,
+                'cooperativas' => $user->cooperativas,
+                'tiene_cooperativas' => $user->tiene_cooperativas,
+                'tipo_productor' => $user->tipo_productor,
+                'avatar' => $user->avatar,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ],
+            'propiedades' => $user->propiedades->toArray(),
+            'cultivos' => $user->propiedades->flatMap->cultivos->toArray(),
+            'maquinarias' => $user->propiedades->flatMap->maquinarias->toArray(),
+            'comercios' => $user->comercios->toArray(),
+        ]);
     }
 }

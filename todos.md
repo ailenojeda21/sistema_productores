@@ -42,22 +42,22 @@
 
 | # | Hallazgo | Área | ISO | Asignado | Estado |
 |---|---|---|---|---|---|
-| M1 | Sin Content-Security-Policy header | Session | 27002 A.13.1.1 | Developer | pendiente |
-| M2 | Sin HSTS, X-Frame-Options, X-Content-Type-Options | Session | 27002 A.13.1.1 | Developer | pendiente |
-| M3 | `SESSION_ENCRYPT=false` — datos de sesión en texto plano en BD | Session | 27002 A.10.1 | Developer | pendiente |
+| M1 | Sin Content-Security-Policy header | Session | 27002 A.13.1.1 | Developer | ok |
+| M2 | Sin HSTS, X-Frame-Options, X-Content-Type-Options | Session | 27002 A.13.1.1 | Developer | ok |
+| M3 | `SESSION_ENCRYPT=false` — datos de sesión en texto plano en BD | Session | 27002 A.10.1 | Developer | ok |
 | M4 | `SESSION_SECURE_COOKIE` no seteado explícitamente | Session | 27002 A.10.1 | DevOps | manual |
-| M5 | No existe `AuthServiceProvider` — policies en `AppServiceProvider` | Authz | 27002 A.14.2.1 | Developer | pendiente |
-| M6 | No existe `StaffUserPolicy` — `StaffUserController` sin `authorize()` | Authz | 27002 A.9.1.2 | Developer | pendiente |
+| M5 | No existe `AuthServiceProvider` — policies en `AppServiceProvider` | Authz | 27002 A.14.2.1 | Developer | ok |
+| M6 | No existe `StaffUserPolicy` — `StaffUserController` sin `authorize()` | Authz | 27002 A.9.1.2 | Developer | ok |
 | M7 | `$hidden` incompleto en `User` — faltan `dni`, `telefono`, `direccion` | PII | 27701 PII.1 / 27018 PII.6 | Developer | ok |
 | M8 | Login staff revela "Usuario inactivo" — confirma existencia del email (info disclosure) | Auth | 27002 A.9.4.2 | Developer | ok |
 | M9 | Auditores y admin ven mismos datos PII en panel staff | PII | 27701 PII.1 | Developer | cancelado |
 | M10 | Log level `debug` — loguea consultas SQL y datos; subir a `warning` | Infra | 27002 A.12.4.1 | DevOps | manual |
 | M11 | Password min: 6 (productores) vs 8 (staff) — inconsistencia | Auth | 27002 A.9.2.1 | Developer | ok |
-| M12 | No hay endpoint de portabilidad (`GET /api/profile/export`) | PII | 27701 PII.6 | Developer | pendiente |
-| M13 | Sanctum token prefix vacío — tokens sin identificar si leaked | Auth | 27002 A.8.13 | Developer | pendiente |
+| M12 | No hay endpoint de portabilidad (`GET /api/profile/export`) | PII | 27701 PII.6 | Developer | ok |
+| M13 | Sanctum token prefix vacío — tokens sin identificar si leaked | Auth | 27002 A.8.13 | Developer | ok |
 | M14 | Token expiration 24h → 2h | Auth | 27002 A.9.1.2 | Developer | ok |
-| M15 | No hay `config/hashing.php` — todo por defecto del framework | Infra | 27002 A.8.13 | Developer | pendiente |
-| M16 | No hay purge job para soft-deletes de `StaffUser` | PII | 27701 PII.7 | Developer | pendiente |
+| M15 | No hay `config/hashing.php` — todo por defecto del framework | Infra | 27002 A.8.13 | Developer | ok |
+| M16 | No hay purge job para soft-deletes de `StaffUser` | PII | 27701 PII.7 | Developer | ok |
 
 ---
 
@@ -65,15 +65,15 @@
 
 | # | Hallazgo | Área | ISO | Asignado | Estado |
 |---|---|---|---|---|---|
-| B1 | `auth.verification.expire` no definido en config — cae a default 60 min | Auth | 27002 A.14.2.1 | Developer | pendiente |
-| B2 | Double rate limiting en login productor — ruta + LoginRequest interno | Auth | 27002 A.12.1.1 | Developer | pendiente |
-| B3 | `StaffRoleMiddleware` solo soporta 1 rol — no permite múltiples | Authz | 27002 A.9.2.3 | Developer | pendiente |
-| B4 | No hay manejo global de excepciones para API — solo handler para 403 | Data | 27002 A.16.1 | Developer | pendiente |
-| B5 | IDOR entre admins staff — admin A puede modificar admin B sin ownership check | Authz | 27002 A.9.1.2 | Developer | pendiente |
+| B1 | `auth.verification.expire` no definido en config — cae a default 60 min | Auth | 27002 A.14.2.1 | Developer | ok |
+| B2 | Double rate limiting en login productor — ruta + LoginRequest interno | Auth | 27002 A.12.1.1 | Developer | ok |
+| B3 | `StaffRoleMiddleware` solo soporta 1 rol — no permite múltiples | Authz | 27002 A.9.2.3 | Developer | ok |
+| B4 | No hay manejo global de excepciones para API — solo handler para 403 | Data | 27002 A.16.1 | Developer | ok |
+| B5 | IDOR entre admins staff — admin A puede modificar admin B sin ownership check | Authz | 27002 A.9.1.2 | Developer | ok |
 | B6 | OpenStreetMap recibe coordenadas de fincas vía CDN tiles | PII | 27018 PII.4 | Developer | pendiente |
 | B7 | Form Request infrautilizado — solo 1 (`LoginRequest`) | Data | 27002 A.14.2.1 | Developer | pendiente |
 | B8 | Mailtrap credenciales en `.env` — rotar si `.env` se filtra | Infra | 27002 A.8.13 | DevOps | manual |
-| B9 | `User` hard-delete — sin SoftDeletes ni anonimización | PII | 27701 PII.7 | Developer | pendiente |
+| B9 | `User` hard-delete — sin SoftDeletes ni anonimización | PII | 27701 PII.7 | Developer | ok |
 | B10 | Sin confirmación de logout en productores — AuthenticatedLayout dispara inmediato | Session | 27002 A.9.4.2 | Developer | ok |
 
 ---
@@ -111,7 +111,7 @@
 |---|---|---|---|---|
 | 🔴 Críticos | 3 | 0 | 0 | 3 |
 | 🟠 Altos | 6 | 6 | 0 | 0 |
-| 🟡 Medios | 16 | 4 | 9 | 2 |
-| 🔵 Bajos | 10 | 1 | 8 | 1 |
+| 🟡 Medios | 16 | 13 | 0 | 2 |
+| 🔵 Bajos | 10 | 7 | 2 | 1 |
 | ✅ Pas | 20 | 20 | 0 | 0 |
-| **Total** | **55** | **31** | **17** | **6** |
+| **Total** | **55** | **46** | **2** | **6** |

@@ -14,12 +14,14 @@ class StaffRoleMiddleware
      * @param  string  $role
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, $roles)
     {
         $user = Auth::guard('staff')->user() ?? Auth::guard('staff-api')->user();
 
-        if (! $user || $user->role !== $role) {
-            abort(403, 'No autorizado. Se requiere rol: '.$role);
+        $allowed = explode(',', $roles);
+
+        if (! $user || ! in_array($user->role, $allowed)) {
+            abort(403, 'No autorizado. Se requiere rol: '.$roles);
         }
 
         return $next($request);

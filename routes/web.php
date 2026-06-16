@@ -128,6 +128,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/avatar', [ProfileController::class, 'editAvatar'])
         ->name('profile.avatar');
 
+    Route::get('/profile/export', [ProfileController::class, 'export'])
+        ->name('profile.export');
+
     // Cultivos
     Route::get('/cultivos/hectareas-disponibles', [CultivoController::class, 'hectareasDisponibles'])
         ->name('cultivos.hectareas-disponibles');

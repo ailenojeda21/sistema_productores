@@ -15,6 +15,8 @@ class StaffUserController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', StaffUser::class);
+
         $user = $request->user();
 
         $name = trim((string) $request->get('name', ''));
@@ -64,6 +66,8 @@ class StaffUserController extends Controller
         $user = $request->user();
         $staffUser = StaffUser::findOrFail($id);
 
+        $this->authorize('view', $staffUser);
+
         $userData = [
             'id' => $staffUser->id,
             'name' => $staffUser->name,
@@ -90,6 +94,8 @@ class StaffUserController extends Controller
     public function update(Request $request, $id)
     {
         $staffUser = StaffUser::findOrFail($id);
+
+        $this->authorize('update', $staffUser);
 
         $isSelf = (int) $id === (int) $request->user()->id;
 
@@ -175,6 +181,8 @@ class StaffUserController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        $staffUser = StaffUser::findOrFail($id);
+
         if ((int) $id === (int) $request->user()->id) {
             if ($this->isApiRequest($request)) {
                 return response()->json(['message' => 'No puedes eliminarte a ti mismo.'], 403);
@@ -183,7 +191,8 @@ class StaffUserController extends Controller
             return back()->with('error', 'No puedes eliminarte a ti mismo.');
         }
 
-        $staffUser = StaffUser::findOrFail($id);
+        $this->authorize('delete', $staffUser);
+
         $staffUser->delete();
 
         if ($this->isApiRequest($request)) {
@@ -198,6 +207,8 @@ class StaffUserController extends Controller
      */
     public function create(Request $request)
     {
+        $this->authorize('create', StaffUser::class);
+
         $user = $request->user();
 
         $availableRoles = ['admin', 'auditor'];
@@ -221,6 +232,8 @@ class StaffUserController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', StaffUser::class);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:staff_users,email'],

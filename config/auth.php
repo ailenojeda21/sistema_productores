@@ -90,6 +90,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Email Verification
+    |--------------------------------------------------------------------------
+    |
+    | Email verification links are signed URLs that expire after the number
+    | of minutes specified below. This controls how long the user has
+    | before the link becomes invalid.
+    |
+    */
+
+    'verification' => [
+        'expire' => 60,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Password Confirmation Timeout
     |--------------------------------------------------------------------------
     */
