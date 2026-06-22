@@ -36,10 +36,10 @@
             <td align="center" style="padding:40px 16px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);" bgcolor="#ffffff">
 
-                    {{-- Header con color azul marino --}}
+                    {{-- Header --}}
                     <tr>
-                        <td align="center" style="background-color:#0a1a3e;padding:40px 24px 32px;" bgcolor="#0a1a3e">
-                            <img src="{{ asset('images/logo.png') }}" alt="RUPAL" style="width:140px;height:auto;display:block;margin:0 auto;" width="140">
+                        <td align="center" style="background-color:#F39200;padding:40px 24px 32px;" bgcolor="#F39200">
+                            <img src="{{ asset('images/logo2.png') }}" alt="RUPAL" style="width:140px;height:auto;display:block;margin:0 auto;" width="140">
                         </td>
                     </tr>
 
@@ -47,14 +47,15 @@
                     <tr>
                         <td style="padding:40px 32px 32px;">
                             <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
-                                <tr>
-                                    <td style="font-size:24px;font-weight:700;color:#0a1a3e;padding-bottom:20px;">
-                                        Hola {{ $user->name }},
-                                    </td>
-                                </tr>
+                               <tr>
+                            <td style="font-size:24px;font-weight:700;padding-bottom:20px;">
+                               <span style="font-weight:400;color:#475569">Hola</span>
+                                <span style="color:#F39200;">{{ $user->name }}</span>,
+                            </td>
+                        </tr>
                                 <tr>
                                     <td style="font-size:15px;line-height:1.6;color:#475569;padding-bottom:16px;">
-                                        ¡Bienvenido a <strong style="color:#0a1a3e;">RUPAL</strong>! <span style="font-size:18px;">🌱</span>
+                                        ¡Bienvenido a <strong style="color:#F39200;">RUPAL</strong>! <span style="font-size:18px;">🌱</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -94,9 +95,9 @@
                                     <td align="center" style="padding-bottom:32px;">
                                         <table role="presentation" cellpadding="0" cellspacing="0">
                                             <tr>
-                                                <td align="center" style="background-color:#d4a017;border-radius:8px;box-shadow:0 2px 8px rgba(212,160,23,0.3);" bgcolor="#d4a017">
+                                                <td align="center" style="background-color:#F39200;border-radius:8px;box-shadow:0 2px 8px rgba(212,160,23,0.3);" bgcolor="#F39200">
                                                     <a href="{{ $verificationUrl }}"
-                                                       style="display:inline-block;padding:14px 40px;font-size:16px;font-weight:700;color:#0a1a3e;text-decoration:none;letter-spacing:0.5px;">
+                                                       style="display:inline-block;padding:14px 40px;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;letter-spacing:0.5px;">
                                                         Verificar correo
                                                     </a>
                                                 </td>
@@ -134,7 +135,7 @@
                             <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
                                 <tr>
                                     <td align="center" style="font-size:13px;color:#94a3b8;line-height:1.5;">
-                                        Gracias por confiar en <strong style="color:#0a1a3e;">RUPAL</strong>.
+                                        Gracias por confiar en <strong style="color:#F39200;">RUPAL</strong>.
                                     </td>
                                 </tr>
                                 <tr>

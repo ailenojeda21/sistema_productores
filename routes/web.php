@@ -19,6 +19,32 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
+// ============================================================
+// PREVIEW de plantillas de correo (solo desarrollo)
+// ============================================================
+// Route::get('/preview/staff-reset-password', function () {
+//     return view('emails.staff-reset-password', [
+//         'url' => 'https://example.com/reset-password/token123',
+//         'count' => 60,
+//     ]);
+// });
+//
+// Route::get('/preview/user-reset-password', function () {
+//     return view('emails.user-reset-password', [
+//         'url' => 'https://example.com/reset-password/token456',
+//         'count' => 60,
+//     ]);
+// });
+//
+// Route::get('/preview/welcome-verification', function () {
+//     $user = (object) ['name' => 'Juan Pérez'];
+//
+//     return view('emails.welcome-verification', [
+//         'user' => $user,
+//         'verificationUrl' => 'https://example.com/verify-email/token789',
+//     ]);
+// });
+
 /*
 |--------------------------------------------------------------------------
 | PÁGINA DE INICIO

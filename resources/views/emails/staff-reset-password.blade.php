@@ -10,9 +10,10 @@
         <tr>
             <td align="center">
                 <table width="520" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                       {{-- Header --}}
                     <tr>
-                        <td style="background-color:#2563eb;padding:32px 40px;text-align:center;">
-                            <img src="{{ asset('images/encabezado-azul.png') }}" alt="RUPAL" style="max-width:100%;height:auto;border-radius:8px;">
+                        <td align="center" style="background-color:#223362;padding:40px 24px 32px;" bgcolor="#223362">
+                            <img src="{{ asset('images/logo2.png') }}" alt="RUPAL" style="width:140px;height:auto;display:block;margin:0 auto;" width="140">
                         </td>
                     </tr>
                     <tr>
@@ -22,12 +23,12 @@
                             </h1>
                             <p style="font-size:14px;color:#64748b;line-height:1.6;margin:0 0 24px;">
                                 Has solicitado restablecer tu contraseña de usuario del sistema
-                                <strong style="color:#2563eb;">RUPAL</strong>.
+                                <strong style="color:#223362;">RUPAL</strong>.
                                 Haz clic en el botón de abajo para continuar.
                             </p>
                             <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
                                 <tr>
-                                    <td align="center" style="background-color:#2563eb;border-radius:8px;padding:12px 32px;">
+                                    <td align="center" style="background-color:#223362;border-radius:8px;padding:12px 32px;">
                                         <a href="{{ $url }}" style="color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;display:inline-block;">
                                             Restablecer contraseña
                                         </a>
