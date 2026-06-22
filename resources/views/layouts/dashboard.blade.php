@@ -21,7 +21,14 @@
                 {{ Auth::user()->name }}
             </div>
 
-            <div class="w-10 h-10"></div>
+            <form method="POST" action="{{ route('logout') }}" class="shrink-0" id="logout-form-mobile">
+                @csrf
+                <button type="button" onclick="confirmLogout('logout-form-mobile')"
+                        class="flex items-center justify-center w-10 h-10 rounded-md text-gray-500 hover:bg-red-50 hover:text-red-600 transition border border-red-500"
+                        aria-label="Cerrar sesión">
+                    <span class="material-symbols-outlined">logout</span>
+                </button>
+            </form>
         </div>
     </header>
 
@@ -62,13 +69,11 @@
                 </a>
             </nav>
 
-            <form method="POST" action="{{ route('logout') }}" class="pt-3 flex-shrink-0" id="logout-form-desktop">
-                @csrf
-                <button type="button" onclick="confirmLogout('logout-form-desktop')"
-                        class="w-full flex items-center px-3 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-300 text-base">
-                    <span class="material-symbols-outlined mr-2">logout</span> Cerrar sesión
-                </button>
-            </form>
+            <div class="flex-shrink-0 pt-4 flex justify-center">
+              <!-- 48px -->
+<!-- 64px -->
+    <img src="{{ asset('images/logo2.png') }}" alt="RUPAL" class="h-16 w-auto opacity-90">
+            </div>
         </aside>
 
         <!-- Drawer (mobile) -->
@@ -119,17 +124,13 @@
                 </a>
             </nav>
 
-            <form method="POST" action="{{ route('logout') }}" class="pt-2 flex-shrink-0" id="logout-form-mobile">
-                @csrf
-                <button type="button" onclick="confirmLogout('logout-form-mobile')"
-                        class="w-full flex items-center px-3 py-2 rounded hover:bg-red-500 hover:text-white transition font-semibold text-red-300">
-                    <span class="material-symbols-outlined mr-2 text-xl">logout</span> Cerrar sesión
-                </button>
-            </form>
+            <div class="flex-shrink-0 pt-4 flex justify-center">
+                <img src="{{ asset('images/logo2.png') }}" alt="RUPAL" class="h-8 w-auto opacity-60">
+            </div>
         </aside>
 
         <!-- Main -->
-        <main class="flex-1 min-w-0">
+        <main class="flex-1 min-w-0 flex flex-col">
 
             <!-- 🔥 NAV SUPERIOR DESKTOP -->
             <header class="hidden lg:flex items-center justify-end h-12 px-6 border-b border-gray-200 bg-white">
@@ -141,6 +142,13 @@
                         {{ Auth::user()->name }}
                     </span>
                 </div>
+                <form method="POST" action="{{ route('logout') }}" class="ml-3 flex items-center shrink-0" id="logout-form-desktop">
+                    @csrf
+                    <button type="button" onclick="confirmLogout('logout-form-desktop')"
+                            class="flex items-center px-1 py-1 rounded-lg text-sm text-red-500 hover:bg-red-50 hover:text-red-700 transition font-medium border border-red-500">
+                        <span class="material-symbols-outlined mr-1 text-base">logout</span> Cerrar sesión
+                    </button>
+                </form>
             </header>
 
             <div class="pt-4 pb-6 px-4 lg:px-8">
