@@ -14,6 +14,7 @@ class StaffProducerController extends Controller
 {
     public function index(Request $request)
     {
+        $all = trim((string) $request->get('all', ''));
         $dni = trim((string) $request->get('dni', ''));
         $name = trim((string) $request->get('name', ''));
         $distrito = trim((string) $request->get('distrito', ''));
@@ -25,11 +26,11 @@ class StaffProducerController extends Controller
             ->select('users.id', 'users.name', 'users.dni', 'users.email')
             ->distinct()
 
-            ->when($dni !== '', fn ($q) => $q->where('users.dni', 'like', "%{$dni}%"))
+            ->when($all !== '1' && $dni !== '', fn ($q) => $q->where('users.dni', 'like', "%{$dni}%"))
 
-            ->when($name !== '', fn ($q) => $q->where('users.name', 'like', "%{$name}%"))
+            ->when($all !== '1' && $name !== '', fn ($q) => $q->where('users.name', 'like', "%{$name}%"))
 
-            ->when($distrito !== '', function ($q) use ($distrito) {
+            ->when($all !== '1' && $distrito !== '', function ($q) use ($distrito) {
                 $normalized = strtolower(str_replace(' ', '-', trim($distrito)));
                 $search = str_replace('-', '', $normalized);
 
@@ -41,15 +42,15 @@ class StaffProducerController extends Controller
                 });
             })
 
-            ->when($variedad !== '', function ($q) use ($variedad) {
+            ->when($all !== '1' && $variedad !== '', function ($q) use ($variedad) {
                 $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('variedad', 'like', "%{$variedad}%"));
             })
 
-            ->when($tipo !== '', function ($q) use ($tipo) {
+            ->when($all !== '1' && $tipo !== '', function ($q) use ($tipo) {
                 $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('tipo', 'like', "%{$tipo}%"));
             })
 
-            ->when($rut !== '', function ($q) use ($rut) {
+            ->when($all !== '1' && $rut !== '', function ($q) use ($rut) {
                 $search = preg_replace('/\D/', '', $rut);
 
                 $q->whereHas('propiedades', function ($sub) use ($search) {
@@ -75,6 +76,7 @@ class StaffProducerController extends Controller
         $user = $request->user();
 
         $filters = [
+            'all' => $all,
             'dni' => $dni,
             'name' => $name,
             'distrito' => $distrito,
@@ -210,6 +212,7 @@ class StaffProducerController extends Controller
 
     public function export(Request $request)
     {
+        $all = trim((string) $request->get('all', ''));
         $dni = trim((string) $request->get('dni', ''));
         $name = trim((string) $request->get('name', ''));
         $distrito = trim((string) $request->get('distrito', ''));
@@ -220,11 +223,11 @@ class StaffProducerController extends Controller
         $producers = User::query()
             ->distinct()
 
-            ->when($dni !== '', fn ($q) => $q->where('users.dni', 'like', "%{$dni}%"))
+            ->when($all !== '1' && $dni !== '', fn ($q) => $q->where('users.dni', 'like', "%{$dni}%"))
 
-            ->when($name !== '', fn ($q) => $q->where('users.name', 'like', "%{$name}%"))
+            ->when($all !== '1' && $name !== '', fn ($q) => $q->where('users.name', 'like', "%{$name}%"))
 
-            ->when($distrito !== '', function ($q) use ($distrito) {
+            ->when($all !== '1' && $distrito !== '', function ($q) use ($distrito) {
                 $normalized = strtolower(str_replace(' ', '-', trim($distrito)));
                 $search = str_replace('-', '', $normalized);
 
@@ -236,15 +239,15 @@ class StaffProducerController extends Controller
                 });
             })
 
-            ->when($variedad !== '', function ($q) use ($variedad) {
+            ->when($all !== '1' && $variedad !== '', function ($q) use ($variedad) {
                 $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('variedad', 'like', "%{$variedad}%"));
             })
 
-            ->when($tipo !== '', function ($q) use ($tipo) {
+            ->when($all !== '1' && $tipo !== '', function ($q) use ($tipo) {
                 $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('tipo', 'like', "%{$tipo}%"));
             })
 
-            ->when($rut !== '', function ($q) use ($rut) {
+            ->when($all !== '1' && $rut !== '', function ($q) use ($rut) {
                 $search = preg_replace('/\D/', '', $rut);
 
                 $q->whereHas('propiedades', function ($sub) use ($search) {
@@ -262,7 +265,10 @@ class StaffProducerController extends Controller
         // Determinar tipo de búsqueda para headers adicionales
         $searchType = null;
         $searchValue = null;
-        if ($variedad) {
+
+        if ($all === '1') {
+            $searchType = 'all';
+        } elseif ($variedad) {
             $searchType = 'variedad';
             $searchValue = $variedad;
         } elseif ($tipo) {
@@ -285,7 +291,9 @@ class StaffProducerController extends Controller
 
         // Título dinámico según tipo de búsqueda
         $titulo = 'Listado de Productores';
-        if ($searchType === 'distrito' && $searchValue) {
+        if ($searchType === 'all') {
+            $titulo = 'Todos los Productores';
+        } elseif ($searchType === 'distrito' && $searchValue) {
             $titulo = 'Productores del Distrito '.$searchValue;
         } elseif ($searchType === 'variedad' && $searchValue) {
             $titulo = 'Productores que cultivan '.$searchValue;
@@ -296,7 +304,9 @@ class StaffProducerController extends Controller
         $fechaExport = date('d/m/Y H:i').' hs';
 
         $dateStr = date('Y-m-d');
-        if ($searchType && $searchValue) {
+        if ($searchType === 'all') {
+            $filename = 'productores_completo_'.$dateStr.'.xlsx';
+        } elseif ($searchType && $searchValue) {
             $filename = 'productores_'.strtolower(str_replace(' ', '_', $searchValue)).'_'.$dateStr.'.xlsx';
         } else {
             $filename = 'productores_todos_'.$dateStr.'.xlsx';

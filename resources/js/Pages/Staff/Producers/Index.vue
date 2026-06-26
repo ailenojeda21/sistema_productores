@@ -29,6 +29,7 @@
             v-model="searchType"
             class="rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0 bg-slate-50"
           >
+            <option value="all">Todos</option>
             <option value="dni">DNI</option>
             <option value="name">Nombre</option>
             <option value="distrito">Distrito</option>
@@ -43,6 +44,7 @@
             class="flex-1 min-w-[200px] rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0"
             :placeholder="placeholderText"
             :inputmode="searchType === 'dni' || searchType === 'rut' ? 'numeric' : 'text'"
+            :disabled="searchType === 'all'"
           />
 
           <div class="flex gap-2">
@@ -163,9 +165,21 @@ const props = defineProps({
   filters: { type: Object, default: () => ({}) },
 })
 
-const searchType = ref('dni')
+const searchType = ref(initialSearchType())
+
+function initialSearchType() {
+  if (props.filters.all) return 'all'
+  if (props.filters.dni) return 'dni'
+  if (props.filters.name) return 'name'
+  if (props.filters.distrito) return 'distrito'
+  if (props.filters.variedad) return 'variedad'
+  if (props.filters.tipo) return 'tipo'
+  if (props.filters.rut) return 'rut'
+  return 'all'
+}
 
 const placeholders = {
+  all: 'Mostrar todos los productores',
   dni: 'Ingrese DNI',
   name: 'Ingrese nombre',
   distrito: 'Ingrese distrito',
@@ -178,6 +192,7 @@ const placeholderText = computed(() => placeholders[searchType.value] || 'Buscar
 
 const form = reactive({
   search: props.filters.search ?? '',
+  all: props.filters.all ?? '',
   dni: props.filters.dni ?? '',
   name: props.filters.name ?? '',
   distrito: props.filters.distrito ?? '',
@@ -188,6 +203,7 @@ const form = reactive({
 
 const activeFilters = computed(() => {
   const filters = []
+  if (form.all) filters.push({ key: 'all', label: 'Todos los productores' })
   if (form.dni) filters.push({ key: 'dni', label: `DNI: ${form.dni}` })
   if (form.name) filters.push({ key: 'name', label: `Nombre: ${form.name}` })
   if (form.distrito) filters.push({ key: 'distrito', label: `Distrito: ${form.distrito}` })
@@ -200,15 +216,16 @@ const activeFilters = computed(() => {
 const hasResults = computed(() => props.producers.data && props.producers.data.length > 0)
 
 const hasSearchPerformed = computed(() => {
-  return form.dni || form.name || form.distrito || form.variedad || form.tipo || form.rut
+  return form.all || form.dni || form.name || form.distrito || form.variedad || form.tipo || form.rut
 })
 
 const canExport = computed(() => {
-  return form.distrito || form.variedad || form.tipo
+  return form.all || form.distrito || form.variedad || form.tipo
 })
 
 const exportResults = () => {
   const params = new URLSearchParams()
+  if (form.all) params.append('all', form.all)
   if (form.dni) params.append('dni', form.dni)
   if (form.name) params.append('name', form.name)
   if (form.distrito) params.append('distrito', form.distrito)
@@ -221,6 +238,7 @@ const exportResults = () => {
 
 const search = () => {
   // Limpiar todos los campos primero
+  form.all = ''
   form.dni = ''
   form.name = ''
   form.distrito = ''
@@ -228,30 +246,33 @@ const search = () => {
   form.tipo = ''
   form.rut = ''
 
-  // Asignar solo el campo activo
-  form[searchType.value] = form.search
-
-  router.get('/staff/producers', { ...form }, { preserveState: true, replace: true })
+  if (searchType.value === 'all') {
+    form.all = '1'
+    router.get('/staff/producers', { all: '1' }, { preserveState: true, replace: true })
+  } else {
+    // Asignar solo el campo activo
+    form[searchType.value] = form.search
+    router.get('/staff/producers', { ...form }, { preserveState: true, replace: true })
+  }
 }
 
 const clear = () => {
   form.search = ''
+  form.all = ''
   form.dni = ''
   form.name = ''
   form.distrito = ''
   form.variedad = ''
   form.tipo = ''
   form.rut = ''
-  searchType.value = 'dni'
-  search()
+  searchType.value = 'all'
+  router.get('/staff/producers', {}, { preserveState: true, replace: true })
 }
 
 const removeFilter = (key) => {
   form[key] = ''
   form.search = ''
-  if (key === searchType.value) {
-    searchType.value = 'dni'
-  }
+  searchType.value = 'all'
   search()
 }
 
