@@ -23,9 +23,9 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'dni' => ['nullable', 'string', 'max:20'],
-            'telefono' => ['nullable', 'string', 'max:20'],
-            'direccion' => ['nullable', 'string', 'max:255'],
+            'dni' => ['required', 'string', 'max:20'],
+            'telefono' => ['required', 'string', 'max:20'],
+            'direccion' => ['required', 'string', 'max:255'],
             'cooperativas' => ['nullable', 'array'],
             'cooperativas.*' => ['string'],
         ]);
