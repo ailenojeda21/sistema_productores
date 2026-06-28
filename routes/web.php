@@ -121,6 +121,9 @@ Route::middleware('web')->group(function () {
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'dni' => '',
+            'telefono' => '',
+            'direccion' => '',
             'password' => Hash::make($data['password']),
         ]);
 

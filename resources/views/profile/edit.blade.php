@@ -16,7 +16,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('profile.update') }}">
+        <form id="profile-form-desktop" method="POST" action="{{ route('profile.update') }}">
             @csrf
             @method('PATCH')
 
@@ -52,7 +52,7 @@
                     </label>
                     <input name="dni" type="text"
                            class="w-full p-2 border border-gray-300 rounded"
-                           value="{{ old('dni', $user->dni) }}">
+                           value="{{ old('dni', $user->dni) }}" required>
                     @error('dni') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
                 </div>
 
@@ -64,7 +64,7 @@
                     </label>
                     <input name="telefono" type="text"
                            class="w-full p-2 border border-gray-300 rounded"
-                           value="{{ old('telefono', $user->telefono) }}">
+                           value="{{ old('telefono', $user->telefono) }}" required>
                     @error('telefono') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
                 </div>
 
@@ -76,7 +76,7 @@
                     </label>
                     <input name="direccion" type="text"
                            class="w-full p-2 border border-gray-300 rounded"
-                           value="{{ old('direccion', $user->direccion) }}">
+                           value="{{ old('direccion', $user->direccion) }}" required>
                     @error('direccion') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
                 </div>
 
@@ -140,7 +140,7 @@
     @endif
 
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <form method="POST" action="{{ route('profile.update') }}">
+        <form id="profile-form-mobile" method="POST" action="{{ route('profile.update') }}">
             @csrf
             @method('PATCH')
 
@@ -176,7 +176,8 @@
                     </label>
                     <input name="dni" type="text"
                            class="w-full p-3 border border-gray-300 rounded-lg"
-                           value="{{ old('dni', $user->dni) }}">
+                           value="{{ old('dni', $user->dni) }}" required>
+                    @error('dni') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
                 </div>
 
                 <!-- Teléfono -->
@@ -187,7 +188,8 @@
                     </label>
                     <input name="telefono" type="text"
                            class="w-full p-3 border border-gray-300 rounded-lg"
-                           value="{{ old('telefono', $user->telefono) }}">
+                           value="{{ old('telefono', $user->telefono) }}" required>
+                    @error('telefono') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
                 </div>
 
                 <!-- Dirección -->
@@ -198,7 +200,8 @@
                     </label>
                     <input name="direccion" type="text"
                            class="w-full p-3 border border-gray-300 rounded-lg"
-                           value="{{ old('direccion', $user->direccion) }}">
+                           value="{{ old('direccion', $user->direccion) }}" required>
+                    @error('direccion') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
                 </div>
 
                 <!-- Creado (solo lectura) -->
@@ -286,6 +289,80 @@
         if (cooperativaCheckboxMobile) {
             cooperativaCheckboxMobile.addEventListener('change', toggleCooperativaFieldsMobile);
             toggleCooperativaFieldsMobile();
+        }
+
+        // OLD (backup 2026-06-28): simple .text-red-600 query — replaced by robust version below
+        // const firstError = document.querySelector('.text-red-600');
+        // if (firstError) {
+        //     const input = firstError.closest('div')?.querySelector('input, select, textarea');
+        //     if (input) {
+        //         input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        //         input.focus();
+        //     }
+        // }
+
+        function isElementVisible(el) {
+            while (el && el !== document.body) {
+                const style = getComputedStyle(el);
+                if (style.display === 'none' || style.visibility === 'hidden') {
+                    return false;
+                }
+                el = el.parentElement;
+            }
+            return true;
+        }
+
+        function getVisibleForm() {
+            const desktop = document.getElementById('profile-form-desktop');
+            const mobile = document.getElementById('profile-form-mobile');
+            for (const f of [desktop, mobile]) {
+                if (f && isElementVisible(f)) {
+                    return f;
+                }
+            }
+            return null;
+        }
+
+        function getFirstInputWithError(form) {
+            const inputs = form.querySelectorAll('input, select, textarea');
+            for (const input of inputs) {
+                const parent = input.closest('div');
+                if (parent && parent.querySelector('.text-red-600')) {
+                    return input;
+                }
+            }
+            return null;
+        }
+
+        const form = getVisibleForm();
+
+        if (form) {
+            // Servidor: errores post-redirect
+            const inputWithError = getFirstInputWithError(form);
+            if (inputWithError) {
+                inputWithError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                inputWithError.focus({ preventScroll: true });
+            }
+
+            // Nativo: required fields
+            let firstInvalid = null;
+            form.addEventListener('invalid', function(e) {
+                if (!firstInvalid) {
+                    firstInvalid = e.target;
+                    requestAnimationFrame(function() {
+                        requestAnimationFrame(function() {
+                            if (firstInvalid) {
+                                console.log('[profile-edit] invalid event fired on:', firstInvalid);
+                                console.log('[profile-edit] scrollY before:', window.scrollY);
+                                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                firstInvalid.focus({ preventScroll: true });
+                                console.log('[profile-edit] scrollIntoView called, scrollY after:', window.scrollY);
+                            }
+                            firstInvalid = null;
+                        });
+                    });
+                }
+            }, true);
         }
     });
 </script>
