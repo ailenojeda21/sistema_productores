@@ -90,22 +90,21 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
 <style>
-    /* Avatar seleccionado */
 .avatar-radio:checked + .avatar-card {
-    border-color: #0f2a44; /* azul-marino */
+    border-color: #0f2a44;
     box-shadow: 0 0 0 4px rgba(15, 42, 68, 0.25);
 }
 
-/* Mostrar check */
 .avatar-radio:checked + .avatar-card .avatar-check {
     opacity: 1;
     transform: scale(1);
 }
 
-/* Hover */
 .avatar-card:hover {
     border-color: #0f2a44;
 }
-
 </style>
+@endpush

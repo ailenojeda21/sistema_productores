@@ -142,11 +142,11 @@
                         {{ Auth::user()->name }}
                     </span>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="ml-3 flex items-center shrink-0" id="logout-form-desktop">
+                <form method="POST" action="{{ route('logout') }}" class="ml-3 flex h-8 items-center shrink-0" id="logout-form-desktop">
                     @csrf
                     <button type="button" onclick="confirmLogout('logout-form-desktop')"
-                            class="flex items-center px-1 py-1 rounded-lg text-sm text-red-500 hover:bg-red-50 hover:text-red-700 transition font-medium border border-red-500">
-                        <span class="material-symbols-outlined mr-1 text-base">logout</span> Cerrar sesión
+                            class="inline-flex h-8 items-center justify-center gap-1 px-2 rounded-lg text-sm leading-none text-red-500 hover:bg-red-50 hover:text-red-700 transition font-medium border border-red-500">
+                        <span class="material-symbols-outlined text-base leading-none">logout</span> Cerrar sesión
                     </button>
                 </form>
             </header>
