@@ -41,7 +41,7 @@
                 {{-- Numeración y Hectáreas --}}
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="numeracion">Numeración</label>
-                    <input name="numeracion" type="number"
+                    <input name="numeracion" type="number" min="1"
                         class="w-full p-2 border border-gray-300 rounded"
                         value="{{ old('numeracion', $propiedad->numeracion) }}" required>
                 </div>
