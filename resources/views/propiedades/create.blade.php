@@ -28,7 +28,7 @@
 
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="numeracion">Numeración</label>
-                    <input id="numeracion" name="numeracion" type="number" class="w-full p-2 border border-gray-300 rounded" value="{{ old('numeracion') }}" required>
+                    <input id="numeracion" name="numeracion" type="number" min="1" class="w-full p-2 border border-gray-300 rounded" value="{{ old('numeracion') }}" required>
                 </div>
                 <div>
                     <label class="block text-gray-700 font-semibold mb-1" for="hectareas">Hectáreas</label>

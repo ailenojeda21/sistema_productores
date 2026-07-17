@@ -33,7 +33,7 @@ class PropiedadController extends Controller
 
         $validated = $request->validate([
             'calle' => 'required|string|max:255',
-            'numeracion' => 'required|string|max:20',
+            'numeracion' => 'required|integer|min:1',
             'distrito' => 'required|string|max:100',
             'hectareas' => 'required|numeric|min:0',
 
@@ -108,7 +108,7 @@ class PropiedadController extends Controller
 
         $validated = $request->validate([
             'calle' => 'sometimes|required|string|max:255',
-            'numeracion' => 'sometimes|required|string|max:20',
+            'numeracion' => 'sometimes|required|integer|min:1',
             'distrito' => 'sometimes|required|string|max:100',
             'hectareas' => 'sometimes|required|numeric|min:0',
 
