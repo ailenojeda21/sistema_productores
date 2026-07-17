@@ -9,7 +9,7 @@
 
     <!-- Encabezado -->
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-azul-marino">Maquinarias</h1>
+        <h1 class="text-3xl font-bold text-naranja-oscuro">Maquinarias</h1>
         <a href="{{ route('maquinaria.create') }}"
            class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">
            Nueva Maquinaria
@@ -79,7 +79,7 @@
                         @if($maq->implementos_activos)
                             <div class="flex flex-wrap gap-2">
                                 @foreach($maq->implementos_activos as $item)
-                                    <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                                    <span class="inline-flex items-center px-3 py-1 bg-[#FCE7A3] text-[#9A5200] text-xs font-medium rounded-full">
                                         {{ $item }}
                                     </span>
                                 @endforeach
@@ -133,8 +133,8 @@
 <!-- Mobile View -->
 <div class="lg:hidden">
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold text-azul-marino">Maquinarias</h1>
-        <a href="{{ route('maquinaria.create') }}" class="p-2 bg-naranja-oscuro text-white rounded-full shadow-lg">
+        <h1 class="text-2xl font-bold text-naranja-oscuro">Maquinarias</h1>
+        <a href="{{ route('maquinaria.create') }}" class="w-12 h-12 flex items-center justify-center bg-naranja-oscuro text-white rounded-full shadow-lg hover:bg-[#FFD166] hover:text-naranja-oscuro transition-colors">
             <span class="material-symbols-outlined">add</span>
         </a>
     </div>

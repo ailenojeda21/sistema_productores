@@ -15,9 +15,9 @@
     @endif
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-azul-marino/10 to-blue-100/20 px-6 py-4 border-b border-blue-100">
+        <div class="bg-gradient-to-r from-[#F39200]/10 to-[#F5B410]/20 px-6 py-4 border-b border-[#F5B410]/30">
             <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <span class="material-symbols-outlined text-xl text-azul-marino">face</span>
+                <span class="material-symbols-outlined text-xl text-naranja-oscuro">face</span>
                 Seleccionar Avatar
             </h2>
         </div>
@@ -55,7 +55,7 @@
 
                             {{-- CHECK --}}
                             <div class="avatar-check absolute top-1 right-1
-                                        bg-azul-marino text-white rounded-full
+                                        bg-[#F39200] text-white rounded-full
                                         w-6 h-6 flex items-center justify-center
                                         shadow-md opacity-0 scale-75
                                         transition pointer-events-none">
@@ -69,10 +69,10 @@
             <div class="mt-8 pt-6 border-t border-gray-100">
                 <button
                     type="submit"
-                    class="w-full sm:w-auto px-8 py-3 bg-azul-marino text-white font-semibold rounded-xl
-                           hover:bg-blue-800 transition-all duration-300
-                           shadow-lg shadow-azul-marino/20
-                           hover:shadow-xl hover:shadow-azul-marino/30
+                    class="w-full sm:w-auto px-8 py-3 bg-[#F39200] text-white font-semibold rounded-xl
+                           hover:bg-[#E07F00] transition-all duration-300
+                           shadow-lg shadow-[#F39200]/20
+                           hover:shadow-xl hover:shadow-[#F39200]/30
                            flex items-center justify-center gap-2 mx-auto">
                     <span class="material-symbols-outlined">save</span>
                     Guardar Cambios
@@ -83,7 +83,7 @@
 
     <div class="mt-6 text-center">
         <a href="{{ route('profile') }}"
-           class="inline-flex items-center gap-2 text-gray-600 hover:text-azul-marino transition-colors text-sm">
+           class="inline-flex items-center gap-2 text-gray-600 hover:text-naranja-oscuro transition-colors text-sm">
             <span class="material-symbols-outlined text-sm">arrow_back</span>
             Volver al perfil
         </a>
@@ -94,8 +94,8 @@
 @push('styles')
 <style>
 .avatar-radio:checked + .avatar-card {
-    border-color: #0f2a44;
-    box-shadow: 0 0 0 4px rgba(15, 42, 68, 0.25);
+    border-color: #F39200;
+    box-shadow: 0 0 0 4px rgba(243, 146, 0, 0.25);
 }
 
 .avatar-radio:checked + .avatar-card .avatar-check {
@@ -104,7 +104,7 @@
 }
 
 .avatar-card:hover {
-    border-color: #0f2a44;
+    border-color: #F39200;
 }
 </style>
 @endpush

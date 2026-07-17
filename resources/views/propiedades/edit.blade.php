@@ -7,7 +7,7 @@
         ['name' => 'Editar']
     ]" />
     <div class="bg-white rounded-lg shadow p-8">
-        <h2 class="text-2xl font-bold text-azul-marino mb-6">Editar Propiedad</h2>
+        <h2 class="text-2xl font-bold text-naranja-oscuro mb-6">Editar Propiedad</h2>
 
         @if (session('success'))
             <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
@@ -23,7 +23,7 @@
 
                 {{-- Distrito y Calle --}}
                 <div>
-                    <label class="block font-semibold mb-1" for="distrito">Distrito</label>
+                    <label class="block text-gray-700 font-semibold mb-1" for="distrito">Distrito</label>
                     <select id="distrito" name="distrito" class="w-full p-2 border border-gray-300 rounded" required>
                         <option value="">Seleccione un distrito</option>
                         @foreach(\App\Models\Propiedad::getDistritosForForm() as $value => $label)
@@ -32,7 +32,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block font-semibold mb-1" for="calle">Calle</label>
+                    <label class="block text-gray-700 font-semibold mb-1" for="calle">Calle</label>
                     <input name="calle" type="text"
                         class="w-full p-2 border border-gray-300 rounded"
                         value="{{ old('calle', $propiedad->calle) }}" required>
@@ -40,13 +40,13 @@
 
                 {{-- Numeración y Hectáreas --}}
                 <div>
-                    <label class="block font-semibold mb-1" for="numeracion">Numeración</label>
+                    <label class="block text-gray-700 font-semibold mb-1" for="numeracion">Numeración</label>
                     <input name="numeracion" type="number"
                         class="w-full p-2 border border-gray-300 rounded"
                         value="{{ old('numeracion', $propiedad->numeracion) }}" required>
                 </div>
                 <div>
-                    <label class="block font-semibold mb-1">Hectáreas</label>
+                    <label class="block text-gray-700 font-semibold mb-1">Hectáreas</label>
                     <input id="hectareas" name="hectareas" type="text" inputmode="decimal"
                         class="w-full p-2 border border-gray-300 rounded"
                         value="{{ old('hectareas', $propiedad->hectareas) }}"
@@ -62,7 +62,7 @@
                     $hasCoordinateError = $errors->has('lat') || $errors->has('lng');
                 @endphp
                 <div class="md:col-span-2 location-map-field scroll-mt-24" data-has-coordinate-error="{{ $hasCoordinateError ? '1' : '0' }}">
-                    <label class="block font-semibold mb-1">Ubicación</label>
+                    <label class="block text-gray-700 font-semibold mb-1">Ubicación</label>
                     <div class="mb-4 rounded-md border-l-4 border-blue-600 bg-blue-50 p-4 text-blue-950 shadow-sm">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
                             <span class="text-2xl leading-none" aria-hidden="true">📍</span>
@@ -118,7 +118,7 @@
 
                 {{-- Tenencia --}}
                 <div class="md:col-span-2">
-                    <label class="block font-semibold mb-3">
+                    <label class="block text-gray-700 font-semibold mb-3">
                         Tipo de tenencia
                     </label>
 
@@ -192,7 +192,7 @@
 
                     {{-- Adjunto RUT --}}
                     <div id="rutArchivoDiv" class="hidden ml-7 mt-2">
-                        <label class="block font-semibold mb-1">Adjunto RUT</label>
+                        <label class="block text-gray-700 font-semibold mb-1">Adjunto RUT</label>
                         @if ($propiedad->rut_archivo)
                             <p class="text-sm text-gray-500 mb-2">
                                 Archivo actual: 
@@ -235,7 +235,7 @@
         
 
             <button type="submit"
-                class="mt-8 w-full py-2 bg-azul-marino text-white font-bold rounded hover:bg-amarillo-claro hover:text-azul-marino transition">
+                class="mt-8 w-full py-2 bg-[#F39200] text-white font-bold rounded hover:bg-[#E07F00] transition">
                 Guardar cambios
             </button>
         </form>
@@ -247,12 +247,128 @@
 <link rel="stylesheet" href="{{ asset('vendor/leaflet/leaflet.css') }}" />
 <style>
     .custom-checkbox {
-        width: 1.25rem; height: 1.25rem; border-radius: 0.25rem;
-        border: 2px solid #cbd5e1; background: #fff; appearance: none;
-        outline: none; transition: border-color 0.2s, box-shadow 0.2s; cursor: pointer;
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 0.25rem;
+        border: 2px solid #cbd5e1;
+        background: #fff;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent;
+        transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        margin: 0;
+    }
+    .custom-checkbox:hover {
+        border-color: #F39200 !important;
+    }
+    .custom-checkbox:focus {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.3) !important;
+        border-color: #F39200 !important;
+    }
+    .custom-checkbox:focus-visible {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.4) !important;
+        border-color: #F39200 !important;
     }
     .custom-checkbox:checked {
-        background-color: #2563eb; border-color: #2563eb; box-shadow: 0 0 0 2px #93c5fd;
+        background-color: #F39200 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    .custom-checkbox:checked:hover {
+        background-color: #D97706 !important;
+        border-color: #D97706 !important;
+    }
+    .custom-checkbox:checked:focus {
+        background-color: #F39200 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    .custom-checkbox:active {
+        background-color: #FCE7A3 !important;
+        border-color: #F39200 !important;
+        box-shadow: none !important;
+    }
+    .custom-checkbox:checked:active {
+        background-color: #FCE7A3 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    .custom-checkbox:disabled {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+        border-color: #e5e7eb !important;
+    }
+    input[type="radio"].tenencia-radio {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 9999px;
+        border: 2px solid #cbd5e1;
+        background: #fff;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent;
+        transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        margin: 0;
+        position: relative;
+    }
+    input[type="radio"].tenencia-radio:hover {
+        border-color: #F39200 !important;
+    }
+    input[type="radio"].tenencia-radio:focus {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.3) !important;
+        border-color: #F39200 !important;
+    }
+    input[type="radio"].tenencia-radio:focus-visible {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.4) !important;
+        border-color: #F39200 !important;
+    }
+    input[type="radio"].tenencia-radio:checked {
+        background-color: #F39200 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    input[type="radio"].tenencia-radio:checked::before {
+        content: '';
+        display: block;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 9999px;
+        background: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    input[type="radio"].tenencia-radio:checked:hover {
+        background-color: #D97706 !important;
+        border-color: #D97706 !important;
+    }
+    input[type="radio"].tenencia-radio:active {
+        background-color: #FCE7A3 !important;
+        border-color: #F39200 !important;
+        box-shadow: none !important;
+    }
+    input[type="radio"].tenencia-radio:disabled {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
     }
 </style>
 @endsection

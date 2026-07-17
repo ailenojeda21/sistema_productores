@@ -7,7 +7,7 @@
         ['name' => 'Detalle']
     ]" />
     <div class="bg-white rounded-lg shadow p-8">
-        <h2 class="text-2xl font-bold text-azul-marino mb-6">Detalle de Maquinaria</h2>
+        <h2 class="text-2xl font-bold text-naranja-oscuro mb-6">Detalle de Maquinaria</h2>
         <div class="mb-4">
             <strong>Tractor:</strong> {{ $maquinaria->tractor ? 'Sí' : 'No' }}
         </div>
@@ -47,7 +47,7 @@
         <div class="mb-4">
             <strong>Retroexcavadora:</strong> {{ $maquinaria->retroexcavadora ? 'Sí' : 'No' }}
         </div>
-        <a href="{{ route('maquinaria.index') }}" class="px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro font-semibold shadow">Volver</a>
+        <a href="{{ route('maquinaria.index') }}" class="px-4 py-2 bg-[#F39200] text-white rounded hover:bg-[#E07F00] font-semibold shadow">Volver</a>
     </div>
 </div>
 @endsection

@@ -43,12 +43,12 @@
 
 <div {{ $attributes->merge(['class' => 'flex flex-col items-center']) }}>
    @if($gradient)
-<div class="bg-gradient-to-br from-[#1e3a8a] to-[#2563eb] p-6 rounded-xl w-full flex flex-col items-center shadow-lg">
+<div class="bg-gradient-to-br from-[#F39200] to-[#F5B410] p-6 rounded-xl w-full flex flex-col items-center shadow-lg">
 @endif
     
     <div class="relative">
         <div class="rounded-full {{ $yellowOnly ? 'border-4 border-amarillo-claro' : ($thinBorder ? 'bg-white p-0.5 border border-gray-200' : 'bg-white p-1 shadow-lg border-4 border-amarillo-claro') }}">
-            <div class="bg-blue-50 rounded-full overflow-hidden {{ $sizeClass }}">
+            <div class="bg-orange-50 rounded-full overflow-hidden {{ $sizeClass }}">
                 <img
                     id="avatar-preview-{{ uniqid() }}"
                     src="{{ $avatarSrc }}"
@@ -61,7 +61,7 @@
 
         @if($editable)
         <label for="avatar-upload"
-               class="absolute bottom-0 right-0 bg-white text-azul-marino rounded-full p-2 shadow-md cursor-pointer hover:bg-amber-100 transition border border-azul-marino">
+               class="absolute bottom-0 right-0 bg-white text-[#F39200] rounded-full p-2 shadow-md cursor-pointer hover:bg-amber-100 transition border border-[#F39200]">
             <span class="material-symbols-outlined text-sm">photo_camera</span>
             <input type="file"
                    id="avatar-upload"
@@ -74,13 +74,13 @@
     </div>
     
     @if($showName && $user)
-    <h3 class="{{ $gradient ? 'text-white' : 'text-azul-marino' }} font-semibold {{ $textSize }} mt-3">
+    <h3 class="{{ $gradient ? 'text-white' : 'text-[#F39200]' }} font-semibold {{ $textSize }} mt-3">
         {{ $user->name }}
     </h3>
     @endif
     
     @if($showEmail && $user)
-    <p class="{{ $gradient ? 'text-blue-200' : 'text-gray-600' }} text-sm">
+    <p class="{{ $gradient ? 'text-orange-100' : 'text-gray-600' }} text-sm">
         {{ $user->email }}
     </p>
     @endif

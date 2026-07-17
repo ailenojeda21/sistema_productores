@@ -6,7 +6,7 @@
         <!-- Header -->
         <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
-                <h3 class="font-semibold text-azul-marino text-lg">
+                <h3 class="font-semibold text-naranja-oscuro text-lg">
                     {{ $propiedad->direccion_completa }}
                 </h3>
                 <p class="text-sm text-gray-500">{{ number_format($propiedad->hectareas, 2, ',', '.') }} hectáreas</p>

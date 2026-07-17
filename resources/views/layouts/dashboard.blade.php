@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-dvh bg-gray-100">
+<div class="min-h-dvh bg-[#F5F5F7]">
     <!-- Overlay (solo mobile) -->
     <div id="drawer-overlay"
          class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
@@ -11,8 +11,8 @@
         <div class="h-14 px-4 flex items-center justify-between">
             <button id="mobile-menu-btn"
                     type="button"
-                    class="bg-azul-marino text-white w-10 h-10 rounded-md shadow flex items-center justify-center
-                           hover:bg-amarillo-claro hover:text-azul-marino transition-colors"
+                    class="bg-naranja-oscuro text-white w-10 h-10 rounded-md shadow flex items-center justify-center
+                           hover:bg-[#FFD166] hover:text-naranja-oscuro transition-colors"
                     aria-label="Abrir menú">
                 <span class="material-symbols-outlined">menu</span>
             </button>
@@ -22,19 +22,19 @@
             </div>
 
             <form method="POST" action="{{ route('logout') }}" class="shrink-0" id="logout-form-mobile">
-                @csrf
-                <button type="button" onclick="confirmLogout('logout-form-mobile')"
-                        class="flex items-center justify-center w-10 h-10 rounded-md text-gray-500 hover:bg-red-50 hover:text-red-600 transition border border-red-500"
-                        aria-label="Cerrar sesión">
-                    <span class="material-symbols-outlined">logout</span>
-                </button>
-            </form>
+    @csrf
+    <button type="button" onclick="confirmLogout('logout-form-mobile')"
+            class="flex items-center justify-center w-10 h-10 rounded-md text-red-500 hover:bg-red-500 hover:text-white transition border border-red-500"
+            aria-label="Cerrar sesión">
+        <span class="material-symbols-outlined">logout</span>
+    </button>
+</form>
         </div>
     </header>
 
     <div class="flex min-h-dvh">
         <!-- Sidebar (desktop) -->
-        <aside class="hidden lg:flex w-64 bg-azul-marino text-white flex-col py-6 px-3 shadow-lg
+        <aside class="hidden lg:flex w-64 bg-naranja-oscuro text-white flex-col py-6 px-3 shadow-lg
                       sticky top-0 h-dvh">
             <div class="flex-shrink-0">
                 <x-user-avatar :user="Auth::user()" size="md" :gradient="false" :showName="false" :thin-border="true" class="mb-0" />
@@ -44,26 +44,26 @@
             </div>
 
             <nav class="flex-1 space-y-1 pr-1">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-2">dashboard</span> Inicio
                 </a>
-                <a href="{{ route('profile') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                <a href="{{ route('profile') }}" class="flex items-center px-4 py-3 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-2">person</span> Perfil
                     <x-completion-circle :percentage="Auth::user()->profile_completeness" class="ml-auto" />
                 </a>
-                <a href="{{ route('propiedades.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                <a href="{{ route('propiedades.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-2">home</span> Propiedades
                     <x-completion-circle :percentage="Auth::user()->propiedades_completeness" class="ml-auto" />
                 </a>
-                <a href="{{ route('cultivos.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                <a href="{{ route('cultivos.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-3">spa</span> Cultivos
                     <x-completion-circle :percentage="Auth::user()->cultivos_completeness" class="ml-auto" />
                 </a>
-                <a href="{{ route('maquinaria.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                <a href="{{ route('maquinaria.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-2">agriculture</span> Maquinarias
                     <x-completion-circle :percentage="Auth::user()->maquinarias_completeness" class="ml-auto" />
                 </a>
-                <a href="{{ route('comercios.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold text-[17px]">
+                <a href="{{ route('comercios.index') }}" class="flex items-center px-4 py-3 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold text-[17px]">
                     <span class="material-symbols-outlined mr-2">shopping_cart</span> Comercialización
                     <x-completion-circle :percentage="Auth::user()->comercializacion_completeness" class="ml-auto" />
                 </a>
@@ -78,7 +78,7 @@
 
         <!-- Drawer (mobile) -->
         <aside id="drawer"
-               class="fixed lg:hidden inset-y-0 left-0 z-50 bg-azul-marino text-white shadow-lg
+               class="fixed lg:hidden inset-y-0 left-0 z-50 bg-naranja-oscuro text-white shadow-lg
                       w-[85vw] max-w-xs transform -translate-x-full transition-transform duration-300
                       h-dvh flex flex-col py-4 px-3">
             <div class="flex-shrink-0">
@@ -99,33 +99,33 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto space-y-1 pr-1 scrollbar-hide">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">dashboard</span> Inicio
                 </a>
-                <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">person</span> Perfil
                     <x-completion-circle :percentage="Auth::user()->profile_completeness" class="ml-auto" />
                 </a>
-                <a href="{{ route('propiedades.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                <a href="{{ route('propiedades.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">home</span> Propiedades
                     <x-completion-circle :percentage="Auth::user()->propiedades_completeness" class="ml-auto" />
                 </a>
-                <a href="{{ route('cultivos.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                <a href="{{ route('cultivos.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">spa</span> Cultivos
                     <x-completion-circle :percentage="Auth::user()->cultivos_completeness" class="ml-auto" />
                 </a>
-                <a href="{{ route('maquinaria.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                <a href="{{ route('maquinaria.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">agriculture</span> Maquinarias
                     <x-completion-circle :percentage="Auth::user()->maquinarias_completeness" class="ml-auto" />
                 </a>
-                <a href="{{ route('comercios.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-amarillo-claro hover:text-azul-marino transition font-semibold">
+                <a href="{{ route('comercios.index') }}" class="flex items-center px-3 py-2 rounded hover:bg-[#FFD166] hover:text-naranja-oscuro transition font-semibold">
                     <span class="material-symbols-outlined mr-2 text-xl">shopping_cart</span> Comercialización
                     <x-completion-circle :percentage="Auth::user()->comercializacion_completeness" class="ml-auto" />
                 </a>
             </nav>
 
             <div class="flex-shrink-0 pt-4 flex justify-center">
-                <img src="{{ asset('images/logo2.png') }}" alt="RUPAL" class="h-8 w-auto opacity-60">
+                <img src="{{ asset('images/logo2.png') }}" alt="RUPAL" class="h-16 w-auto opacity-90">
             </div>
         </aside>
 
@@ -145,7 +145,7 @@
                 <form method="POST" action="{{ route('logout') }}" class="ml-3 flex h-8 items-center shrink-0" id="logout-form-desktop">
                     @csrf
                     <button type="button" onclick="confirmLogout('logout-form-desktop')"
-                            class="inline-flex h-8 items-center justify-center gap-1 px-2 rounded-lg text-sm leading-none text-red-500 hover:bg-red-50 hover:text-red-700 transition font-medium border border-red-500">
+                            class="inline-flex h-8 items-center justify-center gap-1 px-2 rounded-lg text-sm leading-none text-red-500 hover:bg-red-500 hover:text-white transition font-medium border border-red-500">
                         <span class="material-symbols-outlined text-base leading-none">logout</span> Cerrar sesión
                     </button>
                 </form>

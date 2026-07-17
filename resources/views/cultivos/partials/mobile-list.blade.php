@@ -11,7 +11,7 @@
         <!-- Header -->
         <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
-                <h3 class="font-semibold text-azul-marino text-lg">{{ $cultivo->variedad }}</h3>
+                <h3 class="font-semibold text-naranja-oscuro text-lg">{{ $cultivo->variedad }}</h3>
                 <p class="text-sm text-gray-500">{{ $cultivo->tipo }} - {{ $cultivo->estacion }}</p>
             </div>
             <span class="material-symbols-outlined text-gray-400">agriculture</span>
@@ -66,7 +66,7 @@
     @if($remaining->count() > 0)
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <button onclick="toggleExpandCultivos()" 
-                class="w-full px-4 py-3 bg-gray-50 text-azul-marino font-medium flex items-center justify-between">
+                class="w-full px-4 py-3 bg-gray-50 text-naranja-oscuro font-medium flex items-center justify-between">
             <span>Ver {{ $remaining->count() }} más</span>
             <span id="expand-icon-cultivos" class="material-symbols-outlined transition-transform">expand_more</span>
         </button>
@@ -76,7 +76,7 @@
             <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
                 <div class="flex items-start justify-between mb-3">
                     <div class="flex-1">
-                        <h3 class="font-semibold text-azul-marino text-lg">{{ $cultivo->variedad }}</h3>
+                        <h3 class="font-semibold text-naranja-oscuro text-lg">{{ $cultivo->variedad }}</h3>
                         <p class="text-sm text-gray-500">{{ $cultivo->tipo }} - {{ $cultivo->estacion }}</p>
                     </div>
                     <span class="material-symbols-outlined text-gray-400">agriculture</span>
