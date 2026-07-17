@@ -231,18 +231,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             setTimeout(() => {
                 if (mapDiv._previewMap) {
-                    console.log('Refrescando mapa preview:', mapId);
                     mapDiv._previewMap.invalidateSize();
-
-                    // Verificar si el mapa se renderizó correctamente
-                    setTimeout(() => {
-                        const mapContainer = mapDiv.querySelector('.leaflet-container');
-                        if (mapContainer) {
-                            console.log('Mapa renderizado correctamente:', mapId);
-                        } else {
-                            console.warn('Mapa no se renderizó correctamente:', mapId);
-                        }
-                    }, 500);
                 }
             }, 100);
 
@@ -280,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // Observar todos los contenedores de mapa preview móviles
-        document.querySelectorAll('[id$="-mobile"]').forEach(mapDiv => {
+        document.querySelectorAll('[id^="map-preview-"][id$="-mobile"]').forEach(mapDiv => {
             mapObserver.observe(mapDiv);
         });
 
@@ -290,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Intersection Observer no disponible, inicializando todos los mapas');
 
         // Inicializar todos los mapas inmediatamente con delay escalonado
-        document.querySelectorAll('[id$="-mobile"]').forEach((mapDiv, index) => {
+        document.querySelectorAll('[id^="map-preview-"][id$="-mobile"]').forEach((mapDiv, index) => {
             setTimeout(() => initializeMapPreview(mapDiv), index * 200);
         });
     }
