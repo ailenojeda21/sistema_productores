@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Neutralize @tailwindcss/forms blue rings */
+@layer base {
+    input:not([type='checkbox']):not([type='radio']):focus,
+    textarea:focus,
+    select:focus,
+    [multiple]:focus {
+        --tw-ring-color: #F39200;
+        border-color: #F39200;
+        outline: none;
+        outline-style: none;
+    }
+    input[type='checkbox']:focus, input[type='radio']:focus {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: none !important;
+    }
+}
+
 /* Material Symbols Icons */
 @layer components {
     .icon {

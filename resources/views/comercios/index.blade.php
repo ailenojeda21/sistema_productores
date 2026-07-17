@@ -7,11 +7,11 @@
         ['name' => 'Comercialización', 'route' => 'comercios.index']
     ]" />
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-azul-marino">Comercialización</h1>
+        <h1 class="text-3xl font-bold text-naranja-oscuro">Comercialización</h1>
         @if($comercios->isEmpty())
             <a href="{{ route('comercios.create') }}" class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">Nuevo Comercio</a>
         @else
-            <a href="{{ route('comercios.edit', $comercios->first()->id) }}" class="px-4 py-2 bg-azul-marino text-white rounded hover:bg-amarillo-claro font-semibold shadow">Editar Comercio</a>
+            <a href="{{ route('comercios.edit', $comercios->first()->id) }}" class="px-4 py-2 bg-[#F39200] text-white rounded hover:bg-[#E07F00] font-semibold shadow">Editar Comercio</a>
         @endif
     </div>
 
@@ -77,7 +77,7 @@
                         @if(is_array($mercados) && count($mercados))
                             <div class="flex flex-col gap-1">
                                 @foreach($mercados as $mercado)
-                                  <span class="inline-flex max-w-fit px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded text-left">
+                                  <span class="inline-flex max-w-fit px-2 py-0.5 bg-[#FCE7A3] text-[#9A5200] text-xs font-medium rounded text-left">
 
                                         {{ $mercado }}
                                     </span>
@@ -98,7 +98,7 @@
                         @if(is_array($cooperativas) && count($cooperativas))
                             <div class="grid grid-cols-2 gap-1">
                                 @foreach($cooperativas as $cooperativa)
-                                  <span class="inline-flex max-w-fit px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded text-left">
+                                  <span class="inline-flex max-w-fit px-2 py-0.5 bg-[#FCE7A3] text-[#9A5200] text-xs font-medium rounded text-left">
 
                                         {{ $cooperativa }}
                                     </span>
@@ -132,13 +132,13 @@
 <!-- Mobile View -->
 <div class="lg:hidden">
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold text-azul-marino">Comercialización</h1>
+        <h1 class="text-2xl font-bold text-naranja-oscuro">Comercialización</h1>
         @if($comercios->isEmpty())
-            <a href="{{ route('comercios.create') }}" class="w-12 h-12 flex items-center justify-center bg-naranja-oscuro text-white rounded-full shadow-lg">
+            <a href="{{ route('comercios.create') }}" class="w-12 h-12 flex items-center justify-center bg-naranja-oscuro text-white rounded-full shadow-lg hover:bg-[#FFD166] hover:text-naranja-oscuro transition-colors">
                 <span class="material-symbols-outlined">add</span>
             </a>
         @else
-            <a href="{{ route('comercios.edit', $comercios->first()->id) }}" class="w-12 h-12 flex items-center justify-center bg-azul-marino text-white rounded-full shadow-lg">
+            <a href="{{ route('comercios.edit', $comercios->first()->id) }}" class="w-12 h-12 flex items-center justify-center bg-naranja-oscuro text-white rounded-full shadow-lg hover:bg-[#FFD166] hover:text-naranja-oscuro transition-colors">
                 <span class="material-symbols-outlined">edit</span>
             </a>
         @endif

@@ -8,7 +8,7 @@
         ['name' => 'Editar']
     ]" />
     <div class="bg-white rounded-lg shadow p-8">
-        <h2 class="text-2xl font-bold text-azul-marino mb-6">Editar Perfil</h2>
+        <h2 class="text-2xl font-bold text-naranja-oscuro mb-6">Editar Perfil</h2>
 
         @if (session('success'))
             <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
@@ -114,7 +114,7 @@
             </div>
 
             <button type="submit"
-                    class="mt-6 w-full py-2 px-4 bg-azul-marino text-white font-bold rounded hover:bg-amarillo-claro hover:text-azul-marino transition">
+                    class="mt-6 w-full py-2 px-4 bg-[#F39200] text-white font-bold rounded hover:bg-[#E07F00] transition">
                 Guardar Cambios
             </button>
         </form>
@@ -128,7 +128,7 @@
     ['name' => 'Editar']
 ]" />
     <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold text-azul-marino">Editar Perfil</h2>
+        <h2 class="text-2xl font-bold text-naranja-oscuro">Editar Perfil</h2>
        
     </div>
 
@@ -239,7 +239,7 @@
 
             <div class="p-4 bg-gray-50 border-t">
                 <button type="submit"
-                        class="w-full py-3 bg-azul-marino text-white font-semibold rounded-lg">
+                        class="w-full py-3 bg-[#F39200] text-white font-semibold rounded-lg hover:bg-[#E07F00] transition">
                     Guardar Cambios
                 </button>
             </div>
@@ -254,15 +254,60 @@
         border-radius: 0.25rem;
         border: 2px solid #cbd5e1;
         background: #fff;
-        appearance: none;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent;
+        transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
         cursor: pointer;
+        margin: 0;
+    }
+    .custom-checkbox:hover {
+        border-color: #F39200 !important;
+    }
+    .custom-checkbox:focus {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.3) !important;
+        border-color: #F39200 !important;
+    }
+    .custom-checkbox:focus-visible {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.4) !important;
+        border-color: #F39200 !important;
     }
     .custom-checkbox:checked {
-        background-color: #2563eb;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 2px #93c5fd;
+        background-color: #F39200 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    .custom-checkbox:checked:hover {
+        background-color: #D97706 !important;
+        border-color: #D97706 !important;
+    }
+    .custom-checkbox:checked:focus {
+        background-color: #F39200 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    .custom-checkbox:active {
+        background-color: #FCE7A3 !important;
+        border-color: #F39200 !important;
+        box-shadow: none !important;
+    }
+    .custom-checkbox:checked:active {
+        background-color: #FCE7A3 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    .custom-checkbox:disabled {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+        border-color: #e5e7eb !important;
     }
 </style>
 

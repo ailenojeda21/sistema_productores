@@ -8,7 +8,7 @@
     ]" />
     <!-- Encabezado -->
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-azul-marino">Cultivos</h1>
+        <h1 class="text-3xl font-bold text-naranja-oscuro">Cultivos</h1>
         <a href="{{ route('cultivos.create') }}" 
            class="px-4 py-2 bg-naranja-oscuro text-white rounded hover:bg-amarillo-claro font-semibold shadow">
            Nuevo Cultivo
@@ -140,8 +140,8 @@
 <!-- Mobile View -->
 <div class="lg:hidden">
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold text-azul-marino">Cultivos</h1>
-        <a href="{{ route('cultivos.create') }}" class="w-12 h-12 flex items-center justify-center bg-naranja-oscuro text-white rounded-full shadow-lg">
+        <h1 class="text-2xl font-bold text-naranja-oscuro">Cultivos</h1>
+        <a href="{{ route('cultivos.create') }}" class="w-12 h-12 flex items-center justify-center bg-naranja-oscuro text-white rounded-full shadow-lg hover:bg-[#FFD166] hover:text-naranja-oscuro transition-colors">
             <span class="material-symbols-outlined">add</span>
         </a>
     </div>

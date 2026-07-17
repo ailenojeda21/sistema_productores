@@ -12,7 +12,7 @@
         <!-- Header -->
         <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
-                <h3 class="font-semibold text-azul-marino text-lg">
+                <h3 class="font-semibold text-naranja-oscuro text-lg">
                     {{ $maq->propiedad->direccion_completa ?? 'Sin dirección' }}
                 </h3>
                 <p class="text-sm text-gray-500">
@@ -30,7 +30,7 @@
                 <span class="font-medium text-gray-600 block mb-2">Implementos:</span>
                 <div class="flex flex-wrap gap-1.5">
                     @foreach($maq->implementos_activos as $item)
-                    <span class="inline-flex items-center px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                    <span class="inline-flex items-center px-2.5 py-1 bg-[#FCE7A3] text-[#9A5200] text-xs font-medium rounded-full">
                         {{ $item }}
                     </span>
                     @endforeach
@@ -72,7 +72,7 @@
     @if($remaining->count() > 0)
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <button onclick="toggleExpandMaquinaria()" 
-                class="w-full px-4 py-3 bg-gray-50 text-azul-marino font-medium flex items-center justify-between">
+                class="w-full px-4 py-3 bg-gray-50 text-naranja-oscuro font-medium flex items-center justify-between">
             <span>Ver {{ $remaining->count() }} más</span>
             <span id="expand-icon-maquinaria" class="material-symbols-outlined transition-transform">expand_more</span>
         </button>
@@ -83,7 +83,7 @@
 
                 <div class="flex items-start justify-between mb-3">
                     <div class="flex-1">
-                        <h3 class="font-semibold text-azul-marino text-lg">
+                        <h3 class="font-semibold text-naranja-oscuro text-lg">
                             {{ $maq->propiedad->direccion_completa ?? 'Sin dirección' }}
                         </h3>
                         <p class="text-sm text-gray-500">
@@ -100,7 +100,7 @@
                         <span class="font-medium text-gray-600 block mb-2">Implementos:</span>
                         <div class="flex flex-wrap gap-1.5">
                             @foreach($maq->implementos_activos as $item)
-                            <span class="inline-flex items-center px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                            <span class="inline-flex items-center px-2.5 py-1 bg-[#FCE7A3] text-[#9A5200] text-xs font-medium rounded-full">
                                 {{ $item }}
                             </span>
                             @endforeach

@@ -8,7 +8,7 @@
         ['name' => 'Nueva']
     ]" />
     <div class="bg-white rounded-lg shadow p-8">
-        <h2 class="text-2xl font-bold text-azul-marino mb-6">Nueva Propiedad</h2>
+        <h2 class="text-2xl font-bold text-naranja-oscuro mb-6">Nueva Propiedad</h2>
         <form method="POST" action="{{ route('propiedades.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -172,7 +172,7 @@
 
 
             </div>
-            <button type="submit" class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar</button>
+            <button type="submit" class="mt-8 w-full py-2 px-4 bg-[#F39200] hover:bg-[#E07F00] text-white font-bold rounded transition">Guardar</button>
         </form>
     </div>
 </div>
@@ -187,15 +187,123 @@
         border-radius: 0.25rem;
         border: 2px solid #cbd5e1;
         background: #fff;
-        appearance: none;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent;
+        transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
         cursor: pointer;
+        margin: 0;
+    }
+    .custom-checkbox:hover {
+        border-color: #F39200 !important;
+    }
+    .custom-checkbox:focus {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.3) !important;
+        border-color: #F39200 !important;
+    }
+    .custom-checkbox:focus-visible {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.4) !important;
+        border-color: #F39200 !important;
     }
     .custom-checkbox:checked {
-        background-color: #2563eb;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 2px #93c5fd;
+        background-color: #F39200 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    .custom-checkbox:checked:hover {
+        background-color: #D97706 !important;
+        border-color: #D97706 !important;
+    }
+    .custom-checkbox:checked:focus {
+        background-color: #F39200 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    .custom-checkbox:active {
+        background-color: #FCE7A3 !important;
+        border-color: #F39200 !important;
+        box-shadow: none !important;
+    }
+    .custom-checkbox:checked:active {
+        background-color: #FCE7A3 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    .custom-checkbox:disabled {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+        border-color: #e5e7eb !important;
+    }
+    input[type="radio"].tenencia-radio {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 9999px;
+        border: 2px solid #cbd5e1;
+        background: #fff;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent;
+        transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        margin: 0;
+        position: relative;
+    }
+    input[type="radio"].tenencia-radio:hover {
+        border-color: #F39200 !important;
+    }
+    input[type="radio"].tenencia-radio:focus {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.3) !important;
+        border-color: #F39200 !important;
+    }
+    input[type="radio"].tenencia-radio:focus-visible {
+        outline: none !important;
+        outline-style: none !important;
+        box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.4) !important;
+        border-color: #F39200 !important;
+    }
+    input[type="radio"].tenencia-radio:checked {
+        background-color: #F39200 !important;
+        border-color: #F39200 !important;
+        box-shadow: 0 0 0 2px #FCE7A3 !important;
+    }
+    input[type="radio"].tenencia-radio:checked::before {
+        content: '';
+        display: block;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 9999px;
+        background: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    input[type="radio"].tenencia-radio:checked:hover {
+        background-color: #D97706 !important;
+        border-color: #D97706 !important;
+    }
+    input[type="radio"].tenencia-radio:active {
+        background-color: #FCE7A3 !important;
+        border-color: #F39200 !important;
+        box-shadow: none !important;
+    }
+    input[type="radio"].tenencia-radio:disabled {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
     }
 </style>
 @endsection

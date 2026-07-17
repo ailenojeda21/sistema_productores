@@ -7,7 +7,7 @@
         ['name' => 'Editar']
     ]" />
     <div class="bg-white rounded-lg shadow p-8">
-        <h2 class="text-2xl font-bold text-azul-marino mb-6">Editar Cultivo</h2>
+        <h2 class="text-2xl font-bold text-naranja-oscuro mb-6">Editar Cultivo</h2>
         <form method="POST" action="{{ route('cultivos.update', $cultivo) }}" data-cultivo-id="{{ $cultivo->id }}">
             @csrf
             @method('PUT')
@@ -74,7 +74,7 @@
                      </select>
                  </div>
             </div>
-            <button type="submit" class="mt-8 w-full py-2 px-4 bg-azul-marino hover:bg-amarillo-claro hover:text-azul-marino text-white font-bold rounded transition">Guardar Cambios</button>
+            <button type="submit" class="mt-8 w-full py-2 px-4 bg-[#F39200] hover:bg-[#E07F00] text-white font-bold rounded transition">Guardar Cambios</button>
         </form>
     </div>
 </div>

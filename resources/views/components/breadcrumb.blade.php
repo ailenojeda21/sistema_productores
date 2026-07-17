@@ -34,14 +34,14 @@
 
             <li>
                 @if($isLast || !$hasRoute)
-                    <span class="flex items-center {{ $isLast ? 'text-azul-marino font-semibold' : 'text-gray-500' }}">
+                    <span class="flex items-center {{ $isLast ? 'text-[#F39200] font-semibold' : 'text-gray-500' }}">
                         @if(!empty($item['icon']))
                             <span class="material-symbols-outlined text-18 mr-1">{{ $item['icon'] }}</span>
                         @endif
                         {{ $item['name'] ?? '' }}
                     </span>
                 @else
-                    <a href="{{ $url }}" class="flex items-center text-gray-500 hover:text-azul-marino transition-colors">
+                    <a href="{{ $url }}" class="flex items-center text-gray-500 hover:text-[#F39200] transition-colors">
                         @if(!empty($item['icon']))
                             <span class="material-symbols-outlined text-18 mr-1">{{ $item['icon'] }}</span>
                         @endif
