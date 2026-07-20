@@ -40,6 +40,21 @@ class AuthServiceProvider extends ServiceProvider
             return $user instanceof \App\Models\StaffUser && $user->role === 'admin';
         });
 
+        Gate::define('view-dashboard', function ($user) {
+            return $user instanceof \App\Models\StaffUser
+                && in_array($user->role, ['admin', 'auditor']);
+        });
+
+        Gate::define('view-producers', function ($user) {
+            return $user instanceof \App\Models\StaffUser
+                && in_array($user->role, ['admin', 'auditor']);
+        });
+
+        Gate::define('export-producers', function ($user) {
+            return $user instanceof \App\Models\StaffUser
+                && in_array($user->role, ['admin', 'auditor']);
+        });
+
         Gate::before(function ($user, $ability) {
             if (method_exists($user, 'hasRole') && $user->hasRole('admin')) {
                 return true;

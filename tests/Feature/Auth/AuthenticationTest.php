@@ -39,4 +39,6 @@ test('users can logout', function () {
     $response = $this->post('/logout');
 
     $response->assertRedirect('/');
-})->skip('assertGuest is unreliable in this test env — controller logic verified manually');
+
+    $this->get('/dashboard')->assertRedirect('/login');
+});

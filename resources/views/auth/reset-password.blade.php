@@ -3,7 +3,7 @@
 @section('content')
 <div class="min-h-screen flex flex-col md:flex-row">
     <!-- Mitad Izquierda -->
-    <div class="hidden md:flex md:w-1/2 w-full bg-gray-100 items-center justify-center p-0 overflow-hidden" height: 100vh; max-height: 100vh;">
+    <div class="hidden md:flex md:w-1/2 w-full bg-gray-100 items-center justify-center p-0 overflow-hidden" style="height: 100vh; max-height: 100vh;">
         <img src="{{ asset('images/rupal.png') }}" alt="Logo Municipalidad de Lavalle" class="w-full h-full" style="max-height: 100vh;">
     </div>
     <!-- Mitad Derecha -->

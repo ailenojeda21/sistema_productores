@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateMaquinariaRequest;
 use App\Models\Maquinaria;
 use App\Models\Propiedad;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class MaquinariaController extends Controller
@@ -44,56 +46,54 @@ class MaquinariaController extends Controller
 
         $entries = $isBulk ? $items : [$request->only(array_merge(['propiedad_id', 'modelo_tractor', 'tractor'], Maquinaria::implementosKeys()))];
 
-        foreach ($entries as $index => $entry) {
-            $validator = Validator::make($entry, [
-                'propiedad_id' => 'required|exists:propiedades,id',
-                'modelo_tractor' => [
-                    'nullable',
-                    'integer',
-                    'min:1900',
-                    'max:'.date('Y'),
-                    function ($attr, $value, $fail) use ($entry) {
-                        if (! empty($entry['tractor']) && empty($value)) {
-                            $fail('El año del tractor es obligatorio cuando se marca la opción tractor.');
-                        }
-                    },
-                ],
-            ], [
-                'modelo_tractor.integer' => 'El año del tractor debe ser un número entero.',
-            ]);
+        DB::transaction(function () use ($entries) {
+            foreach ($entries as $entry) {
+                $validator = Validator::make($entry, [
+                    'propiedad_id' => 'required|exists:propiedades,id',
+                    'modelo_tractor' => [
+                        'nullable',
+                        'integer',
+                        'min:1900',
+                        'max:'.date('Y'),
+                        function ($attr, $value, $fail) use ($entry) {
+                            if (! empty($entry['tractor']) && empty($value)) {
+                                $fail('El año del tractor es obligatorio cuando se marca la opción tractor.');
+                            }
+                        },
+                    ],
+                ], [
+                    'modelo_tractor.integer' => 'El año del tractor debe ser un número entero.',
+                ]);
 
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
+                if ($validator->fails()) {
+                    throw new \Illuminate\Validation\ValidationException($validator);
+                }
+
+                $propiedad = Propiedad::where('id', $entry['propiedad_id'])
+                    ->where('usuario_id', auth()->id())
+                    ->first();
+
+                if (! $propiedad) {
+                    throw new \Illuminate\Database\Eloquent\ModelNotFoundException('Propiedad no encontrada');
+                }
+
+                $existente = Maquinaria::lockForUpdate()->where('propiedad_id', $entry['propiedad_id'])->first();
+                if ($existente) {
+                    throw new \App\Exceptions\BusinessRuleException('Ya existe una maquinaria registrada para la propiedad: '.($propiedad->calle ?? 'ID '.$entry['propiedad_id']));
+                }
+
+                $ma = new Maquinaria;
+                $ma->propiedad_id = $entry['propiedad_id'];
+                $ma->tractor = ! empty($entry['tractor']) ? 1 : 0;
+                $ma->modelo_tractor = ! empty($entry['tractor']) ? ($entry['modelo_tractor'] ?? null) : null;
+
+                foreach (Maquinaria::implementosKeys() as $field) {
+                    $ma->$field = ! empty($entry[$field]) ? 1 : 0;
+                }
+
+                $ma->save();
             }
-
-            $propiedad = Propiedad::where('id', $entry['propiedad_id'])
-                ->where('usuario_id', auth()->id())
-                ->first();
-
-            if (! $propiedad) {
-                return redirect()->back()
-                    ->withInput()
-                    ->withErrors(['propiedad_id' => 'La propiedad seleccionada no es válida.']);
-            }
-
-            $existente = Maquinaria::where('propiedad_id', $entry['propiedad_id'])->first();
-            if ($existente) {
-                return redirect()->back()
-                    ->with('error', 'Ya existe una maquinaria registrada para la propiedad: '.($propiedad->calle ?? 'ID '.$entry['propiedad_id']))
-                    ->withInput();
-            }
-
-            $ma = new Maquinaria;
-            $ma->propiedad_id = $entry['propiedad_id'];
-            $ma->tractor = ! empty($entry['tractor']) ? 1 : 0;
-            $ma->modelo_tractor = ! empty($entry['tractor']) ? ($entry['modelo_tractor'] ?? null) : null;
-
-            foreach (Maquinaria::implementosKeys() as $field) {
-                $ma->$field = ! empty($entry[$field]) ? 1 : 0;
-            }
-
-            $ma->save();
-        }
+        });
 
         $msg = $isBulk
             ? 'Maquinarias creadas correctamente.'
@@ -118,28 +118,13 @@ class MaquinariaController extends Controller
         return view('maquinaria.edit', compact('maquinaria', 'propiedades'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateMaquinariaRequest $request, $id)
     {
         $maquinaria = Maquinaria::with('propiedad')->findOrFail($id);
 
         $this->authorize('update', $maquinaria);
 
-        $validated = $request->validate([
-            'propiedad_id' => 'required|exists:propiedades,id',
-            'modelo_tractor' => [
-                'nullable',
-                'integer',
-                'min:1900',
-                'max:'.date('Y'),
-                function ($attr, $value, $fail) use ($request) {
-                    if ($request->has('tractor') && empty($value)) {
-                        $fail('El año del tractor es obligatorio cuando se marca la opción tractor.');
-                    }
-                },
-            ],
-        ], [
-            'modelo_tractor.integer' => 'El año del tractor debe ser un número entero.',
-        ]);
+        $validated = $request->validated();
 
         $propiedad = Propiedad::where('id', $validated['propiedad_id'])
             ->where('usuario_id', auth()->id())

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePropiedadRequest;
+use App\Http\Requests\UpdatePropiedadRequest;
 use App\Models\Propiedad;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -27,36 +28,11 @@ class PropiedadController extends Controller
         return view('propiedades.index', compact('propiedades'));
     }
 
-    public function store(Request $request)
+    public function store(StorePropiedadRequest $request)
     {
         $this->authorize('create', Propiedad::class);
 
-        $validated = $request->validate([
-            'calle' => 'required|string|max:255',
-            'numeracion' => 'required|integer|min:1',
-            'distrito' => 'required|string|max:100',
-            'hectareas' => 'required|numeric|min:0',
-
-            'malla' => 'nullable',
-            'derecho_riego' => 'nullable',
-            'tipo_derecho_riego' => 'nullable|string|in:Subterráneo,Superficial,Ambos',
-
-            'rut' => 'nullable',
-            'rut_valor' => 'nullable|required_with:rut_archivo_file',
-            'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240',
-
-            'lat' => 'required|numeric|between:-90,90',
-            'lng' => 'required|numeric|between:-180,180',
-
-            'hectareas_malla' => 'nullable|numeric|lte:hectareas',
-            'cierre_perimetral' => 'nullable',
-
-            'tipo_tenencia' => 'required|in:propietario,arrendatario,otros',
-            'especificar_tenencia' => 'nullable|required_if:tipo_tenencia,otros|string|max:255',
-        ], [
-            'especificar_tenencia.required_if' => 'Debe especificar la condición cuando selecciona "Otro".',
-            'rut_valor.required_with' => 'El número de RUT es obligatorio cuando se adjunta un archivo.',
-        ]);
+        $validated = $request->validated();
 
         $validated['malla'] = $request->has('malla');
         $validated['derecho_riego'] = $request->has('derecho_riego');
@@ -100,38 +76,13 @@ class PropiedadController extends Controller
         return view('propiedades.edit', compact('propiedad'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdatePropiedadRequest $request, string $id)
     {
         $propiedad = Propiedad::findOrFail($id);
 
         $this->authorize('update', $propiedad);
 
-        $validated = $request->validate([
-            'calle' => 'sometimes|required|string|max:255',
-            'numeracion' => 'sometimes|required|integer|min:1',
-            'distrito' => 'sometimes|required|string|max:100',
-            'hectareas' => 'sometimes|required|numeric|min:0',
-
-            'malla' => 'nullable',
-            'derecho_riego' => 'nullable',
-            'tipo_derecho_riego' => 'nullable|string|in:Subterráneo,Superficial,Ambos',
-
-            'rut' => 'nullable',
-            'rut_valor' => 'nullable|required_with:rut_archivo_file',
-            'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240',
-
-            'lat' => 'sometimes|required|numeric|between:-90,90',
-            'lng' => 'sometimes|required|numeric|between:-180,180',
-
-            'hectareas_malla' => 'nullable|numeric|lte:hectareas',
-            'cierre_perimetral' => 'nullable',
-
-            'tipo_tenencia' => 'sometimes|required|in:propietario,arrendatario,otros',
-            'especificar_tenencia' => 'nullable|required_if:tipo_tenencia,otros|string|max:255',
-        ], [
-            'especificar_tenencia.required_if' => 'Debe especificar la condición cuando selecciona "Otro".',
-            'rut_valor.required_with' => 'El número de RUT es obligatorio cuando se adjunta un archivo.',
-        ]);
+        $validated = $request->validated();
 
         if ($validated['tipo_tenencia'] !== 'otros') {
             $validated['especificar_tenencia'] = null;

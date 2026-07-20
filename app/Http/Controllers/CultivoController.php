@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCultivoRequest;
+use App\Http\Requests\UpdateCultivoRequest;
 use App\Models\Cultivo;
 use App\Models\Propiedad;
 use Illuminate\Http\Request;
@@ -68,32 +70,11 @@ class CultivoController extends Controller
         return view('cultivos.create', compact('propiedades'));
     }
 
-    public function store(Request $request)
+    public function store(StoreCultivoRequest $request)
     {
         $this->authorize('create', Cultivo::class);
 
-        $propiedad = Propiedad::where('id', $request->propiedad_id)
-            ->where('usuario_id', auth()->id())
-            ->first();
-
-        if (! $propiedad) {
-            return back()->withErrors(['propiedad_id' => 'La propiedad seleccionada no es válida'])->withInput();
-        }
-
-        $hectareasDisponibles = $propiedad->hectareas_disponibles;
-
-        $validated = $request->validate([
-            'propiedad_id' => 'required|exists:propiedades,id',
-            'variedad' => 'required|string|max:255',
-            'estacion' => 'required|string|max:255',
-            'tipo' => ['required', 'string', 'max:255', 'regex:/^[\pL\pM0-9\s\-\.\,\/]+$/u'],
-            'hectareas' => "required|numeric|min:0|max:$hectareasDisponibles",
-            'manejo_cultivo' => 'required|in:Convencional,Agroecologico,Organico',
-            'tecnologia_riego' => 'required|in:Surco,Inundación,Cimalco,Manga,Goteo,Aspersión',
-        ], [
-            'hectareas.max' => "Las hectáreas del cultivo no pueden exceder las disponibles ($hectareasDisponibles ha).",
-            'tipo.regex' => 'El tipo contiene caracteres no permitidos.',
-        ]);
+        $validated = $request->validated();
 
         $validated['tipo'] = $this->normalizarTipo($validated['tipo'] ?? null);
 
@@ -114,38 +95,13 @@ class CultivoController extends Controller
         return view('cultivos.edit', compact('cultivo', 'propiedades'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateCultivoRequest $request, string $id)
     {
         $cultivo = Cultivo::with('propiedad')->findOrFail($id);
 
         $this->authorize('update', $cultivo);
 
-        $propiedad = Propiedad::where('id', $request->propiedad_id ?: $cultivo->propiedad_id)
-            ->where('usuario_id', auth()->id())
-            ->first();
-
-        if (! $propiedad) {
-            return back()->withErrors(['propiedad_id' => 'La propiedad seleccionada no es válida'])->withInput();
-        }
-
-        $hectareasUsadas = $propiedad->cultivos()
-            ->where('id', '!=', $id)
-            ->sum('hectareas');
-
-        $hectareasDisponibles = max(0, $propiedad->hectareas - $hectareasUsadas);
-
-        $validated = $request->validate([
-            'propiedad_id' => 'sometimes|exists:propiedades,id',
-            'variedad' => 'sometimes|string|max:255',
-            'estacion' => 'sometimes|string|max:255',
-            'tipo' => ['sometimes', 'string', 'max:255', 'regex:/^[\pL\pM0-9\s\-\.\,\/]+$/u'],
-            'hectareas' => "sometimes|numeric|min:0|max:$hectareasDisponibles",
-            'manejo_cultivo' => 'sometimes|in:Convencional,Agroecologico,Organico',
-            'tecnologia_riego' => 'sometimes|in:Surco,Inundación,Cimalco,Manga,Goteo,Aspersión',
-        ], [
-            'hectareas.max' => "Las hectáreas del cultivo no pueden exceder las disponibles ($hectareasDisponibles ha).",
-            'tipo.regex' => 'El tipo contiene caracteres no permitidos.',
-        ]);
+        $validated = $request->validated();
 
         if (array_key_exists('tipo', $validated)) {
             $validated['tipo'] = $this->normalizarTipo($validated['tipo']);

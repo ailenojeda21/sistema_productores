@@ -116,8 +116,8 @@ class ProfileController extends Controller
         $user->load([
             'propiedades',
             'propiedades.cultivos',
-            'propiedades.maquinarias',
-            'comercios',
+            'propiedades.maquinaria',
+            'comercializacion',
         ]);
 
         return response()->json([
@@ -137,8 +137,8 @@ class ProfileController extends Controller
             ],
             'propiedades' => $user->propiedades->toArray(),
             'cultivos' => $user->propiedades->flatMap->cultivos->toArray(),
-            'maquinarias' => $user->propiedades->flatMap->maquinarias->toArray(),
-            'comercios' => $user->comercios->toArray(),
+            'maquinarias' => $user->propiedades->flatMap->maquinaria->toArray(),
+            'comercios' => $user->comercializacion ? [$user->comercializacion->toArray()] : [],
         ]);
     }
 }

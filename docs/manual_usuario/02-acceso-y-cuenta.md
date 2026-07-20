@@ -24,7 +24,7 @@ Aplica a todos los productores que necesiten crear una cuenta, acceder al sistem
 | 1 | Abrir el navegador e ir a la URL del sistema (ej: `https://rupal.lavalle.gob.ar`) | Se muestra la página de inicio con los botones **Ingresar** y **Registrarse** |
 | 2 | Hacer clic en el botón **Registrarse** | Se abre el formulario de registro |
 
-![Página de inicio con botones Ingresar y Registrarse](../imagenes/02-acceso%20P%C3%A1gina%20de%20inicio%20con%20botones%20Ingresar%20y%20Registrarse%20.png)
+![Página de inicio con botones Ingresar y Registrarse](../imagenes/02-acceso%20P%C3%A1gina%20de%20inicio%20con%20botones%20Ingresar%20y%20Registrarse.png)
 
 ### 3.2 Completar el formulario de registro
 
@@ -62,7 +62,7 @@ Después del registro, el sistema envía un correo de verificación.
 | 2 | Abrir el correo | El mensaje contiene un botón **Verificar Correo Electrónico** |
 | 3 | Hacer clic en el botón **Verificar Correo Electrónico** | Se abre una ventana del navegador confirmando la verificación |
 
-[CAPTURA DE PANTALLA: Correo electrónico de verificación con botón naranja]
+![Correo electrónico de verificación con botón naranja](../imagenes/02-acceso%20Correo%20electr%C3%B3nico%20de%20verificaci%C3%B3n%20con%20bot%C3%B3n%20naranja.png)
 
 | Paso | Acción | Resultado Esperado |
 |------|--------|--------------------|
@@ -80,7 +80,7 @@ Si no se recibe el correo:
 | 3 | Hacer clic en el enlace "reenviar el correo de verificación" |
 | 4 | Esperar unos minutos y revisar la bandeja de entrada (incluyendo la carpeta de spam) |
 
-[CAPTURA DE PANTALLA: Notificación de correo no verificado con enlace para reenviar]
+![Notificación de correo no verificado con enlace para reenviar](../imagenes/02-acceso%20Notificaci%C3%B3n%20de%20correo%20no%20verificado%20con%20enlace%20para%20reenviar.png)
 
 ## 5. PROCEDIMIENTO: INICIO DE SESIÓN
 
@@ -118,7 +118,7 @@ Si no se recibe el correo:
 
 ### 6.2 Restablecer la contraseña
 
-[CAPTURA DE PANTALLA: Correo electrónico de restablecimiento de contraseña (estilo naranja)]
+![Correo electrónico de restablecimiento de contraseña (estilo naranja)](../imagenes/02-acceso%20Correo%20electr%C3%B3nico%20de%20restablecimiento%20de%20contrase%C3%B1a%20(estilo%20naranja).png)
 
 | Paso | Acción | Resultado Esperado |
 |------|--------|--------------------|

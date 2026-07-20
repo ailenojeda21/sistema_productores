@@ -18,6 +18,8 @@ class StaffDashboardController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('view-dashboard');
+
         $user = $request->user();
 
         $usuariosTotal = User::count();

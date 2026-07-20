@@ -8,42 +8,38 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropiedadController;
 use App\Http\Controllers\StaffAuthController;
 use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\StaffNewPasswordController;
 use App\Http\Controllers\StaffPasswordResetLinkController;
 use App\Http\Controllers\StaffProducerController;
 use App\Http\Controllers\StaffUserController;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 // ============================================================
 // PREVIEW de plantillas de correo (solo desarrollo)
 // ============================================================
-// Route::get('/preview/staff-reset-password', function () {
-//     return view('emails.staff-reset-password', [
-//         'url' => 'https://example.com/reset-password/token123',
-//         'count' => 60,
-//     ]);
-// });
+ Route::get('/preview/staff-reset-password', function () {
+     return view('emails.staff-reset-password', [
+         'url' => 'https://example.com/reset-password/token123',
+         'count' => 60,
+     ]);
+ });
 //
-// Route::get('/preview/user-reset-password', function () {
-//     return view('emails.user-reset-password', [
-//         'url' => 'https://example.com/reset-password/token456',
-//         'count' => 60,
-//     ]);
-// });
+ Route::get('/preview/user-reset-password', function () {
+     return view('emails.user-reset-password', [
+         'url' => 'https://example.com/reset-password/token456',
+         'count' => 60,
+     ]);
+ });
 //
-// Route::get('/preview/welcome-verification', function () {
-//     $user = (object) ['name' => 'Juan Pérez'];
-//
-//     return view('emails.welcome-verification', [
-//         'user' => $user,
-//         'verificationUrl' => 'https://example.com/verify-email/token789',
-//     ]);
-// });
+ Route::get('/preview/welcome-verification', function () {
+     $user = (object) ['name' => 'Juan Pérez'];
+
+     return view('emails.welcome-verification', [
+        'user' => $user,
+         'verificationUrl' => 'https://example.com/verify-email/token789',
+     ]);
+ });
 
 /*
 |--------------------------------------------------------------------------
@@ -96,43 +92,11 @@ Route::middleware('web')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
-    Route::get('/register', function () {
-        return view('auth.register');
-    })->name('register');
+    Route::get('/register', [RegisteredUserController::class, 'create'])
+        ->name('register');
 
-    Route::post('/register', function (Request $request) {
-
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ], [
-            'email.unique' => 'El correo electronico ya ha sido utilizado.',
-            'email.required' => 'El correo electronico es obligatorio.',
-            'email.email' => 'Ingrese un correo electronico valido.',
-            'password.required' => 'La contrasena es obligatoria.',
-            'password.min' => 'La contrasena debe tener al menos 8 caracteres.',
-            'password.confirmed' => 'La confirmacion de contrasena no coincide.',
-            'name.required' => 'El nombre es obligatorio.',
-        ]);
-
-        $data['email'] = strtolower($data['email']);
-
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'dni' => '',
-            'telefono' => '',
-            'direccion' => '',
-            'password' => Hash::make($data['password']),
-        ]);
-
-        event(new Registered($user));
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return redirect('/dashboard');
-    })->middleware('throttle:register');
+    Route::post('/register', [RegisteredUserController::class, 'store'])
+        ->middleware('throttle:register');
 
     // Rutas de recuperacion de contrasena
     require __DIR__.'/auth.php';
@@ -173,11 +137,11 @@ Route::middleware('auth')->group(function () {
 
     // Maquinaria
     Route::resource('maquinaria', MaquinariaController::class)->except(['show']);
-});
 
-// RUT files (fuera del grupo auth para permitir ambas guardas: web y staff)
-Route::get('/propiedades/{propiedad}/rut', [PropiedadController::class, 'downloadRut'])
-    ->name('propiedades.rut');
+    // RUT descarga (productores)
+    Route::get('/propiedades/{propiedad}/rut', [PropiedadController::class, 'downloadRut'])
+        ->name('propiedades.rut');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -284,5 +248,9 @@ Route::prefix('staff')->group(function () {
         // Logout Staff
         Route::post('/logout', [StaffAuthController::class, 'logout'])
             ->name('staff.logout');
+
+        // RUT descarga (staff)
+        Route::get('/propiedades/{propiedad}/rut', [PropiedadController::class, 'downloadRut'])
+            ->name('staff.propiedades.rut');
     });
 });

@@ -25,8 +25,10 @@
     <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-24 mb-3">
 
-        <h2 class="text-xl font-bold text-naranja-oscuro text-center">
-            Bienvenido {{ Auth::user()->name }} a <span class="tracking-[0.2em]">RUPAL</span>
+        <h2 class="text-xl font-bold text-naranja-oscuro text-center leading-relaxed">
+            Bienvenido<br>
+            <span class="text-lg">{{ Auth::user()->name }} a </span><br>
+            <span class="tracking-[0.5em] text-base font-semibold">R U P A L</span>
         </h2>
     </div>
 
