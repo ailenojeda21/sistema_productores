@@ -71,8 +71,8 @@ test('api me returns authenticated user', function () {
 test('api me returns 401 when unauthenticated', function () {
     $response = $this->getJson('/api/staff/me');
 
-    expect($response->status())->toBe(401);
-})->skip('Crashes the PHP process in this environment — investigate exception handler');
+    $response->assertStatus(401);
+})->skip('Crashes the PHP process in this environment — AuthenticationException handler compatibility issue');
 
 test('api logout deletes token', function () {
     $staff = StaffUser::factory()->create();

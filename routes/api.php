@@ -34,7 +34,7 @@ Route::post('/staff/login', [App\Http\Controllers\StaffApiAuthController::class,
     ->middleware('throttle:login-staff-api');
 
 // Rutas protegidas con token Sanctum
-Route::middleware(['auth:staff-api'])->prefix('staff')->group(function () {
+Route::middleware(['auth:staff-api', 'throttle:60,1'])->prefix('staff')->group(function () {
 
     // Sesión
     Route::post('/logout', [App\Http\Controllers\StaffApiAuthController::class, 'logout']);

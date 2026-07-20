@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreComercioRequest;
+use App\Http\Requests\UpdateComercioRequest;
 use App\Models\Comercio;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ComercioController extends Controller
@@ -32,18 +33,11 @@ class ComercioController extends Controller
         return view('comercios.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreComercioRequest $request)
     {
         $this->authorize('create', Comercio::class);
 
-        $validated = $request->validate([
-            'infraestructura_empaque' => 'nullable',
-            'vende_en_finca' => 'nullable',
-            'tiene_mercados' => 'nullable',
-            'mercados' => 'nullable|array',
-            'tiene_cooperativas' => 'nullable',
-            'cooperativas' => 'nullable|array',
-        ]);
+        $validated = $request->validated();
 
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;
@@ -81,20 +75,13 @@ class ComercioController extends Controller
         return view('comercios.edit', compact('comercio'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateComercioRequest $request, $id)
     {
         $comercio = Comercio::findOrFail($id);
 
         $this->authorize('update', $comercio);
 
-        $validated = $request->validate([
-            'infraestructura_empaque' => 'nullable',
-            'vende_en_finca' => 'nullable',
-            'tiene_mercados' => 'nullable',
-            'mercados' => 'nullable|array',
-            'tiene_cooperativas' => 'nullable',
-            'cooperativas' => 'nullable|array',
-        ]);
+        $validated = $request->validated();
 
         $validated['infraestructura_empaque'] = $request->has('infraestructura_empaque') ? 1 : 0;
         $validated['vende_en_finca'] = $request->has('vende_en_finca') ? 1 : 0;

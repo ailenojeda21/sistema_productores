@@ -8,7 +8,7 @@ export default defineConfig({
     },
     plugins: [
         laravel({
-            input: [ // <-- ¡Aquí la corrección!
+            input: [
                 'resources/js/app.js',
                 'resources/css/app.css',
             ],
@@ -23,4 +23,14 @@ export default defineConfig({
             },
         }),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['vue', '@inertiajs/vue3', 'axios'],
+                    'chart-vendor': ['chart.js', 'vue-chartjs'],
+                },
+            },
+        },
+    },
 });

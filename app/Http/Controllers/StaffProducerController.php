@@ -14,6 +14,8 @@ class StaffProducerController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('view-producers');
+
         $all = trim((string) $request->get('all', ''));
         $dni = trim((string) $request->get('dni', ''));
         $name = trim((string) $request->get('name', ''));
@@ -55,10 +57,7 @@ class StaffProducerController extends Controller
 
                 $q->whereHas('propiedades', function ($sub) use ($search) {
                     $sub->where('rut', 1)
-                        ->whereRaw(
-                            'CAST(rut_valor AS CHAR) LIKE ?',
-                            ["%{$search}%"]
-                        );
+                        ->where('rut_valor', 'like', "%{$search}%");
                 });
             })
 
@@ -101,6 +100,8 @@ class StaffProducerController extends Controller
 
     public function show(Request $request, $id)
     {
+        $this->authorize('view-producers');
+
         $producer = User::with([
             'propiedades.cultivos',
             'propiedades.maquinaria',
@@ -124,7 +125,7 @@ class StaffProducerController extends Controller
                 'cierre_perimetral' => $prop->cierre_perimetral,
                 'rut' => $prop->rut,
                 'rut_valor' => $prop->rut_valor,
-                'rut_archivo_url' => $prop->rut_archivo ? route('propiedades.rut', $prop) : null,
+                'rut_archivo_url' => $prop->rut_archivo ? route('staff.propiedades.rut', $prop) : null,
                 'lat' => $prop->lat,
                 'lng' => $prop->lng,
             ];
@@ -212,6 +213,8 @@ class StaffProducerController extends Controller
 
     public function export(Request $request)
     {
+        $this->authorize('export-producers');
+
         $all = trim((string) $request->get('all', ''));
         $dni = trim((string) $request->get('dni', ''));
         $name = trim((string) $request->get('name', ''));
@@ -220,7 +223,11 @@ class StaffProducerController extends Controller
         $tipo = trim((string) $request->get('tipo', ''));
         $rut = trim((string) $request->get('rut', ''));
 
-        $producers = User::query()
+        $producers = User::with([
+            'comercializacion',
+            'propiedades.maquinaria',
+            'propiedades.cultivos',
+        ])
             ->distinct()
 
             ->when($all !== '1' && $dni !== '', fn ($q) => $q->where('users.dni', 'like', "%{$dni}%"))
@@ -252,64 +259,53 @@ class StaffProducerController extends Controller
 
                 $q->whereHas('propiedades', function ($sub) use ($search) {
                     $sub->where('rut', 1)
-                        ->whereRaw(
-                            'CAST(rut_valor AS CHAR) LIKE ?',
-                            ["%{$search}%"]
-                        );
+                        ->where('rut_valor', 'like', "%{$search}%");
                 });
             })
 
-            ->with(['propiedades.cultivos'])
             ->get();
 
-        // Determinar tipo de búsqueda para headers adicionales
-        $searchType = null;
-        $searchValue = null;
+        $headers = [
+            // User
+            'Nombre', 'Email', 'DNI', 'Teléfono', 'Dirección',
+            // Comercio
+            'Infraestructura de empaque', 'Vende en finca', 'Mercados', 'Cooperativas',
+            // Propiedad
+            'Calle', 'Numeración', 'Dirección completa', 'Distrito', 'Hectáreas',
+            'Derecho de riego', 'Tipo derecho de riego', 'Posee RUT', 'Valor del RUT',
+            'Latitud', 'Longitud', 'Hectáreas con malla', 'Cierre perimetral', 'Posee malla',
+            'Tipo de tenencia', 'Especificar tenencia',
+            // Maquinaria
+            'Tractor', 'Modelo tractor', 'Arado', 'Rastra', 'Niveleta común', 'Niveleta láser',
+            'Cincel/Cultivadora', 'Desmalezadora', 'Pulverizadora', 'Mochila pulverizadora',
+            'Cosechadora', 'Enfardadora', 'Retroexcavadora', 'Carro/Carretón', 'Múltiple',
+            // Cultivo
+            'Tipo', 'Variedad', 'Estación', 'Hectáreas', 'Manejo del cultivo', 'Tecnología de riego',
+        ];
 
-        if ($all === '1') {
-            $searchType = 'all';
-        } elseif ($variedad) {
-            $searchType = 'variedad';
-            $searchValue = $variedad;
-        } elseif ($tipo) {
-            $searchType = 'tipo';
-            $searchValue = $tipo;
-        } elseif ($distrito) {
-            $searchType = 'distrito';
-            $searchValue = $distrito;
-        }
+        $searchValue = $variedad ?: $tipo ?: $distrito;
+        $searchType = $all === '1' ? 'all' : ($variedad ? 'variedad' : ($tipo ? 'tipo' : ($distrito ? 'distrito' : null)));
 
-        $headers = ['Nombre', 'DNI', 'RUT', 'Teléfono', 'Email'];
-
-        if ($searchType === 'variedad') {
-            $headers = array_merge($headers, ['Variedad', 'Hectáreas']);
-        } elseif ($searchType === 'tipo') {
-            $headers = array_merge($headers, ['Tipo', 'Hectáreas']);
-        } elseif ($searchType === 'distrito') {
-            $headers = array_merge($headers, ['Distrito']);
-        }
-
-        // Título dinámico según tipo de búsqueda
         $titulo = 'Listado de Productores';
         if ($searchType === 'all') {
             $titulo = 'Todos los Productores';
-        } elseif ($searchType === 'distrito' && $searchValue) {
-            $titulo = 'Productores del Distrito '.$searchValue;
-        } elseif ($searchType === 'variedad' && $searchValue) {
-            $titulo = 'Productores que cultivan '.$searchValue;
-        } elseif ($searchType === 'tipo' && $searchValue) {
-            $titulo = 'Productores de tipo '.$searchValue;
+        } elseif ($searchType === 'distrito') {
+            $titulo = 'Productores del Distrito ' . $distrito;
+        } elseif ($searchType === 'variedad') {
+            $titulo = 'Productores que cultivan ' . $variedad;
+        } elseif ($searchType === 'tipo') {
+            $titulo = 'Productores de tipo ' . $tipo;
         }
 
-        $fechaExport = date('d/m/Y H:i').' hs';
-
+        $fechaExport = date('d/m/Y H:i') . ' hs';
         $dateStr = date('Y-m-d');
+
         if ($searchType === 'all') {
-            $filename = 'productores_completo_'.$dateStr.'.xlsx';
+            $filename = 'productores_completo_' . $dateStr . '.xlsx';
         } elseif ($searchType && $searchValue) {
-            $filename = 'productores_'.strtolower(str_replace(' ', '_', $searchValue)).'_'.$dateStr.'.xlsx';
+            $filename = 'productores_' . strtolower(str_replace(' ', '_', $searchValue)) . '_' . $dateStr . '.xlsx';
         } else {
-            $filename = 'productores_todos_'.$dateStr.'.xlsx';
+            $filename = 'productores_todos_' . $dateStr . '.xlsx';
         }
 
         $spreadsheet = new Spreadsheet();
@@ -317,6 +313,7 @@ class StaffProducerController extends Controller
         $sheet->setTitle('Productores');
 
         $lastCol = $this->colLetter(count($headers));
+        $headerRow = 4;
 
         // Título
         $sheet->setCellValue('A1', $titulo);
@@ -329,61 +326,134 @@ class StaffProducerController extends Controller
         $sheet->getStyle('A2')->getFont()->setSize(10)->getColor()->setARGB('FF64748B');
 
         // Headers fila 4 con estilo
-        $headerRow = 4;
-        $col = 'A';
-        foreach ($headers as $header) {
-            $sheet->setCellValue("{$col}{$headerRow}", $header);
-            $sheet->getStyle("{$col}{$headerRow}")->applyFromArray([
+        foreach ($headers as $i => $header) {
+            $colLetter = $this->colLetter($i + 1);
+            $sheet->setCellValue("{$colLetter}{$headerRow}", $header);
+            $sheet->getStyle("{$colLetter}{$headerRow}")->applyFromArray([
                 'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
                 'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF1E40AF']],
                 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
             ]);
-            $col++;
         }
+
+        // Autofiltro
+        $sheet->setAutoFilter("A{$headerRow}:{$lastCol}{$headerRow}");
+
+        // Congelar encabezado
+        $sheet->freezePane("A" . ($headerRow + 1));
 
         // Datos desde fila 5
         $rowNum = 5;
         foreach ($producers as $producer) {
-            $data = [
-                $producer->name,
-                $producer->dni ?? '',
-                $producer->propiedades->where('rut', true)->first()?->rut_valor ?? '',
-                $producer->telefono ?? '',
-                $producer->email,
-            ];
+            $comercio = $producer->comercializacion;
 
-            if ($searchType === 'variedad') {
-                $variedadData = $this->getVariedadData($producer, $variedad);
-                $data[] = $variedadData['variedad'];
-                $data[] = $variedadData['hectareas'];
-            } elseif ($searchType === 'tipo') {
-                $tipoData = $this->getTipoData($producer, $tipo);
-                $data[] = $tipoData['tipo'];
-                $data[] = $tipoData['hectareas'];
-            } elseif ($searchType === 'distrito') {
-                $distritos = $producer->propiedades->pluck('distrito')->filter()->unique()->values()->toArray();
-                $data[] = implode(', ', $distritos);
-            }
+            // Resolver etiquetas de mercados y cooperativas
+            $mercadosLabels = $comercio
+                ? collect($comercio->mercados ?? [])
+                    ->map(fn($k) => \App\Models\Comercio::MERCADOS[$k] ?? $k)
+                    ->implode(', ')
+                : '';
 
-            $col = 'A';
-            foreach ($data as $value) {
-                $cell = $sheet->getCell("{$col}{$rowNum}");
-                if (is_float($value) || is_int($value)) {
-                    $cell->setValueExplicit($value, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
-                } else {
-                    $cell->setValue($value);
+            $cooperativasLabels = $comercio
+                ? collect($comercio->cooperativas ?? [])
+                    ->map(fn($k) => \App\Models\Comercio::COOPERATIVAS[$k] ?? $k)
+                    ->implode(', ')
+                : '';
+
+            $propiedades = $producer->propiedades;
+
+            if ($propiedades->isEmpty()) {
+                // Productor sin propiedades: una fila con datos básicos
+                $this->writeExcelRow($sheet, $rowNum, [
+                    $producer->name, $producer->email, $producer->dni ?? '', $producer->telefono ?? '', $producer->direccion ?? '',
+                    $comercio ? ($comercio->infraestructura_empaque ? 'Sí' : 'No') : '',
+                    $comercio ? ($comercio->vende_en_finca ? 'Sí' : 'No') : '',
+                    $mercadosLabels, $cooperativasLabels,
+                    '', '', '', '', '',
+                    '', '', '', '', '', '', '', '', '',
+                    '', '',
+                    '', '', '', '', '', '', '', '', '', '',
+                    '', '', '', '', '',
+                    '', '', '', '', '', '',
+                ]);
+                $rowNum++;
+            } else {
+                foreach ($propiedades as $prop) {
+                    $maquinaria = $prop->maquinaria;
+                    $cultivos = $prop->cultivos;
+
+                    $propData = [
+                        $prop->calle ?? '',
+                        $prop->numeracion ?? '',
+                        $prop->direccion_completa,
+                        $prop->distrito_label,
+                        $prop->hectareas,
+                        $prop->derecho_riego ? 'Sí' : 'No',
+                        $prop->tipo_derecho_riego_label,
+                        $prop->rut ? 'Sí' : 'No',
+                        $prop->rut_valor ?? '',
+                        $prop->lat,
+                        $prop->lng,
+                        $prop->hectareas_malla ?? '0.00',
+                        $prop->cierre_perimetral ? 'Sí' : 'No',
+                        $prop->malla ? 'Sí' : 'No',
+                        $prop->tipo_tenencia_label,
+                        $prop->especificar_tenencia ?? '',
+                    ];
+
+                    $maqData = $maquinaria ? [
+                        $maquinaria->tractor ? 'Sí' : 'No',
+                        $maquinaria->modelo_tractor ?? '',
+                        $maquinaria->arado ? 'Sí' : 'No',
+                        $maquinaria->rastra ? 'Sí' : 'No',
+                        $maquinaria->niveleta_comun ? 'Sí' : 'No',
+                        $maquinaria->niveleta_laser ? 'Sí' : 'No',
+                        $maquinaria->cincel_cultivadora ? 'Sí' : 'No',
+                        $maquinaria->desmalezadora ? 'Sí' : 'No',
+                        $maquinaria->pulverizadora_tractor ? 'Sí' : 'No',
+                        $maquinaria->mochila_pulverizadora ? 'Sí' : 'No',
+                        $maquinaria->cosechadora ? 'Sí' : 'No',
+                        $maquinaria->enfardadora ? 'Sí' : 'No',
+                        $maquinaria->retroexcavadora ? 'Sí' : 'No',
+                        $maquinaria->carro_carreton ? 'Sí' : 'No',
+                        $maquinaria->multiple ? 'Sí' : 'No',
+                    ] : array_fill(0, 15, '');
+
+                    $userData = [
+                        $producer->name, $producer->email, $producer->dni ?? '', $producer->telefono ?? '', $producer->direccion ?? '',
+                        $comercio ? ($comercio->infraestructura_empaque ? 'Sí' : 'No') : '',
+                        $comercio ? ($comercio->vende_en_finca ? 'Sí' : 'No') : '',
+                        $mercadosLabels, $cooperativasLabels,
+                    ];
+
+                    if ($cultivos->isNotEmpty()) {
+                        foreach ($cultivos as $cult) {
+                            $cultData = [
+                                $cult->tipo ?? '',
+                                $cult->variedad ?? '',
+                                $cult->estacion ?? '',
+                                $cult->hectareas,
+                                $cult->manejo_label,
+                                \App\Models\Cultivo::TECNOLOGIA_RIEGO[$cult->tecnologia_riego] ?? $cult->tecnologia_riego ?? '',
+                            ];
+
+                            $this->writeExcelRow($sheet, $rowNum, array_merge($userData, $propData, $maqData, $cultData));
+                            $rowNum++;
+                        }
+                    } else {
+                        // Propiedad sin cultivos: una fila con datos de propiedad pero celdas de cultivo vacías
+                        $emptyCult = ['', '', '', '', '', ''];
+                        $this->writeExcelRow($sheet, $rowNum, array_merge($userData, $propData, $maqData, $emptyCult));
+                        $rowNum++;
+                    }
                 }
-                $col++;
             }
-            $rowNum++;
         }
 
         // Auto-size columns
-        $col = 'A';
-        for ($i = 0; $i < count($headers); $i++) {
-            $sheet->getColumnDimension($col)->setAutoSize(true);
-            $col++;
+        for ($i = 1; $i <= count($headers); $i++) {
+            $sheet->getColumnDimension($this->colLetter($i))->setAutoSize(true);
         }
 
         $writer = new Xlsx($spreadsheet);
@@ -393,52 +463,33 @@ class StaffProducerController extends Controller
 
         return response($content, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
+    }
+
+    private function writeExcelRow($sheet, int $row, array $data): void
+    {
+        foreach ($data as $i => $value) {
+            $colLetter = $this->colLetter($i + 1);
+            $cell = $sheet->getCell("{$colLetter}{$row}");
+            if (is_float($value) || is_int($value)) {
+                $cell->setValueExplicit($value, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            } elseif (is_null($value)) {
+                $cell->setValue('');
+            } else {
+                $cell->setValue($value);
+            }
+        }
     }
 
     private function colLetter(int $index): string
     {
-        return chr(64 + $index);
-    }
-
-    private function getVariedadData($producer, $variedad)
-    {
-        $totalHectareas = 0;
-        $variedadesEncontradas = [];
-
-        foreach ($producer->propiedades as $prop) {
-            foreach ($prop->cultivos as $cult) {
-                if (stripos($cult->variedad, $variedad) !== false) {
-                    $variedadesEncontradas[] = $cult->variedad;
-                    $totalHectareas += $cult->hectareas;
-                }
-            }
+        $letter = '';
+        while ($index > 0) {
+            $index--;
+            $letter = chr(65 + ($index % 26)) . $letter;
+            $index = intdiv($index, 26);
         }
-
-        return [
-            'variedad' => implode(', ', array_unique($variedadesEncontradas)) ?: $variedad,
-            'hectareas' => $totalHectareas,
-        ];
-    }
-
-    private function getTipoData($producer, $tipo)
-    {
-        $totalHectareas = 0;
-        $tiposEncontrados = [];
-
-        foreach ($producer->propiedades as $prop) {
-            foreach ($prop->cultivos as $cult) {
-                if (stripos($cult->tipo, $tipo) !== false) {
-                    $tiposEncontrados[] = $cult->tipo;
-                    $totalHectareas += $cult->hectareas;
-                }
-            }
-        }
-
-        return [
-            'tipo' => implode(', ', array_unique($tiposEncontrados)) ?: $tipo,
-            'hectareas' => $totalHectareas,
-        ];
+        return $letter;
     }
 }

@@ -64,21 +64,22 @@ class Propiedad extends Model
 
     public function getDistritoLabelAttribute(): string
     {
-        return self::DISTRITOS[$this->distrito] ?? ucwords(str_replace('-', ' ', $this->distrito));
+        return self::DISTRITOS[$this->distrito] ?? (is_string($this->distrito) ? ucwords(str_replace('-', ' ', $this->distrito)) : '');
     }
 
     public function getTipoTenenciaLabelAttribute(): string
     {
-        return self::TIPO_TENENCIA[$this->tipo_tenencia] ?? $this->tipo_tenencia;
+        return self::TIPO_TENENCIA[$this->tipo_tenencia] ?? (is_string($this->tipo_tenencia) ? $this->tipo_tenencia : '');
     }
 
     public function getTipoDerechoRiegoLabelAttribute(): string
     {
-        return self::TIPO_DERECHO_RIEGO[$this->tipo_derecho_riego] ?? $this->tipo_derecho_riego;
+        return self::TIPO_DERECHO_RIEGO[$this->tipo_derecho_riego] ?? (is_string($this->tipo_derecho_riego) ? $this->tipo_derecho_riego : '');
     }
 
     // Permitir asignación masiva de todos los campos de la tabla
     protected $fillable = [
+        'usuario_id',
         'calle',
         'numeracion',
         'distrito',
