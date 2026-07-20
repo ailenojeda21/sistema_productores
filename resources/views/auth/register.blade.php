@@ -9,10 +9,12 @@
 
     <!-- Mitad Derecha -->
     <div class="w-full md:w-1/2 flex flex-col justify-center relative p-4 bg-white min-h-screen">
-        <!-- Logo arriba a la derecha -->
-          <img src="{{ asset('images/logo.png') }}" alt="Logo" class="absolute top-8 right-8 h-20"> 
-          
+        <!-- Logo arriba a la derecha (desktop) -->
+          <img src="{{ asset('images/logo.png') }}" alt="Logo" class="hidden md:block absolute top-8 right-8 h-20">
+
         <div class="max-w-sm w-full mx-auto">
+            <!-- Logo centrado (mobile) -->
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 mx-auto mb-4 md:hidden">
             <h1 class="text-3xl font-bold text-center text-naranja-oscuro mb-6">Regístrate</h1>
             <form method="POST" action="{{ route('register') }}" class="space-y-4">
                 @csrf

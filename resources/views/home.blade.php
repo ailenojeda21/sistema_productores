@@ -7,10 +7,13 @@
     </div>
     
     <div class="w-full md:w-1/2 flex flex-col justify-center relative p-8 bg-white min-h-screen">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="absolute top-8 right-8 h-20">
-        
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="hidden md:block absolute top-8 right-8 h-20">
+
         <div class="max-w-md w-full mx-auto flex flex-col items-center">
-            
+
+            <!-- Logo centrado (mobile) -->
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 mx-auto mb-4 md:hidden">
+
             <div class="text-center mb-8">
                 <span class="block text-xs md:text-sm font-semibold text-gray-400 uppercase tracking-widest mb-1">
                     Bienvenidos al

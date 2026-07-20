@@ -8,11 +8,12 @@
     </div>
     <!-- Mitad Derecha -->
     <div class="w-full md:w-1/2 flex flex-col justify-center relative p-8 bg-white min-h-screen">
-        <!-- Logo arriba a la derecha -->
-    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="absolute top-8 right-8 h-20">
-
+        <!-- Logo arriba a la derecha (desktop) -->
+    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="hidden md:block absolute top-8 right-8 h-20">
 
         <div class="max-w-md w-full mx-auto">
+            <!-- Logo centrado (mobile) -->
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 mx-auto mb-4 md:hidden">
             <h1 class="text-4xl font-bold text-center text-naranja-oscuro mb-8">Inicia sesión</h1>
             
             <!-- Mensaje de error de sesión -->
