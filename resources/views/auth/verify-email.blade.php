@@ -14,16 +14,17 @@
     </div>
 
     {{-- Contenido --}}
-    <div class="w-full md:w-1/2 flex flex-col justify-center relative p-8 bg-white h-screen overflow-y-auto">
+    <div class="w-full md:w-1/2 flex flex-col justify-start md:justify-center relative p-8 bg-white h-screen overflow-y-auto">
 
-        {{-- Logo --}}
+        {{-- Logo (desktop) --}}
         <img src="{{ asset('images/logo.png') }}"
              alt="Logo"
-             class="absolute top-8 right-8 h-20">
+             class="hidden md:block absolute top-8 right-8 h-20">
 
-        <div class="max-w-lg w-full mx-auto">
+        {{-- Logo (mobile) --}}
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="md:hidden absolute top-8 left-1/2 -translate-x-1/2 h-12">
 
-            
+        <div class="max-w-lg w-full mx-auto pt-20 md:pt-0">
 
             {{-- Encabezado --}}
             <div class="text-center mb-3">

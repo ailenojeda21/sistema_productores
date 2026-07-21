@@ -16,7 +16,18 @@
         </p>
     </div>
 
-   
+    <div data-onboarding class="w-full"
+         data-profile="{{ $profileCompleteness }}"
+         data-propiedades="{{ $propiedadesCompleteness }}"
+         data-cultivos="{{ $cultivosCompleteness }}"
+         data-maquinarias="{{ $maquinariasCompleteness }}"
+         data-comercializacion="{{ $comercializacionCompleteness }}"
+         data-url-profile="{{ route('profile.edit') }}"
+         data-url-propiedades="{{ route('propiedades.index') }}"
+         data-url-cultivos="{{ route('cultivos.index') }}"
+         data-url-maquinaria="{{ route('maquinaria.index') }}"
+         data-url-comercios="{{ route('comercios.index') }}">
+    </div>
 </div>
 
 <!-- Mobile View -->
@@ -32,8 +43,18 @@
         </h2>
     </div>
 
-
-   
+    <div data-onboarding
+         data-profile="{{ $profileCompleteness }}"
+         data-propiedades="{{ $propiedadesCompleteness }}"
+         data-cultivos="{{ $cultivosCompleteness }}"
+         data-maquinarias="{{ $maquinariasCompleteness }}"
+         data-comercializacion="{{ $comercializacionCompleteness }}"
+         data-url-profile="{{ route('profile.edit') }}"
+         data-url-propiedades="{{ route('propiedades.index') }}"
+         data-url-cultivos="{{ route('cultivos.index') }}"
+         data-url-maquinaria="{{ route('maquinaria.index') }}"
+         data-url-comercios="{{ route('comercios.index') }}">
+    </div>
 </div>
 
 @endsection
