@@ -26,9 +26,13 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                manualChunks: {
-                    vendor: ['vue', '@inertiajs/vue3', 'axios'],
-                    'chart-vendor': ['chart.js', 'vue-chartjs'],
+                manualChunks(id) {
+                    if (id.includes('node_modules/vue') || id.includes('node_modules/@inertiajs') || id.includes('node_modules/axios')) {
+                        return 'vendor'
+                    }
+                    if (id.includes('node_modules/chart.js') || id.includes('node_modules/vue-chartjs')) {
+                        return 'chart-vendor'
+                    }
                 },
             },
         },
