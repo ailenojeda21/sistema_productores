@@ -222,6 +222,7 @@
 
     drawer?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
 </script>
+@vite('resources/js/dashboard.js')
 @endsection
 
 @section('styles')

@@ -16,7 +16,7 @@
         </p>
     </div>
 
-    <div data-onboarding class="w-full"
+    <div data-onboarding class="w-1/2 self-end"
          data-profile="{{ $profileCompleteness }}"
          data-propiedades="{{ $propiedadesCompleteness }}"
          data-cultivos="{{ $cultivosCompleteness }}"
