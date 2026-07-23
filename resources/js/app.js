@@ -8,25 +8,6 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-// Mount OnboardingGuide on Blade dashboard pages
-import OnboardingGuide from './Components/OnboardingGuide.vue';
-
-const onboardingEl = document.querySelector('[data-onboarding]');
-if (onboardingEl) {
-    createApp(OnboardingGuide, {
-        profileCompleteness: Number(onboardingEl.dataset.profile),
-        propiedadesCompleteness: Number(onboardingEl.dataset.propiedades),
-        cultivosCompleteness: Number(onboardingEl.dataset.cultivos),
-        maquinariasCompleteness: Number(onboardingEl.dataset.maquinarias),
-        comercializacionCompleteness: Number(onboardingEl.dataset.comercializacion),
-        profileUrl: onboardingEl.dataset.urlProfile,
-        propiedadesUrl: onboardingEl.dataset.urlPropiedades,
-        cultivosUrl: onboardingEl.dataset.urlCultivos,
-        maquinariaUrl: onboardingEl.dataset.urlMaquinaria,
-        comerciosUrl: onboardingEl.dataset.urlComercios,
-    }).mount(onboardingEl);
-}
-
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) =>

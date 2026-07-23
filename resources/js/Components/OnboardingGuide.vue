@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 
+const DISMISS_DURATION = 24 * 60 * 60 * 1000
+const CONGRATULATIONS_KEY = 'congratulations'
+
 const props = defineProps({
     profileCompleteness: { type: Number, default: 0 },
     propiedadesCompleteness: { type: Number, default: 0 },
@@ -23,23 +26,54 @@ const steps = [
 ]
 
 const currentStep = computed(() => steps.find(s => !s.isComplete()) || null)
+const allComplete = computed(() => steps.every(s => s.isComplete()))
 const isDismissed = ref(true)
+const isCongratulationsDismissed = ref(true)
 const transitioning = ref(false)
 
 const show = computed(() => currentStep.value !== null && !isDismissed.value)
+const showCongratulations = computed(() => allComplete.value && !isCongratulationsDismissed.value)
 
-onMounted(() => {
-    if (currentStep.value) {
-        const stored = localStorage.getItem(`onboarding_dismissed_${currentStep.value.key}`)
-        isDismissed.value = !!stored
+function shouldShowCurrentStep() {
+    if (!currentStep.value) return false
+    const key = `onboarding_dismissed_${currentStep.value.key}`
+    const stored = localStorage.getItem(key)
+    if (!stored) return true
+    if (Date.now() - Number(stored) > DISMISS_DURATION) {
+        localStorage.removeItem(key)
+        return true
     }
-})
+    return false
+}
+
+function shouldShowCongratulationsCard() {
+    if (!allComplete.value) return false
+    const key = `onboarding_dismissed_${CONGRATULATIONS_KEY}`
+    const stored = localStorage.getItem(key)
+    if (!stored) return true
+    if (Date.now() - Number(stored) > DISMISS_DURATION) {
+        localStorage.removeItem(key)
+        return true
+    }
+    return false
+}
+
+function updateDismissedState() {
+    steps.forEach(s => {
+        if (s.isComplete()) {
+            localStorage.removeItem(`onboarding_dismissed_${s.key}`)
+        }
+    })
+    isDismissed.value = !shouldShowCurrentStep()
+    isCongratulationsDismissed.value = !shouldShowCongratulationsCard()
+}
+
+onMounted(updateDismissedState)
 
 watch(currentStep, (next, prev) => {
     if (!next) return
     if (!prev || next.key !== prev.key) {
-        const stored = localStorage.getItem(`onboarding_dismissed_${next.key}`)
-        isDismissed.value = !!stored
+        updateDismissedState()
         transitioning.value = true
         setTimeout(() => { transitioning.value = false }, 500)
     }
@@ -48,8 +82,13 @@ watch(currentStep, (next, prev) => {
 function dismiss() {
     isDismissed.value = true
     if (currentStep.value) {
-        localStorage.setItem(`onboarding_dismissed_${currentStep.value.key}`, 'true')
+        localStorage.setItem(`onboarding_dismissed_${currentStep.value.key}`, String(Date.now()))
     }
+}
+
+function dismissCongratulations() {
+    isCongratulationsDismissed.value = true
+    localStorage.setItem(`onboarding_dismissed_${CONGRATULATIONS_KEY}`, String(Date.now()))
 }
 
 function go() {
@@ -60,9 +99,9 @@ function go() {
 </script>
 
 <template>
-    <div v-if="currentStep" class="relative" style="min-height: 0">
+    <div v-if="currentStep || allComplete" class="relative" style="min-height: 0">
         <Transition name="onboarding">
-            <div v-if="show" class="bg-white rounded-lg shadow-lg p-4 border-l-4 border-naranja-oscuro">
+            <div v-if="show && currentStep" class="bg-white rounded-lg shadow-lg p-4 border-l-4 border-naranja-oscuro">
                 <button
                     @click="dismiss"
                     class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors"
@@ -85,6 +124,31 @@ function go() {
                     class="w-full py-2 px-4 bg-naranja-oscuro text-white text-sm font-semibold rounded hover:bg-opacity-90 transition"
                 >
                     Ir ahora
+                </button>
+            </div>
+
+            <div v-else-if="showCongratulations" class="bg-white rounded-lg shadow-lg p-4 border-l-4 border-green-500">
+                <button
+                    @click="dismissCongratulations"
+                    class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label="Cerrar"
+                >
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">¡Completado!</span>
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-800 mb-1 pr-6">¡Felicidades! Completaste tu perfil</h3>
+
+                <p class="text-xs text-gray-600 mb-3">Todos los datos de tu perfil están completos.</p>
+
+                <button
+                    class="w-full py-2 px-4 bg-naranja-oscuro text-white text-sm font-semibold rounded hover:bg-opacity-90 transition"
+                >
+                    Descargar comprobante de registro
                 </button>
             </div>
         </Transition>
