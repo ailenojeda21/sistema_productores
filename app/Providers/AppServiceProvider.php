@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
@@ -25,6 +29,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(
+            Login::class,
+            \App\Listeners\LogAuthenticationAttempt::class,
+        );
+        Event::listen(
+            Failed::class,
+            \App\Listeners\LogAuthenticationAttempt::class,
+        );
+        Event::listen(
+            Logout::class,
+            \App\Listeners\LogAuthenticationAttempt::class,
+        );
+
         Vite::prefetch(concurrency: 3);
 
         Password::defaults(function () {

@@ -104,7 +104,25 @@ class ProfileController extends Controller
 
         $this->authorize('view', $user);
 
-        return view('profile.show', compact('user'));
+        $user->load([
+            'propiedades.cultivos.propiedad',
+            'propiedades.maquinaria.propiedad',
+            'comercializacion',
+        ]);
+
+        $propiedades = $user->propiedades;
+        $cultivos = $propiedades->flatMap->cultivos;
+        $maquinarias = $propiedades->map->maquinaria->filter()->values();
+        $comercio = $user->comercializacion;
+
+        $stats = [
+            'propiedades' => $propiedades->count(),
+            'cultivos' => $cultivos->count(),
+            'maquinarias' => $maquinarias->count(),
+            'comercializacion' => $comercio ? 1 : 0,
+        ];
+
+        return view('profile.show', compact('user', 'propiedades', 'cultivos', 'maquinarias', 'comercio', 'stats'));
     }
 
     public function export(): JsonResponse

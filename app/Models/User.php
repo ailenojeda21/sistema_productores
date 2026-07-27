@@ -157,4 +157,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->comercializacion()->exists() ? 100 : 0;
     }
+
+    public function canDownloadCertificate(): bool
+    {
+        return $this->profile_completeness === 100
+            && $this->propiedades_completeness === 100
+            && $this->cultivos_completeness === 100
+            && $this->maquinarias_completeness === 100
+            && $this->comercializacion_completeness === 100;
+    }
 }
