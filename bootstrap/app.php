@@ -15,7 +15,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withProviders([
-        App\Providers\EventServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
