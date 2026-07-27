@@ -122,21 +122,31 @@
         {{-- Acciones del perfil --}}
         <div class="flex flex-col items-center mt-10 pt-6 border-t w-full">
     <div class="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 items-center w-full sm:w-auto">
-        <button onclick="printCertificate()"
-            {{ $user->canDownloadCertificate() ? '' : 'disabled' }}
-            class="w-full sm:w-auto h-11 justify-center px-5 bg-[#223362] text-white rounded-lg hover:bg-[#1A2850] transition-all duration-200 font-bold shadow-lg flex items-center gap-2 text-sm whitespace-nowrap {{ $user->canDownloadCertificate() ? '' : 'opacity-50 cursor-not-allowed' }}">
-            <span class="material-symbols-outlined text-lg shrink-0">download</span>
-            <span>Descargar comprobante</span>
-        </button>
+        <div class="relative group/dl w-full sm:w-auto">
+            <button onclick="printCertificate()"
+                {{ $user->canDownloadCertificate() ? '' : 'disabled' }}
+                id="btn-download"
+                ontouchstart="toggleTooltip(event, this)"
+                class="w-full sm:w-auto h-11 justify-center px-5 bg-[#223362] text-white rounded-lg hover:bg-[#1A2850] transition-all duration-200 font-bold shadow-lg flex items-center gap-2 text-sm whitespace-nowrap {{ $user->canDownloadCertificate() ? '' : 'opacity-50 cursor-not-allowed' }}">
+                <span class="material-symbols-outlined text-lg shrink-0">download</span>
+                <span>Descargar comprobante</span>
+            </button>
+            @if(!$user->canDownloadCertificate())
+                <div id="tooltip-download"
+                     class="pointer-events-none opacity-0 group-hover/dl:opacity-100 transition-opacity duration-200 absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 sm:w-72 z-50 tooltip-download">
+                    <div class="bg-gray-800 text-white text-xs leading-relaxed rounded-md px-3 py-2 text-center shadow-lg">
+                        Debes completar tus registros para poder descargar el comprobante.
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-gray-800"></div>
+                    </div>
+                </div>
+            @endif
+        </div>
         <a href="{{ route('profile.edit') }}"
             class="w-full sm:w-auto h-11 justify-center px-5 bg-white text-[#F39200] border-2 border-[#F39200] rounded-lg hover:bg-orange-50 transition-all duration-200 font-bold flex items-center gap-2 text-sm whitespace-nowrap">
             <span class="material-symbols-outlined text-lg shrink-0">edit</span>
             <span>Editar perfil</span>
         </a>
     </div>
-    @if(!$user->canDownloadCertificate())
-        <p class="text-xs text-gray-500 mt-2 max-w-xs sm:max-w-sm text-center mx-auto">Debes completar tus registros para poder descargar el comprobante.</p>
-    @endif
 </div>
     {{-- Comprobante PDF oculto en pantalla, visible al imprimir --}}
     <div id="pdf-certificate" class="pdf-container">
@@ -411,6 +421,23 @@
             window.print();
             setTimeout(() => { document.title = originalTitle }, 100);
         }
+
+        function toggleTooltip(e, btn) {
+            e.preventDefault();
+            const tip = document.getElementById('tooltip-download');
+            if (!tip) return;
+            const isVisible = tip.classList.contains('mobile-show');
+            tip.classList.toggle('mobile-show');
+            const closeOnOutside = (ev) => {
+                if (!btn.contains(ev.target) && !tip.contains(ev.target)) {
+                    tip.classList.remove('mobile-show');
+                    document.removeEventListener('touchstart', closeOnOutside);
+                }
+            };
+            if (!isVisible) {
+                setTimeout(() => document.addEventListener('touchstart', closeOnOutside), 10);
+            }
+        }
     </script>
 </div>
 @endsection
@@ -421,8 +448,37 @@
     display: none;
 }
 
+.tooltip-download {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@media (min-width: 640px) {
+    .tooltip-download {
+        opacity: 0;
+        pointer-events: none;
+    }
+    .group\/dl:hover .tooltip-download {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 639px) {
+    .tooltip-download {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+    .tooltip-download.mobile-show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
 @media print {
-    aside, header, .fixed, nav {
+    aside, header, .fixed, nav, .tooltip-download {
         display: none !important;
     }
 
