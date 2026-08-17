@@ -33,30 +33,26 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::define('manage-staff', function ($user) {
-            if (method_exists($user, 'hasRole') && $user->hasRole('admin')) {
-                return true;
-            }
-
-            return $user instanceof \App\Models\StaffUser && $user->role === 'admin';
+            return $user instanceof StaffUser && $user->role === 'admin';
         });
 
         Gate::define('view-dashboard', function ($user) {
-            return $user instanceof \App\Models\StaffUser
+            return $user instanceof StaffUser
                 && in_array($user->role, ['admin', 'auditor']);
         });
 
         Gate::define('view-producers', function ($user) {
-            return $user instanceof \App\Models\StaffUser
+            return $user instanceof StaffUser
                 && in_array($user->role, ['admin', 'auditor']);
         });
 
         Gate::define('export-producers', function ($user) {
-            return $user instanceof \App\Models\StaffUser
+            return $user instanceof StaffUser
                 && in_array($user->role, ['admin', 'auditor']);
         });
 
         Gate::before(function ($user, $ability) {
-            if (method_exists($user, 'hasRole') && $user->hasRole('admin')) {
+            if ($user instanceof StaffUser && $user->role === 'admin') {
                 return true;
             }
         });

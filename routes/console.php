@@ -12,3 +12,6 @@ Artisan::command('inspire', function () {
 Schedule::command('app:purge-soft-deleted-records --days=365')
     ->dailyAt('03:00')
     ->appendOutputTo(storage_path('logs/purge-soft-deleted.log'));
+
+// Purge expired Sanctum tokens daily
+Schedule::command('sanctum:prune-expired')->daily();

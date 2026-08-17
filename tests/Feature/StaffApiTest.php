@@ -24,7 +24,7 @@ test('api login returns token and user', function () {
         ->assertJson(['user' => ['id' => $staff->id]]);
 });
 
-test('api login fails with wrong password', function () {
+test('api login fails with wrong password and generic message', function () {
     $staff = StaffUser::factory()->create([
         'password' => bcrypt('secret123'),
     ]);
@@ -34,10 +34,12 @@ test('api login fails with wrong password', function () {
         'password' => 'wrong-password',
     ]);
 
-    $response->assertUnprocessable();
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('email');
+    expect($response->json('errors.email')[0])->toBe('Credenciales incorrectas.');
 });
 
-test('api login fails for inactive user', function () {
+test('api login fails for inactive user with generic message', function () {
     $staff = StaffUser::factory()->create([
         'password' => bcrypt('secret123'),
         'active' => false,
@@ -48,7 +50,9 @@ test('api login fails for inactive user', function () {
         'password' => 'secret123',
     ]);
 
-    $response->assertUnprocessable();
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('email');
+    expect($response->json('errors.email')[0])->toBe('Credenciales incorrectas.');
 });
 
 test('api login requires email and password', function () {
@@ -98,6 +102,15 @@ test('api dashboard returns kpi data', function () {
 
     $response->assertOk()
         ->assertJsonStructure(['user', 'kpiData' => ['usuarios', 'hectareas']]);
+});
+
+test('api dashboard returns 403 for inactive staff with existing token', function () {
+    $staff = StaffUser::factory()->create(['active' => false]);
+    Sanctum::actingAs($staff, ['*'], 'staff-api');
+
+    $response = $this->getJson('/api/staff/dashboard');
+
+    $response->assertForbidden();
 });
 
 // =====================================================================
@@ -218,4 +231,34 @@ test('api users destroy soft-deletes user', function () {
         ->assertJson(['message' => 'Usuario eliminado']);
 
     $this->assertSoftDeleted($target);
+});
+
+test('api deactivating staff revokes their tokens', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+    $target = StaffUser::factory()->create();
+    $target->createToken('dev1');
+    Sanctum::actingAs($admin, ['*'], 'staff-api');
+
+    $response = $this->patchJson('/api/staff/users/'.$target->id, [
+        'active' => false,
+    ]);
+
+    $response->assertOk();
+    $this->assertDatabaseHas('staff_users', ['id' => $target->id, 'active' => false]);
+    $this->assertDatabaseCount('personal_access_tokens', 0);
+});
+
+test('api deleting staff revokes their tokens', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+    $target = StaffUser::factory()->create();
+    $target->createToken('dev1');
+    Sanctum::actingAs($admin, ['*'], 'staff-api');
+
+    $response = $this->deleteJson('/api/staff/users/'.$target->id);
+
+    $response->assertOk()
+        ->assertJson(['message' => 'Usuario eliminado']);
+
+    $this->assertSoftDeleted($target);
+    $this->assertDatabaseCount('personal_access_tokens', 0);
 });

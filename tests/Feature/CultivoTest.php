@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\User;
-use App\Models\Propiedad;
 use App\Models\Cultivo;
+use App\Models\Propiedad;
+use App\Models\User;
 
 test('user puede ver listado de cultivos', function () {
     $user = User::factory()->create();
@@ -105,12 +105,13 @@ test('usuario no puede editar cultivo de otro usuario', function () {
 test('usuario no puede actualizar cultivo de otro usuario', function () {
     $owner = User::factory()->create();
     $attacker = User::factory()->create();
-    $propiedad = Propiedad::factory()->for($owner, 'usuario')->create(['hectareas' => 100]);
-    $cultivo = Cultivo::factory()->for($propiedad, 'propiedad')->create();
+    $propiedadOwner = Propiedad::factory()->for($owner, 'usuario')->create(['hectareas' => 100]);
+    $propiedadAttacker = Propiedad::factory()->for($attacker, 'usuario')->create(['hectareas' => 100]);
+    $cultivo = Cultivo::factory()->for($propiedadOwner, 'propiedad')->create();
 
     $response = $this->actingAs($attacker)
         ->put("/cultivos/{$cultivo->id}", [
-            'propiedad_id' => $propiedad->id,
+            'propiedad_id' => $propiedadAttacker->id,
             'tipo' => 'Hortícola',
             'variedad' => 'Tomate Redondo',
             'estacion' => 'Verano',
@@ -120,6 +121,50 @@ test('usuario no puede actualizar cultivo de otro usuario', function () {
         ]);
 
     $response->assertForbidden();
+});
+
+test('usuario no puede crear cultivo en propiedad de otro usuario', function () {
+    $owner = User::factory()->create();
+    $attacker = User::factory()->create();
+    $propiedad = Propiedad::factory()->for($owner, 'usuario')->create(['hectareas' => 100]);
+
+    $response = $this->actingAs($attacker)->post('/cultivos', [
+        'propiedad_id' => $propiedad->id,
+        'tipo' => 'Hortícola',
+        'variedad' => 'Tomate Redondo',
+        'estacion' => 'Verano',
+        'hectareas' => '5.0',
+        'manejo_cultivo' => 'Convencional',
+        'tecnologia_riego' => 'Goteo',
+    ]);
+
+    $response->assertSessionHasErrors(['propiedad_id']);
+    $this->assertDatabaseCount('cultivos', 0);
+});
+
+test('usuario no puede mover cultivo propio a propiedad de otro usuario', function () {
+    $owner = User::factory()->create();
+    $attacker = User::factory()->create();
+    $miPropiedad = Propiedad::factory()->for($attacker, 'usuario')->create(['hectareas' => 100]);
+    $propiedadAjena = Propiedad::factory()->for($owner, 'usuario')->create(['hectareas' => 100]);
+    $cultivo = Cultivo::factory()->for($miPropiedad, 'propiedad')->create();
+
+    $response = $this->actingAs($attacker)
+        ->put("/cultivos/{$cultivo->id}", [
+            'propiedad_id' => $propiedadAjena->id,
+            'tipo' => 'Hortícola',
+            'variedad' => 'Tomate Redondo',
+            'estacion' => 'Verano',
+            'hectareas' => '5.0',
+            'manejo_cultivo' => 'Convencional',
+            'tecnologia_riego' => 'Goteo',
+        ]);
+
+    $response->assertSessionHasErrors(['propiedad_id']);
+    $this->assertDatabaseHas('cultivos', [
+        'id' => $cultivo->id,
+        'propiedad_id' => $miPropiedad->id,
+    ]);
 });
 
 test('usuario no puede eliminar cultivo de otro usuario', function () {

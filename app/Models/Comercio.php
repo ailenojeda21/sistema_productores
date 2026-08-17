@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Comercio extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'usuario_id',
         'infraestructura_empaque',
         'vende_en_finca',
         'mercados',

@@ -20,7 +20,7 @@ class StaffRoleMiddleware
 
         $allowed = explode(',', $roles);
 
-        if (! $user || ! in_array($user->role, $allowed)) {
+        if (! $user || ! $user->active || ! in_array($user->role, $allowed)) {
             abort(403, 'No autorizado. Se requiere rol: '.$roles);
         }
 

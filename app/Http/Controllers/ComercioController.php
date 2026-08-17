@@ -44,15 +44,15 @@ class ComercioController extends Controller
         $validated['mercados'] = $request->has('tiene_mercados') ? $request->input('mercados', []) : [];
         $validated['cooperativas'] = $request->has('tiene_cooperativas') ? $request->input('cooperativas', []) : [];
 
-        if (!$validated['vende_en_finca'] && empty($validated['mercados']) && empty($validated['cooperativas'])) {
+        if (! $validated['vende_en_finca'] && empty($validated['mercados']) && empty($validated['cooperativas'])) {
             return back()->withInput()->withErrors([
-                'comercializacion' => 'Debe seleccionar al menos una opción de comercialización: vende en finca, vende en mercados o comercializa en cooperativas.'
+                'comercializacion' => 'Debe seleccionar al menos una opción de comercialización: vende en finca, vende en mercados o comercializa en cooperativas.',
             ]);
         }
 
-        $validated['usuario_id'] = Auth::id();
-
-        Comercio::create($validated);
+        $comercio = new Comercio($validated);
+        $comercio->usuario_id = Auth::id();
+        $comercio->save();
 
         return redirect()->route('comercios.index')->with('success', 'Comercio creado correctamente');
     }
@@ -88,9 +88,9 @@ class ComercioController extends Controller
         $validated['mercados'] = $request->has('tiene_mercados') ? $request->input('mercados', []) : [];
         $validated['cooperativas'] = $request->has('tiene_cooperativas') ? $request->input('cooperativas', []) : [];
 
-        if (!$validated['vende_en_finca'] && empty($validated['mercados']) && empty($validated['cooperativas'])) {
+        if (! $validated['vende_en_finca'] && empty($validated['mercados']) && empty($validated['cooperativas'])) {
             return back()->withInput()->withErrors([
-                'comercializacion' => 'Debe seleccionar al menos una opción de comercialización: vende en finca, vende en mercados o comercializa en cooperativas.'
+                'comercializacion' => 'Debe seleccionar al menos una opción de comercialización: vende en finca, vende en mercados o comercializa en cooperativas.',
             ]);
         }
 

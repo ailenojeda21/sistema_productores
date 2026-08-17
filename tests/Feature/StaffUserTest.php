@@ -88,6 +88,34 @@ test('admin puede eliminar (soft delete) usuario staff', function () {
     $this->assertSoftDeleted($staffUser);
 });
 
+test('desactivar staff revoca sus tokens', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+    $staffUser = StaffUser::factory()->create();
+    $staffUser->createToken('dev1');
+
+    $response = $this->actingAs($admin, 'staff')
+        ->patch(route('staff.users.update', $staffUser->id), [
+            'active' => false,
+        ]);
+
+    $response->assertSessionHas('success', 'Estado actualizado');
+    $this->assertDatabaseHas('staff_users', ['id' => $staffUser->id, 'active' => false]);
+    $this->assertDatabaseCount('personal_access_tokens', 0);
+});
+
+test('eliminar staff revoca sus tokens', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+    $staffUser = StaffUser::factory()->create();
+    $staffUser->createToken('dev1');
+
+    $response = $this->actingAs($admin, 'staff')
+        ->delete(route('staff.users.destroy', $staffUser->id));
+
+    $response->assertSessionHas('success', 'Usuario eliminado');
+    $this->assertSoftDeleted($staffUser);
+    $this->assertDatabaseCount('personal_access_tokens', 0);
+});
+
 test('admin no puede eliminar su propio usuario', function () {
     $admin = StaffUser::factory()->create(['role' => 'admin']);
 

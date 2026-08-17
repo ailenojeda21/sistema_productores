@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Cultivo;
 use App\Models\Propiedad;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCultivoRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class UpdateCultivoRequest extends FormRequest
             ->where('usuario_id', auth()->id())
             ->first();
 
-        $hectareasDisponibles = 999999;
+        $hectareasDisponibles = 0;
         if ($propiedad) {
             $hectareasUsadas = $propiedad->cultivos()
                 ->when($cultivoId, fn ($q) => $q->where('id', '!=', $cultivoId))
@@ -32,7 +33,10 @@ class UpdateCultivoRequest extends FormRequest
         }
 
         return [
-            'propiedad_id' => 'sometimes|exists:propiedades,id',
+            'propiedad_id' => [
+                'sometimes',
+                Rule::exists('propiedades', 'id')->where('usuario_id', auth()->id()),
+            ],
             'variedad' => 'sometimes|string|max:255',
             'estacion' => 'sometimes|string|max:255',
             'tipo' => ['sometimes', 'string', 'max:255', 'regex:/^[\pL\pM0-9\s\-\.\,\/]+$/u'],

@@ -23,18 +23,12 @@ class StaffPasswordResetLinkController extends Controller
             ['email' => strtolower($request->email)]
         );
 
-        if ($status == Password::RESET_LINK_SENT) {
-            return back()->with('status', 'Hemos enviado por correo electrónico el enlace para restablecer tu contraseña.');
-        }
-
         if ($status == Password::RESET_THROTTLED) {
             throw ValidationException::withMessages([
                 'email' => ['Ya has solicitado un enlace recientemente. Intenta de nuevo más tarde.'],
             ]);
         }
 
-        throw ValidationException::withMessages([
-            'email' => ['No podemos encontrar un usuario con esa dirección de correo electrónico.'],
-        ]);
+        return back()->with('status', 'Hemos enviado por correo electrónico el enlace para restablecer tu contraseña.');
     }
 }
