@@ -27,7 +27,7 @@ class StaffApiAuthController extends Controller
 
         if (! $staff->active) {
             throw ValidationException::withMessages([
-                'email' => ['Usuario inactivo. Contacte al administrador.'],
+                'email' => ['Credenciales incorrectas.'],
             ]);
         }
 

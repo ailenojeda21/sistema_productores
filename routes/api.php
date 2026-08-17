@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\StaffApiAuthController;
+use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\StaffProducerController;
+use App\Http\Controllers\StaffUserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,31 +34,31 @@ use Illuminate\Support\Facades\Route;
 // =====================================================================
 
 // Login (público, sin auth)
-Route::post('/staff/login', [App\Http\Controllers\StaffApiAuthController::class, 'login'])
+Route::post('/staff/login', [StaffApiAuthController::class, 'login'])
     ->middleware('throttle:login-staff-api');
 
 // Rutas protegidas con token Sanctum
-Route::middleware(['auth:staff-api', 'throttle:60,1'])->prefix('staff')->group(function () {
+Route::middleware(['auth:staff-api', 'staff.active', 'throttle:60,1'])->prefix('staff')->group(function () {
 
     // Sesión
-    Route::post('/logout', [App\Http\Controllers\StaffApiAuthController::class, 'logout']);
-    Route::get('/me', [App\Http\Controllers\StaffApiAuthController::class, 'me']);
+    Route::post('/logout', [StaffApiAuthController::class, 'logout']);
+    Route::get('/me', [StaffApiAuthController::class, 'me']);
 
     // Dashboard (admin + auditor)
-    Route::get('/dashboard', [App\Http\Controllers\StaffDashboardController::class, 'index']);
+    Route::get('/dashboard', [StaffDashboardController::class, 'index']);
 
     // Productores (admin + auditor)
-    Route::get('/producers', [App\Http\Controllers\StaffProducerController::class, 'index']);
-    Route::get('/producers/{id}', [App\Http\Controllers\StaffProducerController::class, 'show']);
+    Route::get('/producers', [StaffProducerController::class, 'index']);
+    Route::get('/producers/{id}', [StaffProducerController::class, 'show']);
 
     // Solo admin
     Route::middleware('staff.role:admin')->group(function () {
-        Route::get('/producers/export', [App\Http\Controllers\StaffProducerController::class, 'export']);
-        Route::get('/users', [App\Http\Controllers\StaffUserController::class, 'index']);
-        Route::get('/users/create', [App\Http\Controllers\StaffUserController::class, 'create']);
-        Route::post('/users', [App\Http\Controllers\StaffUserController::class, 'store']);
-        Route::get('/users/{id}/edit', [App\Http\Controllers\StaffUserController::class, 'edit']);
-        Route::patch('/users/{id}', [App\Http\Controllers\StaffUserController::class, 'update']);
-        Route::delete('/users/{id}', [App\Http\Controllers\StaffUserController::class, 'destroy']);
+        Route::get('/producers/export', [StaffProducerController::class, 'export']);
+        Route::get('/users', [StaffUserController::class, 'index']);
+        Route::get('/users/create', [StaffUserController::class, 'create']);
+        Route::post('/users', [StaffUserController::class, 'store']);
+        Route::get('/users/{id}/edit', [StaffUserController::class, 'edit']);
+        Route::patch('/users/{id}', [StaffUserController::class, 'update']);
+        Route::delete('/users/{id}', [StaffUserController::class, 'destroy']);
     });
 });

@@ -2,6 +2,8 @@
 
 use App\Models\StaffUser;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
+use Spatie\Permission\Models\Role;
 
 // Para tests del staff necesitamos autenticación de staff,
 // no la autenticación regular de usuarios.
@@ -42,6 +44,45 @@ test('staff no puede iniciar sesión con contraseña incorrecta', function () {
 
     $response->assertSessionHasErrors();
     $this->assertGuest('staff');
+});
+
+test('login devuelve el mismo mensaje para email inexistente, inactivo y contraseña incorrecta', function () {
+    $inactive = StaffUser::factory()->create([
+        'active' => false,
+        'password' => bcrypt('password'),
+    ]);
+
+    $this->post('/staff/login', [
+        'email' => 'no-existe@test.com',
+        'password' => 'password',
+    ])->assertSessionHasErrors(['email' => 'Credenciales incorrectas.']);
+
+    $this->post('/staff/login', [
+        'email' => $inactive->email,
+        'password' => 'password',
+    ])->assertSessionHasErrors(['email' => 'Credenciales incorrectas.']);
+
+    $this->post('/staff/login', [
+        'email' => $inactive->email,
+        'password' => 'wrong-password',
+    ])->assertSessionHasErrors(['email' => 'Credenciales incorrectas.']);
+});
+
+test('staff admin bypasea gates staff', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+
+    expect(Gate::forUser($admin)->allows('view-dashboard'))->toBeTrue();
+});
+
+test('productor con rol Spatie admin no bypasea gates staff', function () {
+    $producer = User::factory()->create();
+    Role::firstOrCreate(['name' => 'admin']);
+    $producer->assignRole('admin');
+
+    expect($producer->hasRole('admin'))->toBeTrue()
+        ->and(Gate::forUser($producer)->allows('view-dashboard'))->toBeFalse()
+        ->and(Gate::forUser($producer)->allows('export-producers'))->toBeFalse()
+        ->and(Gate::forUser($producer)->allows('manage-staff'))->toBeFalse();
 });
 
 test('usuario regular no puede acceder al dashboard del staff', function () {

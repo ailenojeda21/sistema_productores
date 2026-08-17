@@ -120,6 +120,10 @@ class StaffUserController extends Controller
             $staffUser->active = (bool) $validated['active'];
             $staffUser->save();
 
+            if (! $staffUser->active) {
+                $staffUser->tokens()->delete();
+            }
+
             if ($this->isApiRequest($request)) {
                 return response()->json([
                     'message' => 'Estado actualizado',
@@ -193,6 +197,7 @@ class StaffUserController extends Controller
 
         $this->authorize('delete', $staffUser);
 
+        $staffUser->tokens()->delete();
         $staffUser->delete();
 
         if ($this->isApiRequest($request)) {

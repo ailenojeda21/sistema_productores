@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\StaffUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,17 +22,17 @@ class StaffAuthController extends Controller
 
         $credentials['email'] = strtolower($credentials['email']);
 
-        $staffUser = \App\Models\StaffUser::where('email', $credentials['email'])->first();
+        $staffUser = StaffUser::where('email', $credentials['email'])->first();
 
         if (! $staffUser) {
             return back()->withErrors([
-                'email' => 'Credenciales incorrectas',
+                'email' => 'Credenciales incorrectas.',
             ]);
         }
 
         if (! $staffUser->active) {
             return back()->withErrors([
-                'email' => 'Usuario inactivo. Contacte al administrador.',
+                'email' => 'Credenciales incorrectas.',
             ]);
         }
 
@@ -42,13 +43,13 @@ class StaffAuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Credenciales incorrectas',
+            'email' => 'Credenciales incorrectas.',
         ]);
     }
 
     public function logout(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::guard('staff')->user();
 
         if ($user) {
             $user->tokens()->delete();

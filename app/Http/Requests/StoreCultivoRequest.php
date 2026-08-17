@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Propiedad;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCultivoRequest extends FormRequest
 {
@@ -20,10 +21,13 @@ class StoreCultivoRequest extends FormRequest
 
         $hectareasDisponibles = $propiedad
             ? $propiedad->hectareas_disponibles
-            : 999999;
+            : 0;
 
         return [
-            'propiedad_id' => 'required|exists:propiedades,id',
+            'propiedad_id' => [
+                'required',
+                Rule::exists('propiedades', 'id')->where('usuario_id', auth()->id()),
+            ],
             'variedad' => 'required|string|max:255',
             'estacion' => 'required|string|max:255',
             'tipo' => ['required', 'string', 'max:255', 'regex:/^[\pL\pM0-9\s\-\.\,\/]+$/u'],
