@@ -47,7 +47,7 @@ const goBack = () => {
         <!-- Header -->
         <div class="px-6 py-3 border-b border-slate-100 flex items-center gap-3">
           <button
-            class="h-8 w-8 rounded-lg border border-slate-200 bg-white grid place-items-center text-slate-700 hover:bg-slate-50 transition"
+            class="h-8 w-8 rounded-lg border border-slate-200 bg-azul-m grid place-items-center text-slate-700 hover:bg-slate-50 transition"
             @click="goBack"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -253,7 +253,7 @@ const goBack = () => {
             </button>
             <button
               type="submit"
-              class="flex-1 px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-md text-sm order-1 sm:order-2"
+              class="flex-1 px-5 py-2.5 rounded-lg bg-azul-marino text-white font-medium hover:bg-[#2F4475] transition shadow-md text-sm order-1 sm:order-2"
               :disabled="isSubmitting"
               :class="{ 'opacity-50 cursor-not-allowed': isSubmitting }"
             >

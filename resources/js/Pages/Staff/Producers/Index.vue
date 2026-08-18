@@ -1,33 +1,90 @@
 <template>
   <StaffLayout :user="user">
     <div class="max-w-5xl mx-auto space-y-4">
+
       <!-- Breadcrumb -->
       <nav class="flex items-center text-sm text-slate-500 mb-2">
+
         <button 
           @click="router.visit('/staff/dashboard')" 
           class="hover:text-slate-800 transition flex items-center gap-1"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z" />
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"
+            />
           </svg>
           Inicio
         </button>
+
         <span class="mx-2">/</span>
-        <span class="text-slate-800 font-medium">Productores</span>
+
+        <span class="text-slate-800 font-medium">
+          Productores
+        </span>
+
       </nav>
 
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900">Productores</h1>
-        <p class="text-sm text-slate-600">Buscar por diferentes criterios.</p>
+
+      <!-- Título -->
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h1 class="text-2xl font-bold text-slate-900">
+            Productores
+          </h1>
+
+          <p class="text-sm text-slate-600">
+            Buscar por diferentes criterios.
+          </p>
+        </div>
+
+        <!-- ========================================= -->
+        <!-- EXPORTAR - SOLO MOBILE -->
+        <!-- ========================================= -->
+        <button
+          v-if="hasResults && canExport"
+          class="md:hidden h-11 w-11 shrink-0 rounded-xl bg-green-600 text-white shadow-md hover:bg-green-700 flex items-center justify-center"
+          @click="exportResults"
+          aria-label="Exportar resultados"
+          title="Exportar resultados"
+        >
+          <svg
+            class="h-5 w-5 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+            />
+          </svg>
+        </button>
       </div>
 
-      <!-- Barra de búsqueda compact -->
+
+      <!-- ========================================= -->
+      <!-- BARRA DE BÚSQUEDA -->
+      <!-- ========================================= -->
+
       <div class="bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
-        <div class="flex flex-wrap gap-2 items-center">
+
+        <div class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+
           <!-- Select tipo de búsqueda -->
           <select
             v-model="searchType"
-            class="rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0 bg-slate-50"
+            class="w-full sm:w-auto rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0 bg-slate-50"
           >
             <option value="all">Todos</option>
             <option value="dni">DNI</option>
@@ -38,82 +95,152 @@
             <option value="rut">N° RUT</option>
           </select>
 
+
           <!-- Input de búsqueda -->
           <input
             v-model="form.search"
-            class="flex-1 min-w-[200px] rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0"
+            class="w-full sm:flex-1 min-w-0 rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0"
             :placeholder="placeholderText"
             :inputmode="searchType === 'dni' || searchType === 'rut' ? 'numeric' : 'text'"
             :disabled="searchType === 'all'"
           />
 
-          <div class="flex gap-2">
+
+          <!-- Botones -->
+          <div class="flex w-full sm:w-auto gap-2">
+
+            <!-- Buscar -->
             <button
-              class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
+              class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-azul-marino text-white text-sm font-semibold hover:bg-[#2F4475]"
               @click="search"
             >
               Buscar
             </button>
 
+
+            <!-- Limpiar -->
             <button
-              class="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold hover:bg-slate-50"
+              class="flex-1 sm:flex-none px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold hover:bg-slate-50"
               @click="clear"
             >
               Limpiar
             </button>
 
+
+            <!-- ========================================= -->
+            <!-- EXPORTAR - SOLO DESKTOP -->
+            <!-- ========================================= -->
             <button
               v-if="hasResults && canExport"
-              class="px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-semibold hover:bg-green-700 flex items-center gap-2"
+              class="hidden md:flex px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-semibold hover:bg-green-700 items-center justify-center gap-2"
               @click="exportResults"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
               </svg>
-              Exportar resultados
+
+              <span>
+                Exportar resultados
+              </span>
             </button>
+
           </div>
         </div>
 
-        <!-- Filtros activos -->
-        <div v-if="activeFilters.length" class="mt-2 pt-2 border-t border-slate-100">
+
+        <!-- ========================================= -->
+        <!-- FILTROS ACTIVOS -->
+        <!-- ========================================= -->
+
+        <div
+          v-if="activeFilters.length"
+          class="mt-2 pt-2 border-t border-slate-100"
+        >
           <div class="flex flex-wrap items-center gap-2">
-            <span class="text-xs text-slate-500">Filtros:</span>
+
+            <span class="text-xs text-slate-500">
+              Filtros:
+            </span>
+
             <span
               v-for="filter in activeFilters"
               :key="filter.key"
               class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full"
             >
               {{ filter.label }}
-              <button @click="removeFilter(filter.key)" class="hover:text-slate-900">×</button>
+
+              <button
+                @click="removeFilter(filter.key)"
+                class="hover:text-slate-900"
+              >
+                ×
+              </button>
             </span>
+
           </div>
         </div>
+
       </div>
 
-      <!-- Listado - Solo mostrar si hay búsqueda activa -->
-      <div v-if="hasSearchPerformed" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div v-if="producers.data && producers.data.length" class="divide-y divide-slate-100">
+
+      <!-- ========================================= -->
+      <!-- LISTADO -->
+      <!-- ========================================= -->
+
+      <div
+        v-if="hasSearchPerformed"
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+      >
+
+        <!-- Resultados -->
+        <div
+          v-if="producers.data && producers.data.length"
+          class="divide-y divide-slate-100"
+        >
+
           <button
             v-for="p in producers.data"
             :key="p.id"
             class="w-full text-left px-4 py-3 hover:bg-slate-50"
             @click="goShow(p.id)"
           >
-            <div class="font-semibold text-slate-900">{{ p.name }}</div>
-            <div class="text-xs text-slate-600">DNI: {{ p.dni ?? '-' }} · {{ p.email ?? '-' }}</div>
+            <div class="font-semibold text-slate-900">
+              {{ p.name }}
+            </div>
+
+            <div class="text-xs text-slate-600">
+              DNI: {{ p.dni ?? '-' }} · {{ p.email ?? '-' }}
+            </div>
           </button>
+
         </div>
 
-        <div v-else class="px-4 py-10 text-center text-slate-500">
+
+        <!-- Sin resultados -->
+        <div
+          v-else
+          class="px-4 py-10 text-center text-slate-500"
+        >
           Sin resultados.
         </div>
 
-        <!-- paginación -->
-        <div 
-          v-if="producers.data && producers.data.length && producers.last_page > 1" 
+
+        <!-- Paginación -->
+        <div
+          v-if="producers.data && producers.data.length && producers.last_page > 1"
           class="flex items-center justify-between px-4 py-3 border-t border-slate-200"
         >
+
           <button
             class="px-3 py-2 rounded-xl border border-slate-200 text-sm font-semibold hover:bg-slate-50 disabled:opacity-50"
             :disabled="producers.current_page <= 1"
@@ -122,9 +249,11 @@
             Anterior
           </button>
 
+
           <div class="text-xs text-slate-600">
             Página {{ producers.current_page }} de {{ producers.last_page }}
           </div>
+
 
           <button
             class="px-3 py-2 rounded-xl border border-slate-200 text-sm font-semibold hover:bg-slate-50 disabled:opacity-50"
@@ -133,41 +262,83 @@
           >
             Siguiente
           </button>
+
         </div>
+
       </div>
-      
-      <!-- Mensaje cuando no hay búsqueda -->
-      <div v-else class="bg-white rounded-2xl border border-slate-200 p-8 text-center">
-        <svg class="w-12 h-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+
+
+      <!-- ========================================= -->
+      <!-- MENSAJE SIN BÚSQUEDA -->
+      <!-- ========================================= -->
+
+      <div
+        v-else
+        class="bg-white rounded-2xl border border-slate-200 p-8 text-center"
+      >
+
+        <svg
+          class="w-12 h-12 text-slate-400 mx-auto mb-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
-        <p class="text-slate-600">Realice una búsqueda para ver los productores</p>
+
+        <p class="text-slate-600">
+          Realice una búsqueda para ver los productores
+        </p>
+
       </div>
+
     </div>
   </StaffLayout>
 </template>
 
+
 <script setup>
+
 import StaffLayout from '@/Layouts/StaffLayout.vue'
 import { reactive, computed, ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 
+
 const props = defineProps({
-  user: { type: Object, required: true },
-  producers: { 
-    type: Object, 
+
+  user: {
+    type: Object,
+    required: true
+  },
+
+  producers: {
+    type: Object,
+
     default: () => ({
       data: [],
       current_page: 1,
       last_page: 1,
     })
   },
-  filters: { type: Object, default: () => ({}) },
+
+  filters: {
+    type: Object,
+    default: () => ({})
+  },
+
 })
+
 
 const searchType = ref(initialSearchType())
 
+
 function initialSearchType() {
+
   if (props.filters.all) return 'all'
   if (props.filters.dni) return 'dni'
   if (props.filters.name) return 'name'
@@ -175,10 +346,13 @@ function initialSearchType() {
   if (props.filters.variedad) return 'variedad'
   if (props.filters.tipo) return 'tipo'
   if (props.filters.rut) return 'rut'
+
   return 'all'
 }
 
+
 const placeholders = {
+
   all: 'Mostrar todos los productores',
   dni: 'Ingrese DNI',
   name: 'Ingrese nombre',
@@ -186,11 +360,17 @@ const placeholders = {
   variedad: 'Ingrese variedad',
   tipo: 'Ingrese tipo',
   rut: 'Ingrese N° RUT',
+
 }
 
-const placeholderText = computed(() => placeholders[searchType.value] || 'Buscar...')
+
+const placeholderText = computed(
+  () => placeholders[searchType.value] || 'Buscar...'
+)
+
 
 const form = reactive({
+
   search: props.filters.search ?? '',
   all: props.filters.all ?? '',
   dni: props.filters.dni ?? '',
@@ -199,32 +379,103 @@ const form = reactive({
   variedad: props.filters.variedad ?? '',
   tipo: props.filters.tipo ?? '',
   rut: props.filters.rut ?? '',
+
 })
 
+
 const activeFilters = computed(() => {
+
   const filters = []
-  if (form.all) filters.push({ key: 'all', label: 'Todos los productores' })
-  if (form.dni) filters.push({ key: 'dni', label: `DNI: ${form.dni}` })
-  if (form.name) filters.push({ key: 'name', label: `Nombre: ${form.name}` })
-  if (form.distrito) filters.push({ key: 'distrito', label: `Distrito: ${form.distrito}` })
-  if (form.variedad) filters.push({ key: 'variedad', label: `Variedad: ${form.variedad}` })
-  if (form.tipo) filters.push({ key: 'tipo', label: `Tipo: ${form.tipo}` })
-  if (form.rut) filters.push({ key: 'rut', label: `RUT: ${form.rut}` })
+
+  if (form.all) {
+    filters.push({
+      key: 'all',
+      label: 'Todos los productores'
+    })
+  }
+
+  if (form.dni) {
+    filters.push({
+      key: 'dni',
+      label: `DNI: ${form.dni}`
+    })
+  }
+
+  if (form.name) {
+    filters.push({
+      key: 'name',
+      label: `Nombre: ${form.name}`
+    })
+  }
+
+  if (form.distrito) {
+    filters.push({
+      key: 'distrito',
+      label: `Distrito: ${form.distrito}`
+    })
+  }
+
+  if (form.variedad) {
+    filters.push({
+      key: 'variedad',
+      label: `Variedad: ${form.variedad}`
+    })
+  }
+
+  if (form.tipo) {
+    filters.push({
+      key: 'tipo',
+      label: `Tipo: ${form.tipo}`
+    })
+  }
+
+  if (form.rut) {
+    filters.push({
+      key: 'rut',
+      label: `RUT: ${form.rut}`
+    })
+  }
+
   return filters
 })
 
-const hasResults = computed(() => props.producers.data && props.producers.data.length > 0)
+
+const hasResults = computed(() => {
+  return props.producers.data && props.producers.data.length > 0
+})
+
 
 const hasSearchPerformed = computed(() => {
-  return form.all || form.dni || form.name || form.distrito || form.variedad || form.tipo || form.rut
+
+  return (
+    form.all ||
+    form.dni ||
+    form.name ||
+    form.distrito ||
+    form.variedad ||
+    form.tipo ||
+    form.rut
+  )
+
 })
+
 
 const canExport = computed(() => {
-  return form.all || form.distrito || form.variedad || form.tipo
+
+  return (
+    form.all ||
+    form.distrito ||
+    form.variedad ||
+    form.tipo
+  )
+
 })
 
+
 const exportResults = () => {
+
   const params = new URLSearchParams()
+
   if (form.all) params.append('all', form.all)
   if (form.dni) params.append('dni', form.dni)
   if (form.name) params.append('name', form.name)
@@ -232,12 +483,19 @@ const exportResults = () => {
   if (form.variedad) params.append('variedad', form.variedad)
   if (form.tipo) params.append('tipo', form.tipo)
   if (form.rut) params.append('rut', form.rut)
-  
-  window.open(`/staff/producers/export?${params.toString()}`, '_blank')
+
+  window.open(
+    `/staff/producers/export?${params.toString()}`,
+    '_blank'
+  )
+
 }
 
+
 const search = () => {
+
   // Limpiar todos los campos primero
+
   form.all = ''
   form.dni = ''
   form.name = ''
@@ -246,17 +504,42 @@ const search = () => {
   form.tipo = ''
   form.rut = ''
 
+
   if (searchType.value === 'all') {
+
     form.all = '1'
-    router.get('/staff/producers', { all: '1' }, { preserveState: true, replace: true })
+
+    router.get(
+      '/staff/producers',
+      { all: '1' },
+      {
+        preserveState: true,
+        replace: true
+      }
+    )
+
   } else {
+
     // Asignar solo el campo activo
+
     form[searchType.value] = form.search
-    router.get('/staff/producers', { ...form }, { preserveState: true, replace: true })
+
+    router.get(
+      '/staff/producers',
+      { ...form },
+      {
+        preserveState: true,
+        replace: true
+      }
+    )
+
   }
+
 }
 
+
 const clear = () => {
+
   form.search = ''
   form.all = ''
   form.dni = ''
@@ -265,20 +548,51 @@ const clear = () => {
   form.variedad = ''
   form.tipo = ''
   form.rut = ''
+
   searchType.value = 'all'
-  router.get('/staff/producers', {}, { preserveState: true, replace: true })
+
+  router.get(
+    '/staff/producers',
+    {},
+    {
+      preserveState: true,
+      replace: true
+    }
+  )
+
 }
 
+
 const removeFilter = (key) => {
+
   form[key] = ''
   form.search = ''
   searchType.value = 'all'
+
   search()
+
 }
+
 
 const goPage = (pageNumber) => {
-  router.get('/staff/producers', { ...form, page: pageNumber }, { preserveState: true, replace: true })
+
+  router.get(
+    '/staff/producers',
+    {
+      ...form,
+      page: pageNumber
+    },
+    {
+      preserveState: true,
+      replace: true
+    }
+  )
+
 }
 
-const goShow = (id) => router.visit(`/staff/producers/${id}`)
+
+const goShow = (id) => {
+  router.visit(`/staff/producers/${id}`)
+}
+
 </script>
