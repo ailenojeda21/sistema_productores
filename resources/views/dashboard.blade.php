@@ -2,6 +2,7 @@
 
 @section('dashboard-content')
 
+<div class="dashboard-view">
 <!-- Desktop View -->
 <div class="hidden lg:flex flex-col h-full w-full p-6">
     <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
@@ -55,6 +56,11 @@
          data-url-maquinaria="{{ route('maquinaria.index') }}"
          data-url-comercios="{{ route('comercios.index') }}">
     </div>
+    </div>
 </div>
+
+@if(isset($propiedades))
+    @include('profile.partials.pdf-certificate')
+@endif
 
 @endsection
