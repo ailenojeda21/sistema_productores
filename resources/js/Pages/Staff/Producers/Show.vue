@@ -326,13 +326,11 @@
         <!-- Encabezado Institucional -->
         <div class="pdf-header">
           <div class="pdf-logo">
-            <svg class="pdf-logo-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-            <div class="pdf-logo-text">
-              <div class="pdf-logo-title">SISTEMA RUPAL</div>
-              <div class="pdf-logo-subtitle">Registro Único de Productores Agropecuarios</div>
-            </div>
+            <img src="/images/logo.png" alt="Logo" class="pdf-logo-img">
+          </div>
+          <div class="pdf-logo-text">
+            <div class="pdf-logo-title">SISTEMA RUPAL</div>
+            <div class="pdf-logo-subtitle">Registro Único de Productores Agropecuarios</div>
           </div>
           <div class="pdf-fecha">
             Fecha de emisión: {{ new Date().toLocaleDateString('es-AR') }}
@@ -657,10 +655,24 @@ const formatImplementoName = (key) => {
   html, body {
     height: auto !important;
     overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
   }
   .min-h-screen, .h-screen, .overflow-hidden, .overflow-y-auto, .overflow-auto {
     height: auto !important;
     overflow: visible !important;
+  }
+
+  .bg-slate-50,
+  main,
+  main > div,
+  .max-w-6xl,
+  .space-y-6 {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
   }
 
   /* Ocultar contenido web normal */
@@ -693,31 +705,41 @@ const formatImplementoName = (key) => {
     print-color-adjust: exact !important;
   }
 
+  body * {
+    box-shadow: none !important;
+  }
+
   /* ===== ENCABEZADO INSTITUCIONAL ===== */
   .pdf-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-bottom: 15px;
+    display: grid;
+    grid-template-columns: 120px 1fr 180px;
+    align-items: center;
+    padding-bottom: 12px;
     border-bottom: 3px solid #1e40af;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
     page-break-inside: avoid;
     break-inside: avoid;
   }
 
   .pdf-logo {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-start;
+    align-self: start;
   }
 
-  .pdf-logo-icon {
-    width: 48px;
-    height: 48px;
-    color: #1e40af;
+  .pdf-logo-img {
+    height: 50px;
+    width: auto;
+    margin-top: -6px;
+  }
+
+  .pdf-logo-text {
+    text-align: center;
+    justify-self: center;
   }
 
   .pdf-logo-title {
+    margin: 0;
     font-size: 22px;
     font-weight: 800;
     color: #1e40af;
@@ -725,6 +747,7 @@ const formatImplementoName = (key) => {
   }
 
   .pdf-logo-subtitle {
+    margin-top: 4px;
     font-size: 11px;
     color: #64748b;
     text-transform: uppercase;
@@ -732,6 +755,8 @@ const formatImplementoName = (key) => {
   }
 
   .pdf-fecha {
+    justify-self: end;
+    align-self: start;
     font-size: 11px;
     color: #64748b;
     text-align: right;
@@ -741,13 +766,13 @@ const formatImplementoName = (key) => {
   /* ===== TÍTULO PRINCIPAL ===== */
   .pdf-title-section {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 16px;
     page-break-inside: avoid;
     break-inside: avoid;
   }
 
   .pdf-main-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     color: #0f172a;
     margin: 0 0 5px 0;
@@ -757,14 +782,14 @@ const formatImplementoName = (key) => {
 
   .pdf-subtitle {
     font-size: 12px;
-    color: #64748b;
-    font-weight: 500;
+    color: #1e40af;
+    font-weight: 600;
   }
 
   /* ===== SECCIONES ===== */
   /* CLAVE: NO bloquear cortes dentro de secciones largas */
   .pdf-section {
-    margin-bottom: 25px;
+    margin-bottom: 14px;
     page-break-inside: auto;
     break-inside: auto;
     page-break-before: auto;
@@ -772,11 +797,11 @@ const formatImplementoName = (key) => {
   }
 
   .pdf-section-title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: #1e40af;
-    margin: 0 0 12px 0;
-    padding-bottom: 6px;
+    margin: 0 0 8px 0;
+    padding-bottom: 5px;
     border-bottom: 2px solid #e2e8f0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -795,7 +820,7 @@ const formatImplementoName = (key) => {
     width: 100%;
     border-collapse: collapse;
     font-size: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     page-break-inside: auto;
     break-inside: auto;
   }
@@ -813,7 +838,7 @@ const formatImplementoName = (key) => {
   .pdf-implementos-table th,
   .pdf-implementos-table td {
     border: 1px solid #cbd5e1;
-    padding: 8px 10px;
+    padding: 6px 8px;
     vertical-align: middle;
   }
 
@@ -838,7 +863,7 @@ const formatImplementoName = (key) => {
   .pdf-data-table tbody tr:nth-child(even),
   .pdf-full-table tbody tr:nth-child(even),
   .pdf-implementos-table tbody tr:nth-child(even) {
-    background-color: #f8fafc;
+    background-color: #f8fbff;
   }
 
   /* Repetir encabezado de tablas en nuevas páginas */
@@ -850,14 +875,15 @@ const formatImplementoName = (key) => {
 
   /* ===== CAMPOS Y VALORES ===== */
   .pdf-field-label {
-    background-color: #f1f5f9;
+    background-color: #eef3f9;
     font-weight: 600;
-    color: #475569;
+    color: #334155;
     width: 25%;
     font-size: 9px;
   }
 
   .pdf-field-value {
+    background-color: #ffffff;
     color: #0f172a;
     font-weight: 500;
   }
@@ -870,9 +896,9 @@ const formatImplementoName = (key) => {
 
   /* ===== TABLA RESUMEN ===== */
   .pdf-summary-table {
-    margin-bottom: 20px;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    margin-bottom: 8px;
+    page-break-inside: auto;
+    break-inside: auto;
   }
 
   .pdf-summary-table td {
@@ -880,7 +906,7 @@ const formatImplementoName = (key) => {
     font-size: 18px;
     font-weight: 700;
     color: #1e40af;
-    padding: 15px;
+    padding: 10px;
   }
 
   .pdf-stat-value {
@@ -890,63 +916,63 @@ const formatImplementoName = (key) => {
   /* ===== PROPIEDADES ===== */
   /* Evitar cortar cada bloque de propiedad (pero permitir que la sección total siga en otra página) */
   .pdf-property-block {
-    margin-bottom: 20px;
-    padding: 15px;
+    margin-bottom: 10px;
+    padding: 10px;
     border: 1px solid #e2e8f0;
     border-radius: 4px;
-    background-color: #fafafa;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    background-color: #ffffff;
+    page-break-inside: auto;
+    break-inside: auto;
   }
 
   .pdf-property-title {
     font-size: 12px;
     font-weight: 700;
     color: #334155;
-    margin: 0 0 10px 0;
-    padding-bottom: 5px;
+    margin: 0 0 6px 0;
+    padding-bottom: 4px;
     border-bottom: 1px solid #cbd5e1;
   }
 
   .pdf-property-table {
     margin-bottom: 0;
     background-color: white;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    page-break-inside: auto;
+    break-inside: auto;
   }
 
   /* ===== MAQUINARIAS ===== */
   .pdf-machinery-block {
-    margin-bottom: 20px;
-    padding: 15px;
+    margin-bottom: 10px;
+    padding: 10px;
     border: 1px solid #e2e8f0;
     border-radius: 4px;
-    background-color: #fafafa;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    background-color: #ffffff;
+    page-break-inside: auto;
+    break-inside: auto;
   }
 
   .pdf-machinery-title {
     font-size: 12px;
     font-weight: 700;
     color: #334155;
-    margin: 0 0 10px 0;
-    padding-bottom: 5px;
+    margin: 0 0 6px 0;
+    padding-bottom: 4px;
     border-bottom: 1px solid #cbd5e1;
   }
 
   .pdf-machinery-info-table {
     background-color: white;
-    margin-bottom: 12px;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    margin-bottom: 8px;
+    page-break-inside: auto;
+    break-inside: auto;
   }
 
   .pdf-implementos-title {
     font-size: 10px;
     font-weight: 600;
     color: #475569;
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
     text-transform: uppercase;
   }
 
@@ -968,11 +994,11 @@ const formatImplementoName = (key) => {
   }
 
   .pdf-full-table th {
-    padding: 10px 8px;
+    padding: 7px 8px;
   }
 
   .pdf-full-table td {
-    padding: 8px;
+    padding: 6px 8px;
   }
 
   .pdf-cell-center {
@@ -981,10 +1007,10 @@ const formatImplementoName = (key) => {
 
   /* ===== LISTAS ===== */
   .pdf-list-section {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    page-break-inside: auto;
+    break-inside: auto;
   }
 
   .pdf-list-title {
@@ -1021,7 +1047,7 @@ const formatImplementoName = (key) => {
 
   /* Listas dentro de celdas de tabla */
   .pdf-list-cell {
-    padding: 10px !important;
+    padding: 6px 8px !important;
   }
 
   .pdf-table-list {
@@ -1029,7 +1055,7 @@ const formatImplementoName = (key) => {
     margin: 0;
     padding-left: 18px;
     font-size: 9px;
-    line-height: 1.5;
+    line-height: 1.35;
   }
 
   .pdf-table-list li {
@@ -1052,13 +1078,13 @@ const formatImplementoName = (key) => {
     font-style: italic;
     padding: 20px;
     border: 1px dashed #cbd5e1;
-    background-color: #f8fafc;
+    background-color: #ffffff;
   }
 
   /* ===== PIE DE PÁGINA ===== */
   .pdf-footer {
-    margin-top: 40px;
-    padding-top: 20px;
+    margin-top: 18px;
+    padding-top: 12px;
     border-top: 2px solid #e2e8f0;
     page-break-inside: avoid;
     break-inside: avoid;
@@ -1066,7 +1092,7 @@ const formatImplementoName = (key) => {
 
   .pdf-footer-content {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 18px;
   }
 
   .pdf-footer-text {
@@ -1078,7 +1104,7 @@ const formatImplementoName = (key) => {
   .pdf-signature-section {
     display: flex;
     justify-content: flex-end;
-    margin-top: 30px;
+    margin-top: 18px;
   }
 
   .pdf-signature-box {
