@@ -4,62 +4,73 @@
   <StaffLayout :user="authUser">
     <div class="max-w-6xl mx-auto space-y-6">
       <!-- Header with back button and print -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex min-w-0 items-center gap-3">
           <button
             @click="router.visit('/staff/producers')"
-            class="h-10 w-10 rounded-xl border border-slate-200 bg-white grid place-items-center text-slate-700 hover:bg-slate-50 transition"
+            class="h-10 w-10 shrink-0 rounded-xl border border-slate-200 bg-white grid place-items-center text-slate-700 hover:bg-slate-50 transition"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <nav class="flex items-center text-sm text-slate-500">
-            <button @click="router.visit('/staff/dashboard')" class="hover:text-slate-800 transition">Inicio</button>
-            <span class="mx-2">/</span>
-            <button @click="router.visit('/staff/producers')" class="hover:text-slate-800 transition">Productores</button>
-            <span class="mx-2">/</span>
-            <span class="text-slate-800 font-medium">{{ producer.name }}</span>
+          <nav class="flex min-w-0 items-center text-sm text-slate-500">
+            <button @click="router.visit('/staff/dashboard')" class="shrink-0 hover:text-slate-800 transition">Inicio</button>
+            <span class="mx-2 shrink-0">/</span>
+            <button @click="router.visit('/staff/producers')" class="shrink-0 hover:text-slate-800 transition">Productores</button>
+            <span class="mx-2 shrink-0">/</span>
+            <span class="min-w-0 truncate text-slate-800 font-medium">{{ producer.name }}</span>
           </nav>
         </div>
-      <button
-  @click="printReport"
-  class="flex items-center gap-2 px-3 py-2 sm:px-4 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition shadow-md"
->
-  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-  </svg>
-  <span class="hidden sm:inline">Exportar PDF</span>
-</button>
+        <button
+          @click="printReport"
+          class="hidden h-11 w-11 shrink-0 items-center justify-center self-end rounded-xl bg-green-600 text-white text-sm font-semibold shadow-md transition hover:bg-green-700 sm:flex sm:w-auto sm:self-auto sm:px-4 sm:gap-2"
+        >
+          <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          <span class="hidden sm:inline">Exportar PDF</span>
+        </button>
       </div>
 
       <!-- Report Content for Printing -->
       <div id="printable-report" class="space-y-6">
         <!-- Header Info -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <button
+            @click="printReport"
+            class="mb-4 ml-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-600 text-white shadow-md transition hover:bg-green-700 sm:hidden"
+            aria-label="Exportar PDF"
+            title="Exportar PDF"
+          >
+            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+          </button>
+
           <div class="flex items-start gap-4">
-            <div class="h-16 w-16 rounded-2xl bg-blue-100 grid place-items-center text-blue-600">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="h-16 w-16 shrink-0 rounded-2xl bg-blue-100 grid place-items-center text-blue-600">
+              <svg class="h-8 w-8 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <div class="flex-1">
-              <h1 class="text-2xl font-bold text-slate-900">{{ producer.name }}</h1>
+            <div class="min-w-0 flex-1">
+              <h1 class="break-words text-2xl font-bold text-slate-900">{{ producer.name }}</h1>
               <div class="mt-2 flex flex-wrap gap-4 text-sm text-slate-600">
                 <span class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                   </svg>
                   DNI: {{ producer.dni || 'No registrado' }}
                 </span>
                 <span class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   {{ producer.email }}
                 </span>
                 <span class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                   {{ producer.telefono || 'No registrado' }}
