@@ -65,13 +65,36 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     $user = Auth::user();
 
-    return view('dashboard', [
+    $data = [
+        'user' => $user,
         'profileCompleteness' => $user->profile_completeness,
         'propiedadesCompleteness' => $user->propiedades_completeness,
         'cultivosCompleteness' => $user->cultivos_completeness,
         'maquinariasCompleteness' => $user->maquinarias_completeness,
         'comercializacionCompleteness' => $user->comercializacion_completeness,
-    ]);
+    ];
+
+    if ($user->canDownloadCertificate()) {
+        $user->load([
+            'propiedades.cultivos.propiedad',
+            'propiedades.maquinaria.propiedad',
+            'comercializacion',
+        ]);
+
+        $propiedades = $user->propiedades;
+        $data['propiedades'] = $propiedades;
+        $data['cultivos'] = $propiedades->flatMap->cultivos;
+        $data['maquinarias'] = $propiedades->map->maquinaria->filter()->values();
+        $data['comercio'] = $user->comercializacion;
+        $data['stats'] = [
+            'propiedades' => $propiedades->count(),
+            'cultivos' => $data['cultivos']->count(),
+            'maquinarias' => $data['maquinarias']->count(),
+            'comercializacion' => $data['comercio'] ? 1 : 0,
+        ];
+    }
+
+    return view('dashboard', $data);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 /*

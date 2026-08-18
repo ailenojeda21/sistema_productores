@@ -96,6 +96,12 @@ function go() {
         window.location.href = currentStep.value.url
     }
 }
+
+function downloadCertificate() {
+    if (typeof window.printCertificate === 'function') {
+        window.printCertificate()
+    }
+}
 </script>
 
 <template>
@@ -146,6 +152,7 @@ function go() {
                 <p class="text-xs text-gray-600 mb-3">Todos los datos de tu perfil están completos.</p>
 
                 <button
+                    @click="downloadCertificate"
                     class="w-full py-2 px-4 bg-naranja-oscuro text-white text-sm font-semibold rounded hover:bg-opacity-90 transition"
                 >
                     Descargar comprobante de registro
