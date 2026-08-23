@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comercio;
+use App\Models\Cultivo;
 use App\Models\User;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class StaffProducerController extends Controller
 {
@@ -290,25 +293,25 @@ class StaffProducerController extends Controller
         if ($searchType === 'all') {
             $titulo = 'Todos los Productores';
         } elseif ($searchType === 'distrito') {
-            $titulo = 'Productores del Distrito ' . $distrito;
+            $titulo = 'Productores del Distrito '.$distrito;
         } elseif ($searchType === 'variedad') {
-            $titulo = 'Productores que cultivan ' . $variedad;
+            $titulo = 'Productores que cultivan '.$variedad;
         } elseif ($searchType === 'tipo') {
-            $titulo = 'Productores de tipo ' . $tipo;
+            $titulo = 'Productores de tipo '.$tipo;
         }
 
-        $fechaExport = date('d/m/Y H:i') . ' hs';
+        $fechaExport = date('d/m/Y H:i').' hs';
         $dateStr = date('Y-m-d');
 
         if ($searchType === 'all') {
-            $filename = 'productores_completo_' . $dateStr . '.xlsx';
+            $filename = 'productores_completo_'.$dateStr.'.xlsx';
         } elseif ($searchType && $searchValue) {
-            $filename = 'productores_' . strtolower(str_replace(' ', '_', $searchValue)) . '_' . $dateStr . '.xlsx';
+            $filename = 'productores_'.strtolower(str_replace(' ', '_', $searchValue)).'_'.$dateStr.'.xlsx';
         } else {
-            $filename = 'productores_todos_' . $dateStr . '.xlsx';
+            $filename = 'productores_todos_'.$dateStr.'.xlsx';
         }
 
-        $spreadsheet = new Spreadsheet();
+        $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Productores');
 
@@ -341,7 +344,7 @@ class StaffProducerController extends Controller
         $sheet->setAutoFilter("A{$headerRow}:{$lastCol}{$headerRow}");
 
         // Congelar encabezado
-        $sheet->freezePane("A" . ($headerRow + 1));
+        $sheet->freezePane('A'.($headerRow + 1));
 
         // Datos desde fila 5
         $rowNum = 5;
@@ -351,13 +354,13 @@ class StaffProducerController extends Controller
             // Resolver etiquetas de mercados y cooperativas
             $mercadosLabels = $comercio
                 ? collect($comercio->mercados ?? [])
-                    ->map(fn($k) => \App\Models\Comercio::MERCADOS[$k] ?? $k)
+                    ->map(fn ($k) => Comercio::MERCADOS[$k] ?? $k)
                     ->implode(', ')
                 : '';
 
             $cooperativasLabels = $comercio
                 ? collect($comercio->cooperativas ?? [])
-                    ->map(fn($k) => \App\Models\Comercio::COOPERATIVAS[$k] ?? $k)
+                    ->map(fn ($k) => Comercio::COOPERATIVAS[$k] ?? $k)
                     ->implode(', ')
                 : '';
 
@@ -435,7 +438,7 @@ class StaffProducerController extends Controller
                                 $cult->estacion ?? '',
                                 $cult->hectareas,
                                 $cult->manejo_label,
-                                \App\Models\Cultivo::TECNOLOGIA_RIEGO[$cult->tecnologia_riego] ?? $cult->tecnologia_riego ?? '',
+                                Cultivo::TECNOLOGIA_RIEGO[$cult->tecnologia_riego] ?? $cult->tecnologia_riego ?? '',
                             ];
 
                             $this->writeExcelRow($sheet, $rowNum, array_merge($userData, $propData, $maqData, $cultData));
@@ -463,7 +466,7 @@ class StaffProducerController extends Controller
 
         return response($content, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
     }
 
@@ -472,12 +475,13 @@ class StaffProducerController extends Controller
         foreach ($data as $i => $value) {
             $colLetter = $this->colLetter($i + 1);
             $cell = $sheet->getCell("{$colLetter}{$row}");
+
             if (is_float($value) || is_int($value)) {
-                $cell->setValueExplicit($value, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                $cell->setValueExplicit($value, DataType::TYPE_NUMERIC);
             } elseif (is_null($value)) {
-                $cell->setValue('');
+                $cell->setValueExplicit('', DataType::TYPE_STRING);
             } else {
-                $cell->setValue($value);
+                $cell->setValueExplicit((string) $value, DataType::TYPE_STRING);
             }
         }
     }
@@ -487,9 +491,10 @@ class StaffProducerController extends Controller
         $letter = '';
         while ($index > 0) {
             $index--;
-            $letter = chr(65 + ($index % 26)) . $letter;
+            $letter = chr(65 + ($index % 26)).$letter;
             $index = intdiv($index, 26);
         }
+
         return $letter;
     }
 }

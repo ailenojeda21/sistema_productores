@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\User;
 use App\Models\Comercio;
+use App\Models\User;
 
 test('user puede ver listado de comercios', function () {
     $user = User::factory()->create();
@@ -18,7 +18,7 @@ test('user puede crear comercio', function () {
     $response = $this->actingAs($user)->post('/comercios', [
         'infraestructura_empaque' => true,
         'vende_en_finca' => false,
-        'mercados' => ['Mercado local'],
+        'mercados' => ['Mercado Cooperativo Guaymallen'],
         'cooperativas' => [],
     ]);
 
@@ -44,7 +44,7 @@ test('user puede actualizar comercio', function () {
     $response = $this->actingAs($user)->put("/comercios/{$comercio->id}", [
         'infraestructura_empaque' => false,
         'vende_en_finca' => true,
-        'mercados' => ['Exportación'],
+        'mercados' => ['Mercados Nacionales o Internacionales'],
         'cooperativas' => [],
     ]);
 

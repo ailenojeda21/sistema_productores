@@ -52,7 +52,11 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::before(function ($user, $ability) {
-            if ($user instanceof StaffUser && $user->role === 'admin') {
+            $staffAbilities = ['manage-staff', 'view-dashboard', 'view-producers', 'export-producers'];
+
+            if ($user instanceof StaffUser
+                && $user->role === 'admin'
+                && in_array($ability, $staffAbilities, true)) {
                 return true;
             }
         });
