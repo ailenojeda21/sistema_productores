@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
 
 class PasswordResetLinkController extends Controller
 {
@@ -21,7 +20,8 @@ class PasswordResetLinkController extends Controller
     /**
      * Handle an incoming password reset link request.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * Responde de forma identica exista o no el email para evitar
+     * enumeracion de cuentas (hallazgo M1).
      */
     public function store(Request $request): RedirectResponse
     {
@@ -29,16 +29,10 @@ class PasswordResetLinkController extends Controller
             'email' => 'required|email',
         ]);
 
-        $status = Password::sendResetLink(
+        Password::sendResetLink(
             $request->only('email')
         );
 
-        if ($status == Password::RESET_LINK_SENT) {
-            return back()->with('status', 'Hemos enviado por correo electronico el enlace para restablecer tu contrasena.');
-        }
-
-        throw ValidationException::withMessages([
-            'email' => ['No podemos encontrar un usuario con esa direccion de correo electronico.'],
-        ]);
+        return back()->with('status', 'Si el correo esta registrado, te enviaremos un enlace para restablecer tu contrasena.');
     }
 }

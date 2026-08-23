@@ -215,8 +215,8 @@ test('admin puede gestionar usuarios staff via web', function () {
         ->post(route('staff.users.store'), [
             'name' => 'Nuevo Admin',
             'email' => 'nuevo-admin@staff.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'role' => 'admin',
         ])
         ->assertRedirect();

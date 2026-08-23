@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\ValidationException;
 
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
@@ -20,6 +21,36 @@ test('new users can register', function () {
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('verification.notice', absolute: false));
+});
+
+test('registro simultaneo del mismo email devuelve error de validacion y no 500', function () {
+    $fired = false;
+
+    User::creating(function () use (&$fired) {
+        if ($fired) {
+            return;
+        }
+        $fired = true;
+
+        User::withoutEvents(fn () => User::factory()->create([
+            'email' => 'carrera@test.com',
+        ]));
+    });
+
+    $response = $this->post('/register', [
+        'name' => 'Corredor',
+        'email' => 'carrera@test.com',
+        'password' => 'Secreta1!',
+        'password_confirmation' => 'Secreta1!',
+    ]);
+
+    expect($response->status())->toBe(302)
+        ->and($response->exception)->toBeInstanceOf(ValidationException::class);
+
+    $response->assertSessionHasErrors(['email']);
+
+    User::flushEventListeners();
+    User::clearBootedModels();
 });
 
 test('un productor puede re-registrarse con su email despues de eliminar su cuenta', function () {
