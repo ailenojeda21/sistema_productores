@@ -89,3 +89,42 @@ test('correct password must be provided to delete account', function () {
 
     $this->assertNotNull($user->fresh());
 });
+
+test('cooperativas fuera del catalogo son rechazadas', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Test User',
+            'dni' => '12345678',
+            'telefono' => '1123456789',
+            'direccion' => 'Calle Falsa 123',
+            'tiene_cooperativas' => '1',
+            'cooperativas' => ['Coop Inventada'],
+        ]);
+
+    $response->assertSessionHasErrors(['cooperativas.0']);
+});
+
+test('cooperativas del catalogo se aceptan', function () {
+    $user = User::factory()->create();
+    $coop = array_values(User::COOPERATIVAS)[0];
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Test User',
+            'dni' => '12345678',
+            'telefono' => '1123456789',
+            'direccion' => 'Calle Falsa 123',
+            'tiene_cooperativas' => '1',
+            'cooperativas' => [$coop],
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    expect($user->refresh()->cooperativas)->toBe([$coop]);
+});

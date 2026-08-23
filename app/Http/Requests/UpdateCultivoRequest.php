@@ -38,7 +38,7 @@ class UpdateCultivoRequest extends FormRequest
                 Rule::exists('propiedades', 'id')->where('usuario_id', auth()->id()),
             ],
             'variedad' => 'sometimes|string|max:255',
-            'estacion' => 'sometimes|string|max:255',
+            'estacion' => ['sometimes', Rule::in(array_keys(Cultivo::ESTACIONES))],
             'tipo' => ['sometimes', 'string', 'max:255', 'regex:/^[\pL\pM0-9\s\-\.\,\/]+$/u'],
             'hectareas' => "sometimes|numeric|min:0|max:$hectareasDisponibles",
             'manejo_cultivo' => 'sometimes|in:Convencional,Agroecologico,Organico',

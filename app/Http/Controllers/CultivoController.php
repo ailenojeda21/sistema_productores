@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateCultivoRequest;
 use App\Models\Cultivo;
 use App\Models\Propiedad;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class CultivoController extends Controller
 {
@@ -78,7 +80,31 @@ class CultivoController extends Controller
 
         $validated['tipo'] = $this->normalizarTipo($validated['tipo'] ?? null);
 
-        Cultivo::create($validated);
+        // Serializa la verificación de superficie (hallazgo M2): bloquea la fila
+        // de la propiedad para que requests paralelos no superen el total.
+        DB::transaction(function () use ($validated) {
+            $propiedad = Propiedad::where('id', $validated['propiedad_id'])
+                ->where('usuario_id', auth()->id())
+                ->lockForUpdate()
+                ->first();
+
+            if (! $propiedad) {
+                throw ValidationException::withMessages([
+                    'propiedad_id' => ['La propiedad seleccionada no es válida.'],
+                ]);
+            }
+
+            $hectareasUsadas = (float) $propiedad->cultivos()->sum('hectareas');
+            $disponibles = max(0, (float) $propiedad->hectareas - $hectareasUsadas);
+
+            if (round((float) $validated['hectareas'], 2) > round($disponibles, 2)) {
+                throw ValidationException::withMessages([
+                    'hectareas' => ['Las hectáreas indicadas exceden la superficie disponible de la propiedad.'],
+                ]);
+            }
+
+            Cultivo::create($validated);
+        });
 
         return redirect()->route('cultivos.index')
             ->with('success', 'Cultivo creado correctamente');
@@ -107,7 +133,35 @@ class CultivoController extends Controller
             $validated['tipo'] = $this->normalizarTipo($validated['tipo']);
         }
 
-        $cultivo->update($validated);
+        DB::transaction(function () use ($validated, $cultivo) {
+            $propiedadId = $validated['propiedad_id'] ?? $cultivo->propiedad_id;
+
+            $propiedad = Propiedad::where('id', $propiedadId)
+                ->where('usuario_id', auth()->id())
+                ->lockForUpdate()
+                ->first();
+
+            if (! $propiedad) {
+                throw ValidationException::withMessages([
+                    'propiedad_id' => ['La propiedad seleccionada no es válida.'],
+                ]);
+            }
+
+            if (array_key_exists('hectareas', $validated)) {
+                $usadasPorOtros = (float) $propiedad->cultivos()
+                    ->where('id', '!=', $cultivo->id)
+                    ->sum('hectareas');
+                $disponibles = max(0, (float) $propiedad->hectareas - $usadasPorOtros);
+
+                if (round((float) $validated['hectareas'], 2) > round($disponibles, 2)) {
+                    throw ValidationException::withMessages([
+                        'hectareas' => ['Las hectáreas indicadas exceden la superficie disponible de la propiedad.'],
+                    ]);
+                }
+            }
+
+            $cultivo->update($validated);
+        });
 
         return redirect()->route('cultivos.index')
             ->with('success', 'Cultivo actualizado correctamente');

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -28,7 +30,10 @@ class ProfileController extends Controller
             'telefono' => ['required', 'string', 'max:20'],
             'direccion' => ['required', 'string', 'max:255'],
             'cooperativas' => ['nullable', 'array'],
-            'cooperativas.*' => ['string'],
+            'cooperativas.*' => [
+                'string',
+                Rule::in(array_merge(array_keys(User::COOPERATIVAS), array_values(User::COOPERATIVAS))),
+            ],
         ]);
 
         if (! $request->has('tiene_cooperativas')) {
