@@ -478,6 +478,17 @@ Todo código nuevo debe cumplir con los controles aplicables de las cinco normas
 | **16.1** (Incidentes) | Respuesta a 419 (CSRF), 403 (rol), 422 (validación), 500 (error global) manejadas. |
 | **18.1-18.2** (Cumplimiento) | Revisión de licencias de dependencias; no usar paquetes con licencias GPL si el proyecto es propietario. |
 
+### Matriz de permisos staff (decisión registrada)
+
+| Habilidad (Gate/policy) | Admin | Auditor |
+|---|---|---|
+| `view-dashboard` | ✅ | ✅ |
+| `view-producers` | ✅ | ✅ |
+| `export-producers` (web + PDF/Excel) | ✅ | ✅ |
+| `manage-staff` / CRUD de usuarios staff | ✅ | ❌ |
+
+**Decisión A3 (revisada y cerrada 2026-08-23)**: el acceso del rol **Auditor** a la consulta y exportación de productores es **funcionalidad intencional del sistema**, no una escalación de privilegios. Admin y Auditor comparten intencionalmente los permisos de consulta/exportación; la diferenciación de privilegios entre ambos roles está exclusivamente en la gestión de usuarios Staff (`manage-staff`). Comportamiento verificado en `tests/Feature/SecurityRemediationTest.php`. Las auditorías de seguridad futuras no deben reportar este punto como hallazgo.
+
 #### Reglas de código para 27002
 ```php
 // ✅ Correcto: validación con Form Request + saneamiento

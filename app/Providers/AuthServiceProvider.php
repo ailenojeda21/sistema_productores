@@ -46,11 +46,14 @@ class AuthServiceProvider extends ServiceProvider
                 && in_array($user->role, ['admin', 'auditor']);
         });
 
+        // Decisión de diseño (A3): la exportación de productores es intencionalmente
+        // compartida por Admin y Auditor; no es una escalación de privilegios.
         Gate::define('export-producers', function ($user) {
             return $user instanceof StaffUser
                 && in_array($user->role, ['admin', 'auditor']);
         });
 
+        // Allowlist cerrada: el bypass admin solo aplica a habilidades staff.
         Gate::before(function ($user, $ability) {
             $staffAbilities = ['manage-staff', 'view-dashboard', 'view-producers', 'export-producers'];
 
