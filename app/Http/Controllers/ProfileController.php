@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 
 class ProfileController extends Controller
@@ -88,6 +89,9 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $this->authorize('delete', $user);
+
+        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+        DB::table('staff_password_reset_tokens')->where('email', $user->email)->delete();
 
         Auth::logout();
         $user->delete();

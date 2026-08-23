@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ComercioController;
 use App\Http\Controllers\CultivoController;
 use App\Http\Controllers\MaquinariaController;
@@ -8,7 +9,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropiedadController;
 use App\Http\Controllers\StaffAuthController;
 use App\Http\Controllers\StaffDashboardController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\StaffNewPasswordController;
 use App\Http\Controllers\StaffPasswordResetLinkController;
 use App\Http\Controllers\StaffProducerController;
@@ -18,28 +18,28 @@ use Illuminate\Support\Facades\Route;
 // ============================================================
 // PREVIEW de plantillas de correo (solo desarrollo)
 // ============================================================
- Route::get('/preview/staff-reset-password', function () {
-     return view('emails.staff-reset-password', [
-         'url' => 'https://example.com/reset-password/token123',
-         'count' => 60,
-     ]);
- });
+Route::get('/preview/staff-reset-password', function () {
+    return view('emails.staff-reset-password', [
+        'url' => 'https://example.com/reset-password/token123',
+        'count' => 60,
+    ]);
+});
 //
- Route::get('/preview/user-reset-password', function () {
-     return view('emails.user-reset-password', [
-         'url' => 'https://example.com/reset-password/token456',
-         'count' => 60,
-     ]);
- });
+Route::get('/preview/user-reset-password', function () {
+    return view('emails.user-reset-password', [
+        'url' => 'https://example.com/reset-password/token456',
+        'count' => 60,
+    ]);
+});
 //
- Route::get('/preview/welcome-verification', function () {
-     $user = (object) ['name' => 'Juan Pérez'];
+Route::get('/preview/welcome-verification', function () {
+    $user = (object) ['name' => 'Juan Pérez'];
 
-     return view('emails.welcome-verification', [
+    return view('emails.welcome-verification', [
         'user' => $user,
-         'verificationUrl' => 'https://example.com/verify-email/token789',
-     ]);
- });
+        'verificationUrl' => 'https://example.com/verify-email/token789',
+    ]);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -208,7 +208,7 @@ Route::prefix('staff')->group(function () {
     | RUTAS PROTEGIDAS STAFF
     |--------------------------------------------------------------------------
     */
-    Route::middleware('auth:staff')->group(function () {
+    Route::middleware(['auth:staff', 'staff.active'])->group(function () {
 
         // Dashboard (ADMIN + AUDITOR)
         Route::get('/dashboard', [StaffDashboardController::class, 'index'])
