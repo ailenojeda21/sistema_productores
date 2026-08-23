@@ -3,6 +3,8 @@
 use App\Models\Cultivo;
 use App\Models\Propiedad;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 test('user puede ver listado de cultivos', function () {
     $user = User::factory()->create();
@@ -12,6 +14,109 @@ test('user puede ver listado de cultivos', function () {
     $response = $this->actingAs($user)->get('/cultivos');
 
     $response->assertOk();
+});
+
+test('la creacion simultanea de cultivos nunca excede las hectareas de la propiedad', function () {
+    $user = User::factory()->create();
+    $propiedad = Propiedad::factory()->for($user, 'usuario')->create(['hectareas' => 10]);
+
+    $baseLevel = DB::transactionLevel();
+    $fired = false;
+    Propiedad::retrieved(function ($p) use (&$fired, $propiedad, $baseLevel) {
+        if ($fired || $p->id !== $propiedad->id || DB::transactionLevel() <= $baseLevel) {
+            return;
+        }
+        $fired = true;
+
+        Cultivo::withoutEvents(fn () => Cultivo::factory()->for($propiedad, 'propiedad')->create([
+            'hectareas' => 6,
+        ]));
+    });
+
+    $response = $this->actingAs($user)->post('/cultivos', [
+        'propiedad_id' => $propiedad->id,
+        'tipo' => 'Hortícola',
+        'variedad' => 'Tomate Redondo',
+        'estacion' => 'Verano',
+        'hectareas' => '5',
+        'manejo_cultivo' => 'Convencional',
+        'tecnologia_riego' => 'Goteo',
+    ]);
+
+    expect($response->status())->toBe(302)
+        ->and($response->exception)->toBeInstanceOf(ValidationException::class);
+
+    $response->assertSessionHasErrors(['hectareas']);
+
+    $total = (float) Cultivo::where('propiedad_id', $propiedad->id)->sum('hectareas');
+    expect($total)->toBeLessThanOrEqual(10.0)
+        ->and(Cultivo::where('propiedad_id', $propiedad->id)->count())->toBe(0);
+
+    Propiedad::flushEventListeners();
+    Propiedad::clearBootedModels();
+});
+
+test('se puede cultivar exactamente la superficie disponible', function () {
+    $user = User::factory()->create();
+    $propiedad = Propiedad::factory()->for($user, 'usuario')->create(['hectareas' => 10]);
+
+    $response = $this->actingAs($user)->post('/cultivos', [
+        'propiedad_id' => $propiedad->id,
+        'tipo' => 'Vitícola',
+        'variedad' => 'Malbec',
+        'estacion' => 'Primavera',
+        'hectareas' => '10',
+        'manejo_cultivo' => 'Organico',
+        'tecnologia_riego' => 'Surco',
+    ]);
+
+    $response->assertRedirect('/cultivos')
+        ->assertSessionHasNoErrors();
+    $this->assertDatabaseHas('cultivos', [
+        'propiedad_id' => $propiedad->id,
+        'hectareas' => 10,
+    ]);
+});
+
+test('no se puede ampliar un cultivo mas alla de la superficie disponible', function () {
+    $user = User::factory()->create();
+    $propiedad = Propiedad::factory()->for($user, 'usuario')->create(['hectareas' => 10]);
+    $cultivoA = Cultivo::factory()->for($propiedad, 'propiedad')->create(['hectareas' => 7]);
+    Cultivo::factory()->for($propiedad, 'propiedad')->create(['hectareas' => 4]);
+
+    $response = $this->actingAs($user)->put("/cultivos/{$cultivoA->id}", [
+        'propiedad_id' => $propiedad->id,
+        'tipo' => 'Hortícola',
+        'variedad' => 'Tomate Redondo',
+        'estacion' => 'Verano',
+        'hectareas' => '9.5',
+        'manejo_cultivo' => 'Convencional',
+        'tecnologia_riego' => 'Goteo',
+    ]);
+
+    $response->assertSessionHasErrors(['hectareas']);
+    $this->assertDatabaseHas('cultivos', [
+        'id' => $cultivoA->id,
+        'hectareas' => 7,
+    ]);
+});
+
+test('estacion fuera del catalogo es rechazada', function () {
+    $user = User::factory()->create();
+    $propiedad = Propiedad::factory()->for($user, 'usuario')->create(['hectareas' => 100]);
+
+    $response = $this->actingAs($user)->post('/cultivos', [
+        'propiedad_id' => $propiedad->id,
+        'tipo' => 'Hortícola',
+        'variedad' => 'Tomate Redondo',
+        'estacion' => 'Invernal',
+        'hectareas' => '5',
+        'manejo_cultivo' => 'Convencional',
+        'tecnologia_riego' => 'Goteo',
+    ]);
+
+    $response->assertSessionHasErrors(['estacion']);
+    $this->assertDatabaseCount('cultivos', 0);
 });
 
 test('user puede crear cultivo', function () {

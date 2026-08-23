@@ -15,14 +15,14 @@ class UpdatePropiedadRequest extends FormRequest
     {
         return [
             'calle' => 'sometimes|required|string|max:255',
-            'numeracion' => 'sometimes|required|integer|min:1',
+            'numeracion' => 'sometimes|required|integer|min:1|max:999999',
             'distrito' => 'sometimes|required|string|max:100',
-            'hectareas' => 'sometimes|required|numeric|min:0',
+            'hectareas' => 'sometimes|required|numeric|min:0|max:1000',
             'malla' => 'nullable',
             'derecho_riego' => 'nullable',
             'tipo_derecho_riego' => 'nullable|string|in:Subterráneo,Superficial,Ambos',
             'rut' => 'nullable',
-            'rut_valor' => 'nullable|required_with:rut_archivo_file',
+            'rut_valor' => ['nullable', 'required_with:rut_archivo_file', 'string', 'max:15', 'regex:/^\d+$/'],
             'rut_archivo_file' => 'nullable|file|mimes:pdf|max:10240',
             'lat' => 'sometimes|required|numeric|between:-90,90',
             'lng' => 'sometimes|required|numeric|between:-180,180',
@@ -38,6 +38,9 @@ class UpdatePropiedadRequest extends FormRequest
         return [
             'especificar_tenencia.required_if' => 'Debe especificar la condición cuando selecciona "Otro".',
             'rut_valor.required_with' => 'El número de RUT es obligatorio cuando se adjunta un archivo.',
+            'rut_valor.regex' => 'El número de RUT solo puede contener dígitos.',
+            'rut_valor.max' => 'El número de RUT no puede superar los 15 dígitos.',
+            'hectareas.max' => 'Las hectáreas no pueden superar 1000 por propiedad.',
         ];
     }
 }

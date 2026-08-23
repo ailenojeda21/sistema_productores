@@ -1,10 +1,7 @@
 <?php
 
-use App\Models\User;
 use App\Models\Propiedad;
-use App\Models\Cultivo;
-use App\Models\Maquinaria;
-use App\Models\Comercio;
+use App\Models\User;
 
 test('user puede ver listado de propiedades', function () {
     $user = User::factory()->create();
@@ -37,6 +34,100 @@ test('user puede crear propiedad', function () {
         'usuario_id' => $user->id,
         'calle' => 'Calle Falsa',
     ]);
+});
+
+test('hectareas por encima del tope son rechazadas', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post('/propiedades', [
+        'calle' => 'Calle Falsa',
+        'numeracion' => '123',
+        'distrito' => array_keys(Propiedad::DISTRITOS)[0],
+        'hectareas' => '1000.01',
+        'tipo_tenencia' => 'propietario',
+        'lat' => '-33.0',
+        'lng' => '-68.5',
+    ]);
+
+    $response->assertSessionHasErrors(['hectareas']);
+});
+
+test('hectareas en el tope se aceptan', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post('/propiedades', [
+        'calle' => 'Calle Tope',
+        'numeracion' => '1',
+        'distrito' => array_keys(Propiedad::DISTRITOS)[0],
+        'hectareas' => '1000',
+        'tipo_tenencia' => 'propietario',
+        'lat' => '-33.0',
+        'lng' => '-68.5',
+    ]);
+
+    $response->assertRedirect('/propiedades')
+        ->assertSessionHasNoErrors();
+    $this->assertDatabaseHas('propiedades', [
+        'usuario_id' => $user->id,
+        'calle' => 'Calle Tope',
+        'hectareas' => 1000,
+    ]);
+});
+
+test('rut_valor con formato invalido es rechazado', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post('/propiedades', [
+        'calle' => 'Calle RUT',
+        'numeracion' => '123',
+        'distrito' => array_keys(Propiedad::DISTRITOS)[0],
+        'hectareas' => '10',
+        'rut_valor' => 'ABC-123',
+        'tipo_tenencia' => 'propietario',
+        'lat' => '-33.0',
+        'lng' => '-68.5',
+    ]);
+
+    $response->assertSessionHasErrors(['rut_valor']);
+});
+
+test('rut_valor numerico valido se acepta', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post('/propiedades', [
+        'calle' => 'Calle RUT OK',
+        'numeracion' => '123',
+        'distrito' => array_keys(Propiedad::DISTRITOS)[0],
+        'hectareas' => '10',
+        'rut' => '1',
+        'rut_valor' => '1234567890',
+        'tipo_tenencia' => 'propietario',
+        'lat' => '-33.0',
+        'lng' => '-68.5',
+    ]);
+
+    $response->assertRedirect('/propiedades')
+        ->assertSessionHasNoErrors();
+    $this->assertDatabaseHas('propiedades', [
+        'usuario_id' => $user->id,
+        'rut_valor' => '1234567890',
+    ]);
+});
+
+test('numeracion absurda es rechazada', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post('/propiedades', [
+        'calle' => 'Calle Larga',
+        'numeracion' => '1000000',
+        'distrito' => array_keys(Propiedad::DISTRITOS)[0],
+        'hectareas' => '10',
+        'tipo_tenencia' => 'propietario',
+        'lat' => '-33.0',
+        'lng' => '-68.5',
+    ]);
+
+    $response->assertSessionHasErrors(['numeracion']);
 });
 
 test('user puede ver formulario de edicion de propiedad', function () {
