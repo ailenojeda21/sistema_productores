@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\StaffUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -141,7 +142,7 @@ class StaffUserController extends Controller
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('staff_users', 'email')->ignore($staffUser->id),
+                Rule::unique('staff_users', 'email')->ignore($staffUser->id)->whereNull('deleted_at'),
             ],
             'role' => ['required', 'in:admin,auditor'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
@@ -197,7 +198,14 @@ class StaffUserController extends Controller
 
         $this->authorize('delete', $staffUser);
 
+        DB::table('staff_password_reset_tokens')->where('email', $staffUser->email)->delete();
         $staffUser->tokens()->delete();
+
+        $staffUser->forceFill([
+            'email' => 'deleted-staff-'.$staffUser->id.'@removed.invalid',
+            'remember_token' => null,
+        ])->save();
+
         $staffUser->delete();
 
         if ($this->isApiRequest($request)) {
@@ -241,7 +249,7 @@ class StaffUserController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:staff_users,email'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('staff_users', 'email')->whereNull('deleted_at')],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:admin,auditor'],
         ]);

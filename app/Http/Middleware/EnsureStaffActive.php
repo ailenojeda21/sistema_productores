@@ -11,14 +11,24 @@ class EnsureStaffActive
 {
     /**
      * Bloquea a usuarios staff inactivos o soft-deleted,
-     * incluso si aún tienen tokens Sanctum válidos.
+     * incluso si aún tienen tokens Sanctum válidos o sesión web activa.
      */
     public function handle(Request $request, Closure $next)
     {
         $user = Auth::guard('staff')->user() ?? Auth::guard('staff-api')->user();
 
         if ($user instanceof StaffUser && ! $user->active) {
-            abort(403, 'No autorizado.');
+            if ($request->expectsJson() || $request->is('api/*')) {
+                abort(403, 'No autorizado.');
+            }
+
+            Auth::guard('staff')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('staff.login')
+                ->with('error', 'Tu cuenta ha sido desactivada. Contacta al administrador.');
         }
 
         return $next($request);

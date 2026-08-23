@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Notifications\RupalWelcomeVerification;
+use App\Notifications\UserResetPassword;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -12,6 +14,26 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, HasRoles, Notifiable, SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::deleting(function (User $user) {
+            if ($user->isForceDeleting()) {
+                return;
+            }
+
+            $user->forceFill([
+                'name' => 'Usuario eliminado',
+                'email' => 'deleted-'.$user->id.'@removed.invalid',
+                'dni' => '',
+                'telefono' => '',
+                'direccion' => '',
+                'avatar' => null,
+                'cooperativas' => null,
+                'remember_token' => null,
+            ])->save();
+        });
+    }
 
     public const COOPERATIVAS = [
         'cooperativa_nueva_california' => 'Coop Nueva California',
@@ -94,12 +116,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function sendEmailVerificationNotification(): void
     {
-        $this->notify(new \App\Notifications\RupalWelcomeVerification);
+        $this->notify(new RupalWelcomeVerification);
     }
 
     public function sendPasswordResetNotification($token): void
     {
-        $this->notify(new \App\Notifications\UserResetPassword($token));
+        $this->notify(new UserResetPassword($token));
     }
 
     /**
@@ -137,7 +159,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getCultivosCompletenessAttribute(): int
     {
-        $hasCultivos = \App\Models\Cultivo::whereHas('propiedad', function ($query) {
+        $hasCultivos = Cultivo::whereHas('propiedad', function ($query) {
             $query->where('usuario_id', $this->id);
         })->exists();
 
@@ -146,7 +168,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getMaquinariasCompletenessAttribute(): int
     {
-        $hasMaquinarias = \App\Models\Maquinaria::whereHas('propiedad', function ($query) {
+        $hasMaquinarias = Maquinaria::whereHas('propiedad', function ($query) {
             $query->where('usuario_id', $this->id);
         })->exists();
 
