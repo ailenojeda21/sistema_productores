@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\StaffUser;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class StaffUserController extends Controller
@@ -145,7 +148,7 @@ class StaffUserController extends Controller
                 Rule::unique('staff_users', 'email')->ignore($staffUser->id)->whereNull('deleted_at'),
             ],
             'role' => ['required', 'in:admin,auditor'],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'password' => ['nullable', 'string', 'confirmed', Password::defaults()],
         ]);
 
         if ($isSelf && $validated['role'] !== $staffUser->role) {
@@ -165,7 +168,13 @@ class StaffUserController extends Controller
             $updateData['password'] = Hash::make($validated['password']);
         }
 
-        $staffUser->update($updateData);
+        try {
+            $staffUser->update($updateData);
+        } catch (UniqueConstraintViolationException) {
+            throw ValidationException::withMessages([
+                'email' => ['El correo electronico ya ha sido utilizado.'],
+            ]);
+        }
         $staffUser->role = $validated['role'];
         $staffUser->save();
 
@@ -250,15 +259,22 @@ class StaffUserController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('staff_users', 'email')->whereNull('deleted_at')],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'role' => ['required', 'in:admin,auditor'],
         ]);
 
-        $staffUser = StaffUser::create([
-            'name' => $validated['name'],
-            'email' => strtolower($validated['email']),
-            'password' => Hash::make($validated['password']),
-        ]);
+        try {
+            $staffUser = StaffUser::create([
+                'name' => $validated['name'],
+                'email' => strtolower($validated['email']),
+                'password' => Hash::make($validated['password']),
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            // Carrera: dos requests validan el mismo email y solo uno inserta.
+            throw ValidationException::withMessages([
+                'email' => ['El correo electronico ya ha sido utilizado.'],
+            ]);
+        }
 
         $staffUser->role = $validated['role'];
         $staffUser->save();

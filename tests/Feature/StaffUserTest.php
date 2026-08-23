@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\StaffUser;
+use Illuminate\Validation\ValidationException;
 
 test('admin puede ver listado de usuarios staff', function () {
     $admin = StaffUser::factory()->create(['role' => 'admin']);
@@ -36,8 +37,8 @@ test('admin puede crear usuario staff', function () {
         ->post(route('staff.users.store'), [
             'name' => 'Nuevo Staff',
             'email' => 'nuevo@staff.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'role' => 'auditor',
         ]);
 
@@ -46,6 +47,88 @@ test('admin puede crear usuario staff', function () {
         'email' => 'nuevo@staff.com',
         'role' => 'auditor',
     ]);
+});
+
+test('politica de contrasena rechaza claves debiles en creacion de staff', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+
+    $response = $this->actingAs($admin, 'staff')
+        ->post(route('staff.users.store'), [
+            'name' => 'Debil',
+            'email' => 'debil@staff.com',
+            'password' => '12345678',
+            'password_confirmation' => '12345678',
+            'role' => 'auditor',
+        ]);
+
+    $response->assertSessionHasErrors('password');
+    $this->assertDatabaseMissing('staff_users', ['email' => 'debil@staff.com']);
+});
+
+test('actualizacion acepta contrasena que cumple la politica global', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+    $staffUser = StaffUser::factory()->create();
+
+    $response = $this->actingAs($admin, 'staff')
+        ->patch(route('staff.users.update', $staffUser->id), [
+            'name' => 'Con Clave Nueva',
+            'email' => $staffUser->email,
+            'role' => $staffUser->role,
+            'password' => 'Password456!',
+            'password_confirmation' => 'Password456!',
+        ]);
+
+    $response->assertRedirect(route('staff.users.index'));
+    $this->assertDatabaseHas('staff_users', ['id' => $staffUser->id, 'name' => 'Con Clave Nueva']);
+});
+
+test('actualizacion rechaza contrasena debil', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+    $staffUser = StaffUser::factory()->create();
+
+    $response = $this->actingAs($admin, 'staff')
+        ->patch(route('staff.users.update', $staffUser->id), [
+            'name' => 'Sin Cambio Real',
+            'email' => $staffUser->email,
+            'role' => $staffUser->role,
+            'password' => '12345678',
+            'password_confirmation' => '12345678',
+        ]);
+
+    $response->assertSessionHasErrors('password');
+});
+
+test('registro simultaneo de email staff devuelve error de validacion y no 500', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+
+    $fired = false;
+    StaffUser::creating(function () use (&$fired) {
+        if ($fired) {
+            return;
+        }
+        $fired = true;
+
+        StaffUser::withoutEvents(fn () => StaffUser::factory()->create([
+            'email' => 'carrera@staff.com',
+        ]));
+    });
+
+    $response = $this->actingAs($admin, 'staff')
+        ->post(route('staff.users.store'), [
+            'name' => 'Corredor Staff',
+            'email' => 'carrera@staff.com',
+            'password' => 'Password789!',
+            'password_confirmation' => 'Password789!',
+            'role' => 'auditor',
+        ]);
+
+    expect($response->status())->toBe(302)
+        ->and($response->exception)->toBeInstanceOf(ValidationException::class);
+
+    $response->assertSessionHasErrors(['email']);
+
+    StaffUser::flushEventListeners();
+    StaffUser::clearBootedModels();
 });
 
 test('admin puede ver formulario de edicion de usuario staff', function () {

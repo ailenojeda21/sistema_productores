@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
 {
@@ -41,14 +43,21 @@ class RegisteredUserController extends Controller
 
         $data['email'] = strtolower($data['email']);
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'dni' => '',
-            'telefono' => '',
-            'direccion' => '',
-            'password' => Hash::make($data['password']),
-        ]);
+        try {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'dni' => '',
+                'telefono' => '',
+                'direccion' => '',
+                'password' => Hash::make($data['password']),
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            // Carrera: dos requests validan el mismo email y solo uno inserta.
+            throw ValidationException::withMessages([
+                'email' => ['El correo electronico ya ha sido utilizado.'],
+            ]);
+        }
 
         event(new Registered($user));
         Auth::login($user);

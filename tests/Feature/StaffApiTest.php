@@ -181,8 +181,8 @@ test('api users store creates user', function () {
     $response = $this->postJson('/api/staff/users', [
         'name' => 'API User',
         'email' => 'api@staff.com',
-        'password' => 'password123',
-        'password_confirmation' => 'password123',
+        'password' => 'Password123!',
+        'password_confirmation' => 'Password123!',
         'role' => 'auditor',
     ]);
 
@@ -190,6 +190,55 @@ test('api users store creates user', function () {
         ->assertJson(['user' => ['email' => 'api@staff.com']]);
 
     $this->assertDatabaseHas('staff_users', ['email' => 'api@staff.com']);
+});
+
+test('api users store rechaza contrasena debil', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($admin, ['*'], 'staff-api');
+
+    $response = $this->postJson('/api/staff/users', [
+        'name' => 'Debil API',
+        'email' => 'debil-api@staff.com',
+        'password' => '12345678',
+        'password_confirmation' => '12345678',
+        'role' => 'auditor',
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('password');
+
+    $this->assertDatabaseMissing('staff_users', ['email' => 'debil-api@staff.com']);
+});
+
+test('api users store con email duplicado por carrera devuelve 422 y no 500', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($admin, ['*'], 'staff-api');
+
+    $fired = false;
+    StaffUser::creating(function () use (&$fired) {
+        if ($fired) {
+            return;
+        }
+        $fired = true;
+
+        StaffUser::withoutEvents(fn () => StaffUser::factory()->create([
+            'email' => 'carrera-api@staff.com',
+        ]));
+    });
+
+    $response = $this->postJson('/api/staff/users', [
+        'name' => 'Corredor API',
+        'email' => 'carrera-api@staff.com',
+        'password' => 'Password321!',
+        'password_confirmation' => 'Password321!',
+        'role' => 'auditor',
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('email');
+
+    StaffUser::flushEventListeners();
+    StaffUser::clearBootedModels();
 });
 
 test('api users edit returns user data', function () {
