@@ -1,8 +1,8 @@
 # Manual de Administrador — Gestión de Usuarios Staff
 
 **Código**: RUPAL-MA-05  
-**Versión**: 1.0  
-**Fecha**: 2026-06-15  
+**Versión**: 1.1  
+**Fecha**: 2026-08-23  
 **ISO 9001:2015**: Cláusula 7.5 — Información Documentada
 
 ---
@@ -14,6 +14,8 @@ Describir las operaciones de administración de usuarios del sistema staff: alta
 ## 2. ALCANCE
 
 Aplica exclusivamente a usuarios con rol **Admin** del sistema RUPAL. Los usuarios con rol **Auditor** no tienen acceso a este módulo.
+
+> **Nota de diseño (Decisión A3, revisada y cerrada el 2026-08-23)**: los roles **Admin** y **Auditor** comparten intencionalmente los permisos de consulta y exportación de productores (ver RUPAL-MA-04). Esto es funcionalidad planificada del sistema, no una escalación de privilegios. La diferenciación entre ambos roles está exclusivamente en este módulo: solo **Admin** gestiona usuarios staff.
 
 ## 3. ACCESO AL MÓDULO
 
