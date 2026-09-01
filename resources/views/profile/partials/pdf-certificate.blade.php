@@ -240,10 +240,16 @@
             <p class="pdf-footer-text">Fecha de generación: {{ now()->format('d/m/Y H:i') }}</p>
         </div>
         <div class="pdf-signature-section">
+            <div class="pdf-verify-block">
+                <img src="{{ $verificacionQr }}" alt="Código QR de verificación" class="pdf-qr-img">
+                <p class="pdf-verify-text">Verificá este documento<br>escaneando el código QR</p>
+            </div>
             <div class="pdf-signature-box">
+                <img src="{{ asset('images/firma_sello_transparente.png') }}" alt="Firma y sello" class="pdf-signature-img">
                 <div class="pdf-signature-line-text"></div>
                 <p class="pdf-signature-label">Firma y Sello</p>
-                <p class="pdf-signature-org">Organismo Certificante</p>
+                <p class="pdf-signature-name">Ing. Agr. Mónica M. Tolaba Benavidez</p>
+                <p class="pdf-signature-org">Directora de Desarrollo Económico<br>Municipalidad de Lavalle</p>
             </div>
         </div>
     </div>
@@ -523,8 +529,8 @@
         border: 1px solid #e2e8f0;
         border-radius: 4px;
         background-color: #fafafa;
-        page-break-inside: avoid;
-        break-inside: avoid;
+        page-break-inside: auto;
+        break-inside: auto;
     }
 
     .pdf-property-title {
@@ -534,6 +540,8 @@
         margin: 0 0 10px 0;
         padding-bottom: 5px;
         border-bottom: 1px solid #cbd5e1;
+        page-break-after: avoid;
+        break-after: avoid;
     }
 
     .pdf-property-table {
@@ -542,8 +550,8 @@
         font-size: 10px;
         margin-bottom: 0;
         background-color: white;
-        page-break-inside: avoid;
-        break-inside: avoid;
+        page-break-inside: auto;
+        break-inside: auto;
     }
 
     .pdf-property-table th,
@@ -596,8 +604,8 @@
         border: 1px solid #e2e8f0;
         border-radius: 4px;
         background-color: #fafafa;
-        page-break-inside: avoid;
-        break-inside: avoid;
+        page-break-inside: auto;
+        break-inside: auto;
     }
 
     .pdf-machinery-title {
@@ -607,6 +615,8 @@
         margin: 0 0 10px 0;
         padding-bottom: 5px;
         border-bottom: 1px solid #cbd5e1;
+        page-break-after: avoid;
+        break-after: avoid;
     }
 
     .pdf-machinery-info-table {
@@ -615,8 +625,8 @@
         font-size: 10px;
         background-color: white;
         margin-bottom: 12px;
-        page-break-inside: avoid;
-        break-inside: avoid;
+        page-break-inside: auto;
+        break-inside: auto;
     }
 
     .pdf-machinery-info-table th,
@@ -686,8 +696,8 @@
     }
 
     .pdf-footer {
-        margin-top: 40px;
-        padding-top: 20px;
+        margin-top: 30px;
+        padding-top: 12px;
         border-top: 2px solid #e2e8f0;
         page-break-inside: avoid;
         break-inside: avoid;
@@ -695,7 +705,7 @@
 
     .pdf-footer-content {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 6px;
     }
 
     .pdf-footer-text {
@@ -706,27 +716,64 @@
 
     .pdf-signature-section {
         display: flex;
-        justify-content: flex-end;
-        margin-top: 30px;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: 20px;
+    }
+
+    .pdf-verify-block {
+        text-align: center;
+    }
+
+    .pdf-qr-img {
+        width: 90px;
+        height: 90px;
+        display: block;
+        margin: 0 auto 4px auto;
+    }
+
+    .pdf-verify-text {
+        font-size: 8px;
+        color: #64748b;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .pdf-signature-img {
+        width: 180px;
+        height: auto;
+        max-width: 180px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 0 auto;
     }
 
     .pdf-signature-box {
-        width: 200px;
+        width: 220px;
         text-align: center;
     }
 
     .pdf-signature-line-text {
         border-bottom: 1px solid #334155;
-        height: 40px;
-        margin-bottom: 8px;
+        height: 0;
+        line-height: 0;
+        margin-top: 0;
+        margin-bottom: 6px;
     }
 
     .pdf-signature-label {
         font-size: 10px;
         font-weight: 600;
         color: #334155;
-        margin: 0 0 2px 0;
+        margin: 0 0 4px 0;
         text-transform: uppercase;
+    }
+
+    .pdf-signature-name {
+        font-size: 9px;
+        font-weight: 600;
+        color: #334155;
+        margin: 0 0 2px 0;
     }
 
     .pdf-signature-org {

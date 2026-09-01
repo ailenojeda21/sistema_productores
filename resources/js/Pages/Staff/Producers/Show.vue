@@ -548,16 +548,21 @@
         <!-- Pie de página -->
         <div class="pdf-footer">
           <div class="pdf-footer-content">
+            <p class="pdf-footer-text">Informe Folio: {{ folioInf }}</p>
             <p class="pdf-footer-text">Este documento fue generado por el Sistema RUPAL - Registro Único de Productores Agropecuarios</p>
             <p class="pdf-footer-text">Fecha de generación: {{ new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
           </div>
           <div class="pdf-signature-section">
-            <div class="pdf-signature-line">
-              <div class="pdf-signature-box">
-                <div class="pdf-signature-line-text"></div>
-                <p class="pdf-signature-label">Firma y Sello</p>
-                <p class="pdf-signature-org">Organismo Certificante</p>
-              </div>
+            <div v-if="verificationQr" class="pdf-verify-block">
+              <img :src="verificationQr" alt="Código QR de verificación" class="pdf-qr-img">
+              <p class="pdf-verify-text">Verificá este documento<br>escaneando el código QR</p>
+            </div>
+            <div class="pdf-signature-box">
+              <img src="/images/firma_sello_transparente.png" alt="Firma y sello" class="pdf-signature-img">
+              <div class="pdf-signature-line-text"></div>
+              <p class="pdf-signature-label">Firma y Sello</p>
+              <p class="pdf-signature-name">Ing. Agr. Mónica M. Tolaba Benavidez</p>
+              <p class="pdf-signature-org">Directora de Desarrollo Económico<br>Municipalidad de Lavalle</p>
             </div>
           </div>
         </div>
@@ -582,6 +587,9 @@ const props = defineProps({
   cultivos: { type: Array, default: () => [] },
   maquinarias: { type: Array, default: () => [] },
   comercio: { type: Object, default: null },
+  folioInf: { type: String, default: '' },
+  verificationUrl: { type: String, default: '' },
+  verificationQr: { type: String, default: '' },
   stats: { 
     type: Object, 
     default: () => ({
@@ -914,7 +922,8 @@ const formatImplementoName = (key) => {
   }
 
   /* ===== PROPIEDADES ===== */
-  /* Evitar cortar cada bloque de propiedad (pero permitir que la sección total siga en otra página) */
+  /* El título no debe quedar solo al final: evitar corte después de él,
+     pero permitir que el contenido largo se divida entre páginas */
   .pdf-property-block {
     margin-bottom: 10px;
     padding: 10px;
@@ -932,6 +941,8 @@ const formatImplementoName = (key) => {
     margin: 0 0 6px 0;
     padding-bottom: 4px;
     border-bottom: 1px solid #cbd5e1;
+    page-break-after: avoid;
+    break-after: avoid;
   }
 
   .pdf-property-table {
@@ -942,6 +953,8 @@ const formatImplementoName = (key) => {
   }
 
   /* ===== MAQUINARIAS ===== */
+  /* El título no debe quedar solo al final: evitar corte después de él,
+     pero permitir que el contenido largo se divida entre páginas */
   .pdf-machinery-block {
     margin-bottom: 10px;
     padding: 10px;
@@ -959,6 +972,8 @@ const formatImplementoName = (key) => {
     margin: 0 0 6px 0;
     padding-bottom: 4px;
     border-bottom: 1px solid #cbd5e1;
+    page-break-after: avoid;
+    break-after: avoid;
   }
 
   .pdf-machinery-info-table {
@@ -1083,7 +1098,7 @@ const formatImplementoName = (key) => {
 
   /* ===== PIE DE PÁGINA ===== */
   .pdf-footer {
-    margin-top: 18px;
+    margin-top: 30px;
     padding-top: 12px;
     border-top: 2px solid #e2e8f0;
     page-break-inside: avoid;
@@ -1092,7 +1107,7 @@ const formatImplementoName = (key) => {
 
   .pdf-footer-content {
     text-align: center;
-    margin-bottom: 18px;
+    margin-bottom: 6px;
   }
 
   .pdf-footer-text {
@@ -1103,27 +1118,64 @@ const formatImplementoName = (key) => {
 
   .pdf-signature-section {
     display: flex;
-    justify-content: flex-end;
-    margin-top: 18px;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 20px;
+  }
+
+  .pdf-verify-block {
+    text-align: center;
+  }
+
+  .pdf-qr-img {
+    width: 90px;
+    height: 90px;
+    display: block;
+    margin: 0 auto 4px auto;
+  }
+
+  .pdf-verify-text {
+    font-size: 8px;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .pdf-signature-img {
+    width: 180px;
+    height: auto;
+    max-width: 180px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 0 auto;
   }
 
   .pdf-signature-box {
-    width: 200px;
+    width: 220px;
     text-align: center;
   }
 
   .pdf-signature-line-text {
     border-bottom: 1px solid #334155;
-    height: 40px;
-    margin-bottom: 8px;
+    height: 0;
+    line-height: 0;
+    margin-top: 0;
+    margin-bottom: 6px;
   }
 
   .pdf-signature-label {
     font-size: 10px;
     font-weight: 600;
     color: #334155;
-    margin: 0 0 2px 0;
+    margin: 0 0 4px 0;
     text-transform: uppercase;
+  }
+
+  .pdf-signature-name {
+    font-size: 9px;
+    font-weight: 600;
+    color: #334155;
+    margin: 0 0 2px 0;
   }
 
   .pdf-signature-org {
