@@ -13,6 +13,8 @@ use App\Http\Controllers\StaffNewPasswordController;
 use App\Http\Controllers\StaffPasswordResetLinkController;
 use App\Http\Controllers\StaffProducerController;
 use App\Http\Controllers\StaffUserController;
+use App\Http\Controllers\VerificationController;
+use App\Services\CertificateService;
 use Illuminate\Support\Facades\Route;
 
 // ============================================================
@@ -42,6 +44,15 @@ if (app()->environment(['local', 'testing'])) {
         ]);
     });
 }
+
+/*
+|--------------------------------------------------------------------------
+| VERIFICACIÓN PÚBLICA DE DOCUMENTOS (QR)
+|--------------------------------------------------------------------------
+*/
+Route::get('/verificar/{token}', [VerificationController::class, 'show'])
+    ->name('verificar')
+    ->middleware('throttle:10,1');
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +105,13 @@ Route::get('/dashboard', function () {
             'maquinarias' => $data['maquinarias']->count(),
             'comercializacion' => $data['comercio'] ? 1 : 0,
         ];
+
+        $verificacionUrl = CertificateService::verificationUrl(
+            CertificateService::TIPO_COMPROBANTE,
+            $user->id
+        );
+        $data['verificacionUrl'] = $verificacionUrl;
+        $data['verificacionQr'] = CertificateService::qrDataUri($verificacionUrl);
     }
 
     return view('dashboard', $data);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comercio;
 use App\Models\Cultivo;
 use App\Models\User;
+use App\Services\CertificateService;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -202,7 +203,21 @@ class StaffProducerController extends Controller
             'maquinarias' => $maquinarias,
             'comercio' => $comercio,
             'stats' => $stats,
+            'folioInf' => sprintf(
+                'INF-%s-%s',
+                str_pad((string) $producer->id, 6, '0', STR_PAD_LEFT),
+                now()->format('Ymd')
+            ),
         ];
+
+        if (! $this->isApiRequest($request)) {
+            $verificacionUrl = CertificateService::verificationUrl(
+                CertificateService::TIPO_INFORME,
+                $producer->id
+            );
+            $responseData['verificationUrl'] = $verificacionUrl;
+            $responseData['verificationQr'] = CertificateService::qrDataUri($verificacionUrl);
+        }
 
         if ($this->isApiRequest($request)) {
             return response()->json($responseData);

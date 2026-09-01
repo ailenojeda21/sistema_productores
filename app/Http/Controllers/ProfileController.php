@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\CertificateService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -131,7 +132,17 @@ class ProfileController extends Controller
             'comercializacion' => $comercio ? 1 : 0,
         ];
 
-        return view('profile.show', compact('user', 'propiedades', 'cultivos', 'maquinarias', 'comercio', 'stats'));
+        $verificacionUrl = CertificateService::verificationUrl(CertificateService::TIPO_COMPROBANTE, $user->id);
+
+        return view('profile.show', compact(
+            'user',
+            'propiedades',
+            'cultivos',
+            'maquinarias',
+            'comercio',
+            'stats',
+            'verificacionUrl',
+        ) + ['verificacionQr' => CertificateService::qrDataUri($verificacionUrl)]);
     }
 
     public function export(): JsonResponse
