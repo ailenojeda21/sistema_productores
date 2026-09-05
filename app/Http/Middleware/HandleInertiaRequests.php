@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -31,7 +32,13 @@ class HandleInertiaRequests extends Middleware
     {
         $data = parent::share($request);
 
-        if ($request->user() instanceof \App\Models\User) {
+        $data['flash'] = [
+            'status' => session('status'),
+            'success' => session('success'),
+            'error' => session('error'),
+        ];
+
+        if ($request->user() instanceof User) {
             $user = $request->user();
             $user->loadCount(['propiedades', 'comercializacion']);
             $user->load(['propiedades' => fn ($q) => $q->withCount(['cultivos', 'maquinaria'])]);
