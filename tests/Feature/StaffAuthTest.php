@@ -105,6 +105,29 @@ test('staff autenticado puede acceder al dashboard', function () {
     $response->assertOk();
 });
 
+test('staff forgot-password pagina comparte el status flash por Inertia', function () {
+    Notification::fake();
+
+    $staff = StaffUser::factory()->create(['email' => 'flash@staff.com']);
+
+    $this->post('/staff/forgot-password', ['email' => $staff->email])
+        ->assertSessionHas('status', 'Hemos enviado por correo electrónico el enlace para restablecer tu contraseña.');
+
+    $response = $this->withHeaders([
+        'X-Inertia' => 'true',
+        'X-Inertia-Version' => Inertia\Inertia::getVersion(),
+    ])->get('/staff/forgot-password');
+
+    $response->assertOk();
+    $response->assertJsonFragment([
+        'flash' => [
+            'status' => 'Hemos enviado por correo electrónico el enlace para restablecer tu contraseña.',
+            'success' => null,
+            'error' => null,
+        ],
+    ]);
+});
+
 test('staff puede cerrar sesión', function () {
     $staff = StaffUser::factory()->create();
 

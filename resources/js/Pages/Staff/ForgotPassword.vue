@@ -1,9 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 
 const page = usePage()
+const sentBefore = computed(() => Boolean(page.props.flash?.status))
 
 const isLoading = ref(false)
 const formData = ref({
@@ -72,7 +73,7 @@ const submit = async (e) => {
           :disabled="isLoading"
         >
           <span v-if="isLoading" class="loader mr-2"></span>
-          Enviar enlace de recuperación
+          {{ sentBefore ? 'Reenviar enlace de recuperación' : 'Enviar enlace de recuperación' }}
         </button>
       </form>
       <footer class="mt-6 text-center">
