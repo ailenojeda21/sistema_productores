@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\CertificateService;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
 {
@@ -25,9 +27,19 @@ class ProfileController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        $user = auth()->user();
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'dni' => ['required', 'string', 'max:20'],
+            'dni' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('users', 'dni')
+                    ->ignore($user->id)
+                    ->whereNull('deleted_at')
+                    ->where('dni', '!=', ''),
+            ],
             'telefono' => ['required', 'string', 'max:20'],
             'direccion' => ['required', 'string', 'max:255'],
             'cooperativas' => ['nullable', 'array'],
@@ -35,18 +47,27 @@ class ProfileController extends Controller
                 'string',
                 Rule::in(array_merge(array_keys(User::COOPERATIVAS), array_values(User::COOPERATIVAS))),
             ],
+        ], [
+            'dni.unique' => 'El D.N.I. ya corresponde a otro productor registrado.',
         ]);
 
         if (! $request->has('tiene_cooperativas')) {
             $validated['cooperativas'] = null;
         }
 
-        $user = auth()->user();
-
         $this->authorize('update', $user);
 
         $validated['email'] = $user->email;
-        $user->update($validated);
+
+        try {
+            $user->update($validated);
+        } catch (UniqueConstraintViolationException) {
+            // Carrera: otro productor guardo el mismo DNI entre la validacion
+            // y el update; el indice unico de la BD lo impide.
+            throw ValidationException::withMessages([
+                'dni' => ['El D.N.I. ya corresponde a otro productor registrado.'],
+            ]);
+        }
 
         return Redirect::route('profile')
             ->with('success', 'Perfil actualizado correctamente.');
