@@ -12,13 +12,22 @@ class VerificationController extends Controller
         $datos = CertificateService::verify($token);
 
         if ($datos === null) {
-            return view('verificar', ['valido' => false]);
+            return view('verificar', [
+                'valido' => false,
+                'motivo' => 'token_invalido',
+            ]);
         }
 
         $user = User::find($datos['productor_id']);
 
         if (! $user) {
-            return view('verificar', ['valido' => false]);
+            return view('verificar', [
+                'valido' => false,
+                'motivo' => 'productor_no_encontrado',
+                'tipoDocumento' => $datos['tipo'] === CertificateService::TIPO_COMPROBANTE
+                    ? 'Comprobante de Registro'
+                    : 'Informe Detallado',
+            ]);
         }
 
         return view('verificar', [
