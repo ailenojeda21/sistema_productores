@@ -47,7 +47,7 @@ test('la exportacion excel escribe valores maliciosos como texto y nunca como fo
     ]);
 
     $response = $this->actingAs($admin, 'staff')
-        ->get(route('staff.producers.export', ['all' => '1']));
+        ->get(route('staff.producers.export'));
 
     $response->assertOk();
     $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -156,7 +156,7 @@ test('auditor puede exportar productores via web porque es funcionalidad intenci
     User::factory()->count(2)->create();
 
     $response = $this->actingAs($auditor, 'staff')
-        ->get(route('staff.producers.export', ['all' => '1']));
+        ->get(route('staff.producers.export'));
 
     $response->assertOk();
     $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
