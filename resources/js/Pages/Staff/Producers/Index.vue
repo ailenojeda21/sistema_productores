@@ -86,12 +86,11 @@
             v-model="searchType"
             class="w-full sm:w-auto rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0 bg-slate-50"
           >
-            <option value="all">Todos</option>
             <option value="dni">DNI</option>
-            <option value="name">Nombre</option>
             <option value="distrito">Distrito</option>
             <option value="variedad">Variedad</option>
             <option value="tipo">Tipo</option>
+            <option value="name">Nombre</option>
             <option value="rut">N° RUT</option>
           </select>
 
@@ -102,7 +101,6 @@
             class="w-full sm:flex-1 min-w-0 rounded-xl border-slate-200 text-sm py-2 focus:border-slate-400 focus:ring-0"
             :placeholder="placeholderText"
             :inputmode="searchType === 'dni' || searchType === 'rut' ? 'numeric' : 'text'"
-            :disabled="searchType === 'all'"
           />
 
 
@@ -339,21 +337,29 @@ const searchType = ref(initialSearchType())
 
 function initialSearchType() {
 
-  if (props.filters.all) return 'all'
   if (props.filters.dni) return 'dni'
-  if (props.filters.name) return 'name'
   if (props.filters.distrito) return 'distrito'
   if (props.filters.variedad) return 'variedad'
   if (props.filters.tipo) return 'tipo'
+  if (props.filters.name) return 'name'
   if (props.filters.rut) return 'rut'
 
-  return 'all'
+  return 'dni'
+}
+
+
+function initialSearchValue() {
+
+  for (const key of ['dni', 'distrito', 'variedad', 'tipo', 'name', 'rut']) {
+    if (props.filters[key]) return props.filters[key]
+  }
+
+  return ''
 }
 
 
 const placeholders = {
 
-  all: 'Mostrar todos los productores',
   dni: 'Ingrese DNI',
   name: 'Ingrese nombre',
   distrito: 'Ingrese distrito',
@@ -371,8 +377,7 @@ const placeholderText = computed(
 
 const form = reactive({
 
-  search: props.filters.search ?? '',
-  all: props.filters.all ?? '',
+  search: initialSearchValue(),
   dni: props.filters.dni ?? '',
   name: props.filters.name ?? '',
   distrito: props.filters.distrito ?? '',
@@ -387,52 +392,45 @@ const activeFilters = computed(() => {
 
   const filters = []
 
-  if (form.all) {
-    filters.push({
-      key: 'all',
-      label: 'Todos los productores'
-    })
-  }
-
-  if (form.dni) {
+  if (props.filters.dni) {
     filters.push({
       key: 'dni',
-      label: `DNI: ${form.dni}`
+      label: `DNI: ${props.filters.dni}`
     })
   }
 
-  if (form.name) {
+  if (props.filters.name) {
     filters.push({
       key: 'name',
-      label: `Nombre: ${form.name}`
+      label: `Nombre: ${props.filters.name}`
     })
   }
 
-  if (form.distrito) {
+  if (props.filters.distrito) {
     filters.push({
       key: 'distrito',
-      label: `Distrito: ${form.distrito}`
+      label: `Distrito: ${props.filters.distrito}`
     })
   }
 
-  if (form.variedad) {
+  if (props.filters.variedad) {
     filters.push({
       key: 'variedad',
-      label: `Variedad: ${form.variedad}`
+      label: `Variedad: ${props.filters.variedad}`
     })
   }
 
-  if (form.tipo) {
+  if (props.filters.tipo) {
     filters.push({
       key: 'tipo',
-      label: `Tipo: ${form.tipo}`
+      label: `Tipo: ${props.filters.tipo}`
     })
   }
 
-  if (form.rut) {
+  if (props.filters.rut) {
     filters.push({
       key: 'rut',
-      label: `RUT: ${form.rut}`
+      label: `RUT: ${props.filters.rut}`
     })
   }
 
@@ -448,13 +446,12 @@ const hasResults = computed(() => {
 const hasSearchPerformed = computed(() => {
 
   return (
-    form.all ||
-    form.dni ||
-    form.name ||
-    form.distrito ||
-    form.variedad ||
-    form.tipo ||
-    form.rut
+    props.filters.dni ||
+    props.filters.name ||
+    props.filters.distrito ||
+    props.filters.variedad ||
+    props.filters.tipo ||
+    props.filters.rut
   )
 
 })
@@ -463,10 +460,9 @@ const hasSearchPerformed = computed(() => {
 const canExport = computed(() => {
 
   return (
-    form.all ||
-    form.distrito ||
-    form.variedad ||
-    form.tipo
+    props.filters.distrito ||
+    props.filters.variedad ||
+    props.filters.tipo
   )
 
 })
@@ -476,7 +472,6 @@ const exportResults = () => {
 
   const params = new URLSearchParams()
 
-  if (form.all) params.append('all', form.all)
   if (form.dni) params.append('dni', form.dni)
   if (form.name) params.append('name', form.name)
   if (form.distrito) params.append('distrito', form.distrito)
@@ -496,7 +491,6 @@ const search = () => {
 
   // Limpiar todos los campos primero
 
-  form.all = ''
   form.dni = ''
   form.name = ''
   form.distrito = ''
@@ -505,35 +499,18 @@ const search = () => {
   form.rut = ''
 
 
-  if (searchType.value === 'all') {
+  // Asignar solo el campo activo
 
-    form.all = '1'
+  form[searchType.value] = form.search
 
-    router.get(
-      '/staff/producers',
-      { all: '1' },
-      {
-        preserveState: true,
-        replace: true
-      }
-    )
-
-  } else {
-
-    // Asignar solo el campo activo
-
-    form[searchType.value] = form.search
-
-    router.get(
-      '/staff/producers',
-      { ...form },
-      {
-        preserveState: true,
-        replace: true
-      }
-    )
-
-  }
+  router.get(
+    '/staff/producers',
+    { ...form },
+    {
+      preserveState: true,
+      replace: true
+    }
+  )
 
 }
 
@@ -541,7 +518,6 @@ const search = () => {
 const clear = () => {
 
   form.search = ''
-  form.all = ''
   form.dni = ''
   form.name = ''
   form.distrito = ''
@@ -549,7 +525,7 @@ const clear = () => {
   form.tipo = ''
   form.rut = ''
 
-  searchType.value = 'all'
+  searchType.value = 'dni'
 
   router.get(
     '/staff/producers',
@@ -567,9 +543,15 @@ const removeFilter = (key) => {
 
   form[key] = ''
   form.search = ''
-  searchType.value = 'all'
 
-  search()
+  router.get(
+    '/staff/producers',
+    { ...form },
+    {
+      preserveState: true,
+      replace: true
+    }
+  )
 
 }
 

@@ -7,7 +7,7 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex min-w-0 items-center gap-3">
           <button
-            @click="router.visit('/staff/producers')"
+            @click="goBackToProducers"
             class="h-10 w-10 shrink-0 rounded-xl border border-slate-200 bg-white grid place-items-center text-slate-700 hover:bg-slate-50 transition"
           >
             <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -17,7 +17,7 @@
           <nav class="flex min-w-0 items-center text-sm text-slate-500">
             <button @click="router.visit('/staff/dashboard')" class="shrink-0 hover:text-slate-800 transition">Inicio</button>
             <span class="mx-2 shrink-0">/</span>
-            <button @click="router.visit('/staff/producers')" class="shrink-0 hover:text-slate-800 transition">Productores</button>
+            <button @click="goBackToProducers" class="shrink-0 hover:text-slate-800 transition">Productores</button>
             <span class="mx-2 shrink-0">/</span>
             <span class="min-w-0 truncate text-slate-800 font-medium">{{ producer.name }}</span>
           </nav>
@@ -600,6 +600,14 @@ const props = defineProps({
     })
   }
 })
+
+const goBackToProducers = () => {
+  if (window.history.length > 1) {
+    window.history.back()
+  } else {
+    router.visit('/staff/producers')
+  }
+}
 
 const printReport = () => {
   // Guardar título original
