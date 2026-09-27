@@ -6,6 +6,7 @@ use App\Models\Cultivo;
 use App\Models\User;
 use App\Services\CertificateService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -505,18 +506,42 @@ class StaffProducerController extends Controller
     }
 
     /**
+     * Normaliza un valor de cultivo para comparar contra el filtro buscado.
+     *
+     * MySQL corre con `utf8mb4_unicode_ci`, un collation *case-insensitive* y
+     * *accent-insensitive*: su `LIKE` acepta `Viticola` para un cultivo guardado
+     * como `Vitícola`. Para que el espejo en PHP no descarte filas que la
+     * consulta si trajo, tiene que aplicar la misma regla, y para eso hace
+     * falta transliterar: `í` es un caracter precompuesto, no una marca
+     * combinante, asi que borrar `\p{Mn` no alcanza.
+     */
+    private function normalizarCultivo(string $valor): string
+    {
+        return mb_strtolower(Str::ascii(trim($valor)));
+    }
+
+    /**
      * Espejo en PHP de `aplicarFiltroCultivo()`, para no emitir una fila de
-     * cultivo que la consulta no Habria traido. `LIKE` no distingue mayusculas
-     * en SQLite ni en MySQL con la collation por defecto, asi que se compara
-     * en minúsculas.
+     * cultivo que la consulta no Habria traido.
+     *
+     * Solo puede ser mas permisivo que el `LIKE`, nunca mas estricto: la
+     * relacion `cultivos` ya viene restringida por la misma consulta, asi que
+     * un filtro mas laxo aqui no agrega filas de mas, pero uno mas estricto
+     * vacia el export aunque la consulta haya encontrado productores.
      */
     private function cultivoCoincide($cultivo, string $variedad, string $tipo): bool
     {
-        if ($variedad !== '' && ! str_contains(mb_strtolower((string) $cultivo->variedad), mb_strtolower($variedad))) {
+        if ($variedad !== '' && ! str_contains(
+            $this->normalizarCultivo((string) $cultivo->variedad),
+            $this->normalizarCultivo($variedad)
+        )) {
             return false;
         }
 
-        if ($tipo !== '' && ! str_contains(mb_strtolower((string) $cultivo->tipo), mb_strtolower($tipo))) {
+        if ($tipo !== '' && ! str_contains(
+            $this->normalizarCultivo((string) $cultivo->tipo),
+            $this->normalizarCultivo($tipo)
+        )) {
             return false;
         }
 

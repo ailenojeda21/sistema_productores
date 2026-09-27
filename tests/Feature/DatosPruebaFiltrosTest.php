@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StaffProducerController;
 use App\Models\Cultivo;
 use App\Models\Maquinaria;
 use App\Models\Propiedad;
@@ -373,6 +374,37 @@ test('el export encuentra los distritos de varias palabras', function () {
 
     expect($exportados)->toEqual($esperados)
         ->and(collect($export['rows'])->pluck($idx['Distrito'])->unique()->all())->toBe(['La Pega']);
+});
+
+test('el espejo en PHP del filtro de cultivo no es mas estricto que el LIKE de MySQL', function () {
+    // MySQL corre con `utf8mb4_unicode_ci`, que no distingue mayusculas ni
+    // acentos: el `LIKE` de la consulta acepta `Viticola` para un cultivo
+    // guardado como `Vitícola`. El filtro en PHP que decide que filas se
+    // escriben no puede ser mas estricto que esa consulta, porque entonces el
+    // export sale vacio aunque la consulta haya encontrado productores.
+    $controlador = new StaffProducerController;
+    $metodo = new ReflectionMethod($controlador, 'cultivoCoincide');
+
+    $cultivo = new Cultivo;
+    $cultivo->tipo = 'Vitícola';
+    $cultivo->variedad = 'Malbec';
+
+    // Todo lo que acepta el `LIKE` tiene que llegar al archivo.
+    foreach (['Vitícola', 'Viticola', 'viticola', 'VITÍCOLA', 'vItIcOlA'] as $busqueda) {
+        expect($metodo->invoke($controlador, $cultivo, '', $busqueda))
+            ->toBeTrue("el export descartaria los cultivos para `{$busqueda}`");
+    }
+
+    // Y tiene que seguir descartando los cultivos que no corresponden.
+    foreach (['Hortícola', 'Olivícola', 'Frutícola'] as $busqueda) {
+        expect($metodo->invoke($controlador, $cultivo, '', $busqueda))
+            ->toBeFalse("el export mezclaría cultivos de `{$busqueda}`");
+    }
+
+    // Mismo criterio para variedad.
+    foreach (['Malbec', 'malbec', 'MALBEC'] as $busqueda) {
+        expect($metodo->invoke($controlador, $cultivo, $busqueda, 'Vitícola'))->toBeTrue();
+    }
 });
 
 test('el filtro de distrito acepta espacios guiones y mayusculas en cualquier combinacion', function () {
