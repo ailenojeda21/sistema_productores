@@ -238,9 +238,9 @@ Authorization: Bearer 1|sD3fG5hJ7kL9qW2eR4tY6uI8oP0aZ1bC2vB3nM4x
 
 **Roles**: Admin (Auditor también tiene acceso en web, pero el endpoint API está restringido a admin)
 
-**Parámetros de consulta**: Mismos filtros que el listado (dni, name, distrito, variedad, tipo)
+**Parámetros de consulta**: Mismos filtros que el listado (dni, name, distrito, variedad, tipo, rut)
 
-**Response**: Archivo XLSX (Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet)
+**Response**: Archivo XLSX (Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet). El conjunto de columnas depende del filtro: con `distrito`, `rut`, `dni` o `name` lleva Perfil + Propiedad; con `variedad` o `tipo` agrega además el módulo Cultivo. Nunca incluye Maquinaria ni Comercios. Ver [Gestión de Productores → Exportar](04-gestion-productores.md#61-contenido-del-archivo-exportado).
 
 ### 4.5 Usuarios Staff — Listado
 

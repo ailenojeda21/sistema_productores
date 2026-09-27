@@ -142,27 +142,36 @@ Listado de comercios, mostrando:
 
 ### 6.1 Contenido del archivo exportado
 
-El archivo XLSX contiene las siguientes columnas:
+El archivo XLSX arma sus columnas a partir del filtro activo. Siempre se incluyen los datos del productor; el resto de módulos depende de qué se filtró.
 
-| Columna | Descripción |
-|---------|-------------|
-| ID | Identificador único del productor |
-| Nombre | Nombre completo |
-| Email | Correo electrónico |
-| DNI | Documento Nacional de Identidad |
-| Teléfono | Número de contacto |
-| Dirección | Domicilio |
-| Distrito | Distrito de Lavalle |
-| Propiedades | Cantidad de propiedades registradas |
-| Cultivos | Cantidad de cultivos registrados |
-| Maquinarias | Cantidad de maquinaria registrada |
-| Comercios | Cantidad de comercios registrados |
-| Miembro desde | Fecha de registro |
-| Verificado | Email verificado (Sí/No) |
+**Cuando el filtro es por Distrito, RUT, DNI o Nombre**, el archivo lleva el módulo Perfil y el módulo Propiedad:
+
+| Módulo | Columnas |
+|--------|----------|
+| Perfil | ID, Nombre, Email, DNI, Teléfono, Dirección Productor |
+| Propiedad | Dirección Propiedad, Distrito, Hectáreas, Derecho de riego, Tipo derecho de riego, Posee RUT, Valor del RUT, Latitud, Longitud, Hectáreas con malla, Cierre perimetral, Posee malla, Tipo de tenencia, Especificar tenencia |
+
+**Cuando el filtro es por Variedad o Tipo**, el archivo lleva el módulo Perfil, el módulo Propiedad y además el módulo Cultivo:
+
+| Módulo | Columnas |
+|--------|----------|
+| Cultivo | Tipo, Variedad, Estación, Hectáreas, Manejo del cultivo, Tecnología de riego |
+
+`Calle` y `Numeración` no se exportan por separado: quedan absorbidas en **Dirección Propiedad**. Los módulos Maquinaria y Comercios **no se incluyen en ninguna exportación**, porque ninguna de las búsquedas disponibles filtra por ellos. Para consultar los implementos de una finca hay que abrir el detalle de la propiedad. El módulo Cultivo tampoco se incluye con los filtros que no son de cultivo, por la misma razón: no aportaría información del elemento filtrado.
 
 ### 6.2 Filtros en exportación
 
-La exportación respeta los filtros aplicados en el listado. Si se aplicaron filtros de búsqueda, solo se exportan los resultados filtrados.
+La exportación respeta el filtro aplicado: solo entra en el archivo lo que corresponde al filtro, y cada elemento aparece una sola vez.
+
+| Filtro | Qué se exporta |
+|--------|----------------|
+| Distrito | Perfil + las propiedades que están en ese distrito. Las propiedades del productor en otros distritos no aparecen. Una fila por propiedad. |
+| Variedad | Perfil + la propiedad que cultiva esa variedad + el módulo Cultivo con esa variedad. Las otras variedades del productor y sus otras propiedades no aparecen. Una fila por cultivo coincidente. |
+| Tipo | Perfil + la propiedad que cultiva ese tipo + el módulo Cultivo con ese tipo. Una fila por cultivo coincidente. |
+| RUT | Perfil + las propiedades que tienen ese RUT. Una fila por propiedad. |
+| DNI / Nombre | Perfil + todas las propiedades del productor. Una fila por propiedad. |
+
+Si un productor coincide con el filtro pero no tiene propiedades que mostrar, se exporta una fila solo con su Perfil.
 
 ### 6.3 Formato del archivo
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comercio;
 use App\Models\Cultivo;
 use App\Models\User;
 use App\Services\CertificateService;
@@ -30,21 +29,10 @@ class StaffProducerController extends Controller
         $producers = User::query()
             ->select('users.id', 'users.name', 'users.dni', 'users.email')
             ->distinct()
-
             ->when($dni !== '', fn ($q) => $q->where('users.dni', 'like', "%{$dni}%"))
-
             ->when($name !== '', fn ($q) => $q->where('users.name', 'like', "%{$name}%"))
-
             ->when($distrito !== '', function ($q) use ($distrito) {
-                $normalized = strtolower(str_replace(' ', '-', trim($distrito)));
-                $search = str_replace('-', '', $normalized);
-
-                $q->whereHas('propiedades', function ($sub) use ($search) {
-                    $sub->whereRaw(
-                        "LOWER(REPLACE(REPLACE(distrito, '-', ''), ' ', '')) LIKE ?",
-                        ["%{$search}%"]
-                    );
-                });
+                $q->whereHas('propiedades', fn ($sub) => $this->filtrarPorDistrito($sub, $distrito));
             })
 
             ->when($variedad !== '', function ($q) use ($variedad) {
@@ -239,8 +227,6 @@ class StaffProducerController extends Controller
         $rut = trim((string) $request->get('rut', ''));
 
         $producers = User::with([
-            'comercializacion',
-            'propiedades.maquinaria',
             'propiedades.cultivos',
         ])
             ->distinct()
@@ -250,15 +236,7 @@ class StaffProducerController extends Controller
             ->when($name !== '', fn ($q) => $q->where('users.name', 'like', "%{$name}%"))
 
             ->when($distrito !== '', function ($q) use ($distrito) {
-                $normalized = strtolower(str_replace(' ', '-', trim($distrito)));
-                $search = str_replace('-', '', $normalized);
-
-                $q->whereHas('propiedades', function ($sub) use ($search) {
-                    $sub->whereRaw(
-                        "LOWER(REPLACE(REPLACE(distrito, '-', ''), ' ', '')) LIKE ?",
-                        ["%{$search}%"]
-                    );
-                });
+                $q->whereHas('propiedades', fn ($sub) => $this->filtrarPorDistrito($sub, $distrito));
             })
 
             ->when($variedad !== '', function ($q) use ($variedad) {
@@ -280,23 +258,63 @@ class StaffProducerController extends Controller
 
             ->get();
 
+        // `distrito` y `rut` son filtros a nivel propiedad: el archivo lleva
+        // perfil + las propiedades que coinciden. `variedad` y `tipo` son
+        // filtros a nivel cultivo: ademas se trae la propiedad que lo contiene
+        // y el modulo cultivo.
+        $filtraCultivo = $variedad !== '' || $tipo !== '';
+
+        // Las relaciones se recargan con la MISMA restriccion que usa el
+        // `whereHas` de arriba, para que el archivo no arrastre propiedades ni
+        // cultivos que no corresponden al filtro activo. La normalizacion de
+        // `distrito` se replica aqui a proposito: cualquier divergencia
+        // haria perder filas que la consulta si habria|matchado.
+        $producers->load([
+            'propiedades' => function ($q) use ($distrito, $rut, $variedad, $tipo) {
+                if ($distrito !== '') {
+                    $this->filtrarPorDistrito($q, $distrito);
+                }
+
+                if ($rut !== '') {
+                    $q->where('rut', 1)
+                        ->where('rut_valor', 'like', '%'.preg_replace('/\D/', '', $rut).'%');
+                }
+
+                if ($variedad !== '' || $tipo !== '') {
+                    $q->whereHas('cultivos', function ($sub) use ($variedad, $tipo) {
+                        $this->aplicarFiltroCultivo($sub, $variedad, $tipo);
+                    });
+                }
+            },
+
+            // Sin filtro de cultivo se cargan todos, para el modulo completo;
+            // con filtro, solo los cultivos que coinciden.
+            'propiedades.cultivos' => function ($q) use ($variedad, $tipo) {
+                $this->aplicarFiltroCultivo($q, $variedad, $tipo);
+            },
+        ]);
+
         $headers = [
-            // User
-            'Nombre', 'Email', 'DNI', 'Teléfono', 'Dirección',
-            // Comercio
-            'Infraestructura de empaque', 'Vende en finca', 'Mercados', 'Cooperativas',
-            // Propiedad
-            'Calle', 'Numeración', 'Dirección completa', 'Distrito', 'Hectáreas',
+            // Modulo perfil. `Direccion Productor` se renombra para
+            // desambiguarlo de `Direccion completa`, que es de la propiedad.
+            'ID', 'Nombre', 'Email', 'DNI', 'Teléfono', 'Dirección Productor',
+            // Modulo propiedad. `Calle` y `Numeracion` no se exportan: quedan
+            // absorbidas por `Direccion completa`.
+            'Dirección Propiedad', 'Distrito', 'Hectáreas',
             'Derecho de riego', 'Tipo derecho de riego', 'Posee RUT', 'Valor del RUT',
             'Latitud', 'Longitud', 'Hectáreas con malla', 'Cierre perimetral', 'Posee malla',
             'Tipo de tenencia', 'Especificar tenencia',
-            // Maquinaria
-            'Tractor', 'Modelo tractor', 'Arado', 'Rastra', 'Niveleta común', 'Niveleta láser',
-            'Cincel/Cultivadora', 'Desmalezadora', 'Pulverizadora', 'Mochila pulverizadora',
-            'Cosechadora', 'Enfardadora', 'Retroexcavadora', 'Carro/Carretón', 'Múltiple',
-            // Cultivo
-            'Tipo', 'Variedad', 'Estación', 'Hectáreas', 'Manejo del cultivo', 'Tecnología de riego',
         ];
+
+        if ($filtraCultivo) {
+            // Modulo cultivo: solo tiene sentido cuando se filtro por el.
+            $headers[] = 'Tipo';
+            $headers[] = 'Variedad';
+            $headers[] = 'Estación';
+            $headers[] = 'Hectáreas';
+            $headers[] = 'Manejo del cultivo';
+            $headers[] = 'Tecnología de riego';
+        }
 
         $searchValue = $variedad ?: $tipo ?: $distrito;
         $searchType = $variedad ? 'variedad' : ($tipo ? 'tipo' : ($distrito ? 'distrito' : null));
@@ -357,107 +375,71 @@ class StaffProducerController extends Controller
         // Datos desde fila 5
         $rowNum = 5;
         foreach ($producers as $producer) {
-            $comercio = $producer->comercializacion;
-
-            // Resolver etiquetas de mercados y cooperativas
-            $mercadosLabels = $comercio
-                ? collect($comercio->mercados ?? [])
-                    ->map(fn ($k) => Comercio::MERCADOS[$k] ?? $k)
-                    ->implode(', ')
-                : '';
-
-            $cooperativasLabels = $comercio
-                ? collect($comercio->cooperativas ?? [])
-                    ->map(fn ($k) => Comercio::COOPERATIVAS[$k] ?? $k)
-                    ->implode(', ')
-                : '';
+            $perfil = [
+                $producer->id,
+                $producer->name,
+                $producer->email,
+                $producer->dni ?? '',
+                $producer->telefono ?? '',
+                $producer->direccion ?? '',
+            ];
 
             $propiedades = $producer->propiedades;
 
             if ($propiedades->isEmpty()) {
-                // Productor sin propiedades: una fila con datos básicos
-                $this->writeExcelRow($sheet, $rowNum, [
-                    $producer->name, $producer->email, $producer->dni ?? '', $producer->telefono ?? '', $producer->direccion ?? '',
-                    $comercio ? ($comercio->infraestructura_empaque ? 'Sí' : 'No') : '',
-                    $comercio ? ($comercio->vende_en_finca ? 'Sí' : 'No') : '',
-                    $mercadosLabels, $cooperativasLabels,
-                    '', '', '', '', '',
-                    '', '', '', '', '', '', '', '', '',
-                    '', '',
-                    '', '', '', '', '', '', '', '', '', '',
-                    '', '', '', '', '',
-                    '', '', '', '', '', '',
-                ]);
+                // El productor no tiene propiedades que mostrar: una fila solo
+                // con el perfil completo.
+                $this->writeExcelRow($sheet, $rowNum, $perfil);
                 $rowNum++;
-            } else {
-                foreach ($propiedades as $prop) {
-                    $maquinaria = $prop->maquinaria;
-                    $cultivos = $prop->cultivos;
 
-                    $propData = [
-                        $prop->calle ?? '',
-                        $prop->numeracion ?? '',
-                        $prop->direccion_completa,
-                        $prop->distrito_label,
-                        $prop->hectareas,
-                        $prop->derecho_riego ? 'Sí' : 'No',
-                        $prop->tipo_derecho_riego_label,
-                        $prop->rut ? 'Sí' : 'No',
-                        $prop->rut_valor ?? '',
-                        $prop->lat,
-                        $prop->lng,
-                        $prop->hectareas_malla ?? '0.00',
-                        $prop->cierre_perimetral ? 'Sí' : 'No',
-                        $prop->malla ? 'Sí' : 'No',
-                        $prop->tipo_tenencia_label,
-                        $prop->especificar_tenencia ?? '',
+                continue;
+            }
+
+            foreach ($propiedades as $prop) {
+                $propData = [
+                    $prop->direccion_completa,
+                    $prop->distrito_label,
+                    $prop->hectareas,
+                    $prop->derecho_riego ? 'Sí' : 'No',
+                    $prop->tipo_derecho_riego_label,
+                    $prop->rut ? 'Sí' : 'No',
+                    $prop->rut_valor ?? '',
+                    $prop->lat,
+                    $prop->lng,
+                    $prop->hectareas_malla ?? '0.00',
+                    $prop->cierre_perimetral ? 'Sí' : 'No',
+                    $prop->malla ? 'Sí' : 'No',
+                    $prop->tipo_tenencia_label,
+                    $prop->especificar_tenencia ?? '',
+                ];
+
+                if (! $filtraCultivo) {
+                    // Filtro de propiedad (distrito, rut) o sin filtro de
+                    // cultivo: una fila por propiedad, sin columnas de cultivo.
+                    $this->writeExcelRow($sheet, $rowNum, array_merge($perfil, $propData));
+                    $rowNum++;
+
+                    continue;
+                }
+
+                // Filtro de cultivo: la propiedad solo aparece si tiene un
+                // cultivo que coincida, y solo se emiten esos cultivos.
+                $cultivosCoincidentes = $prop->cultivos->filter(
+                    fn ($cult) => $this->cultivoCoincide($cult, $variedad, $tipo)
+                );
+
+                foreach ($cultivosCoincidentes as $cult) {
+                    $cultData = [
+                        $cult->tipo ?? '',
+                        $cult->variedad ?? '',
+                        $cult->estacion ?? '',
+                        $cult->hectareas,
+                        $cult->manejo_label,
+                        Cultivo::TECNOLOGIA_RIEGO[$cult->tecnologia_riego] ?? $cult->tecnologia_riego ?? '',
                     ];
 
-                    $maqData = $maquinaria ? [
-                        $maquinaria->tractor ? 'Sí' : 'No',
-                        $maquinaria->modelo_tractor ?? '',
-                        $maquinaria->arado ? 'Sí' : 'No',
-                        $maquinaria->rastra ? 'Sí' : 'No',
-                        $maquinaria->niveleta_comun ? 'Sí' : 'No',
-                        $maquinaria->niveleta_laser ? 'Sí' : 'No',
-                        $maquinaria->cincel_cultivadora ? 'Sí' : 'No',
-                        $maquinaria->desmalezadora ? 'Sí' : 'No',
-                        $maquinaria->pulverizadora_tractor ? 'Sí' : 'No',
-                        $maquinaria->mochila_pulverizadora ? 'Sí' : 'No',
-                        $maquinaria->cosechadora ? 'Sí' : 'No',
-                        $maquinaria->enfardadora ? 'Sí' : 'No',
-                        $maquinaria->retroexcavadora ? 'Sí' : 'No',
-                        $maquinaria->carro_carreton ? 'Sí' : 'No',
-                        $maquinaria->multiple ? 'Sí' : 'No',
-                    ] : array_fill(0, 15, '');
-
-                    $userData = [
-                        $producer->name, $producer->email, $producer->dni ?? '', $producer->telefono ?? '', $producer->direccion ?? '',
-                        $comercio ? ($comercio->infraestructura_empaque ? 'Sí' : 'No') : '',
-                        $comercio ? ($comercio->vende_en_finca ? 'Sí' : 'No') : '',
-                        $mercadosLabels, $cooperativasLabels,
-                    ];
-
-                    if ($cultivos->isNotEmpty()) {
-                        foreach ($cultivos as $cult) {
-                            $cultData = [
-                                $cult->tipo ?? '',
-                                $cult->variedad ?? '',
-                                $cult->estacion ?? '',
-                                $cult->hectareas,
-                                $cult->manejo_label,
-                                Cultivo::TECNOLOGIA_RIEGO[$cult->tecnologia_riego] ?? $cult->tecnologia_riego ?? '',
-                            ];
-
-                            $this->writeExcelRow($sheet, $rowNum, array_merge($userData, $propData, $maqData, $cultData));
-                            $rowNum++;
-                        }
-                    } else {
-                        // Propiedad sin cultivos: una fila con datos de propiedad pero celdas de cultivo vacías
-                        $emptyCult = ['', '', '', '', '', ''];
-                        $this->writeExcelRow($sheet, $rowNum, array_merge($userData, $propData, $maqData, $emptyCult));
-                        $rowNum++;
-                    }
+                    $this->writeExcelRow($sheet, $rowNum, array_merge($perfil, $propData, $cultData));
+                    $rowNum++;
                 }
             }
         }
@@ -476,6 +458,69 @@ class StaffProducerController extends Controller
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
+    }
+
+    /**
+     * Aplica el filtro de `variedad` / `tipo` sobre una query de cultivos.
+     *
+     * Se usa en dos lugares: el `whereHas` que elige los productores y el
+     * eager load restringido que elige que propiedades y cultivos se escriben
+     * en el archivo. Ambos deben usar la misma prediccion.
+     */
+    private function aplicarFiltroCultivo($query, string $variedad, string $tipo): void
+    {
+        $query
+            ->when($variedad !== '', fn ($q) => $q->where('variedad', 'like', "%{$variedad}%"))
+            ->when($tipo !== '', fn ($q) => $q->where('tipo', 'like', "%{$tipo}%"));
+    }
+
+    /**
+     * Normaliza el texto buscado por distrito para que sea comparable con la
+     * columna `distrito`, que se guarda en formato slug (`la-pega`).
+     *
+     * Se quitan guiones y cualquier tipo de espacio y se pasa a minusculas, de
+     * modo que `La Pega`, `la-pega`, `LaPega` y `  LA   PEGA  ` colapsan al
+     * mismo valor `lapega`. Tiene que ser el espejo exacto de la expresion SQL
+     * de `filtrarPorDistrito()`: si del lado PHP queda un separador que del lado
+     * SQL se borra (o viceversa), el `LIKE` no encuentra nada.
+     */
+    private function normalizarDistrito(string $valor): string
+    {
+        return preg_replace('/[\s\-]+/u', '', mb_strtolower(trim($valor)));
+    }
+
+    /**
+     * Aplica el filtro de distrito a una query sobre `propiedades`.
+     *
+     * El `whereHas` que elige los productores y el eager load restringido que
+     * elige que propiedades se escriben en el archivo deben usar la misma
+     * prediccion, asi que ambos delegan aca.
+     */
+    private function filtrarPorDistrito($query, string $distrito): void
+    {
+        $query->whereRaw(
+            "LOWER(REPLACE(REPLACE(distrito, '-', ''), ' ', '')) LIKE ?",
+            ['%'.$this->normalizarDistrito($distrito).'%']
+        );
+    }
+
+    /**
+     * Espejo en PHP de `aplicarFiltroCultivo()`, para no emitir una fila de
+     * cultivo que la consulta no Habria traido. `LIKE` no distingue mayusculas
+     * en SQLite ni en MySQL con la collation por defecto, asi que se compara
+     * en minúsculas.
+     */
+    private function cultivoCoincide($cultivo, string $variedad, string $tipo): bool
+    {
+        if ($variedad !== '' && ! str_contains(mb_strtolower((string) $cultivo->variedad), mb_strtolower($variedad))) {
+            return false;
+        }
+
+        if ($tipo !== '' && ! str_contains(mb_strtolower((string) $cultivo->tipo), mb_strtolower($tipo))) {
+            return false;
+        }
+
+        return true;
     }
 
     private function writeExcelRow($sheet, int $row, array $data): void

