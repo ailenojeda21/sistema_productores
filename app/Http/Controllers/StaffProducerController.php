@@ -6,6 +6,7 @@ use App\Models\Cultivo;
 use App\Models\User;
 use App\Services\CertificateService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -86,6 +87,9 @@ class StaffProducerController extends Controller
             'user' => $user,
             'filters' => $filters,
             'producers' => $producers,
+            // La exportacion del listado completo no depende de que haya una
+            // busqueda activa, asi que su boton no se condiciona a los filtros.
+            'canExportAll' => Gate::allows('export-producers'),
         ]);
     }
 
@@ -458,6 +462,79 @@ class StaffProducerController extends Controller
         return response($content, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    /**
+     * Exportacion del listado COMPLETO de productores, independiente de
+     * cualquier busqueda activa en pantalla.
+     *
+     * A diferencia de `export()`, aqui no se lee ningun filtro de la request: la
+     * consulta es propia, sin paginacion y sin relaciones, y escribe una sola
+     * fila por productor con el modulo Perfil. Se consulta por lotes para no
+     * cargar todos los productores en memoria de una vez.
+     */
+    public function exportAll()
+    {
+        $this->authorize('export-producers');
+
+        $headers = [
+            'ID', 'Nombre', 'Email', 'DNI', 'Teléfono', 'Dirección Productor',
+        ];
+
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Productores');
+
+        $lastCol = $this->colLetter(count($headers));
+        $headerRow = 1;
+
+        foreach ($headers as $i => $header) {
+            $colLetter = $this->colLetter($i + 1);
+            $sheet->setCellValue("{$colLetter}{$headerRow}", $header);
+            $sheet->getStyle("{$colLetter}{$headerRow}")->applyFromArray([
+                'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF1E40AF']],
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+            ]);
+        }
+
+        $sheet->setAutoFilter("A{$headerRow}:{$lastCol}{$headerRow}");
+        $sheet->freezePane('A'.($headerRow + 1));
+
+        // Solo columnas de `users`: ninguna relacion, ningun N+1. El orden por
+        // `id` es lo que hace seguro el `chunk()`.
+        $rowNum = $headerRow + 1;
+        User::query()
+            ->select(['id', 'name', 'email', 'dni', 'telefono', 'direccion'])
+            ->orderBy('id')
+            ->chunk(500, function ($productores) use ($sheet, &$rowNum) {
+                foreach ($productores as $producer) {
+                    $this->writeExcelRow($sheet, $rowNum, [
+                        $producer->id,
+                        $producer->name ?? '',
+                        $producer->email ?? '',
+                        $producer->dni ?? '',
+                        $producer->telefono ?? '',
+                        $producer->direccion ?? '',
+                    ]);
+                    $rowNum++;
+                }
+            });
+
+        for ($i = 1; $i <= count($headers); $i++) {
+            $sheet->getColumnDimension($this->colLetter($i))->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        ob_start();
+        $writer->save('php://output');
+        $content = ob_get_clean();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="productores_completo.xlsx"',
         ]);
     }
 

@@ -77,12 +77,20 @@ function consultaProductoresVisibles()
 }
 
 /**
- * Lee el XLSX que devuelve `export()` y devuelve las cabeceras (fila 4) y las
- * filas de datos (desde la 5). El conjunto de columnas depende del filtro
- * activo, asi que por defecto se lee el ancho real de la hoja.
+ * Lee el XLSX que devuelve `export()` o `exportAll()` y devuelve las cabeceras
+ * y las filas de datos. El conjunto de columnas depende del filtro activo, asi
+ * que por defecto se lee el ancho real de la hoja.
+ *
+ * `export()` escribe titulo y fecha arriba, con los encabezados en la fila 4 y
+ * los datos desde la 5. `exportAll()` pone los encabezados en la fila 1, asi
+ * que se pasan `$filaCabecera` y `$primeraFilaDatos`.
  */
-function leerExportacion($response, ?int $columnas = null): array
-{
+function leerExportacion(
+    $response,
+    ?int $columnas = null,
+    int $filaCabecera = 4,
+    int $primeraFilaDatos = 5
+): array {
     $path = tempnam(sys_get_temp_dir(), 'xlsx');
     file_put_contents($path, $response->getContent());
 
@@ -97,11 +105,11 @@ function leerExportacion($response, ?int $columnas = null): array
 
     $cabeceras = [];
     for ($c = 1; $c <= $columnas; $c++) {
-        $cabeceras[] = $leer($c, 4);
+        $cabeceras[] = $leer($c, $filaCabecera);
     }
 
     $filas = [];
-    for ($r = 5; $r <= $sheet->getHighestRow(); $r++) {
+    for ($r = $primeraFilaDatos; $r <= $sheet->getHighestRow(); $r++) {
         $fila = [];
         for ($c = 1; $c <= $columnas; $c++) {
             $fila[] = $leer($c, $r);
@@ -817,4 +825,172 @@ test('el export por RUT trae solo la propiedad que coincide', function () {
     expect($export['rows'])->toHaveCount(1)
         ->and($export['rows'][0][$idx['Email']])->toBe($coincide->email)
         ->and($export['rows'][0][$idx['Dirección Propiedad']])->toContain('Con RUT');
+});
+
+/*
+|---------------------------------------------------------------------------
+| EXPORTAR TODOS (listado completo, independiente de los filtros)
+|---------------------------------------------------------------------------
+*/
+
+test('exportar todos devuelve solo las seis columnas del modulo perfil', function () {
+    actingComoStaff();
+
+    User::factory()->create([
+        'name' => 'Perfil Exportado', 'email' => 'perfil-exportado@test.com',
+        'dni' => '30111222', 'telefono' => '+5492615550000', 'direccion' => 'Calle Perfil 123',
+    ]);
+
+    $response = $this->get('/staff/producers/export-all')->assertOk();
+
+    expect($response->headers->get('content-type'))
+        ->toBe('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        ->and($response->headers->get('content-disposition'))
+        ->toBe('attachment; filename="productores_completo.xlsx"');
+
+    $export = leerExportacion($response, null, 1, 2);
+
+    // Las seis columnas, en el orden pedido y sin una sola más.
+    expect($export['headers'])->toBe([
+        'ID', 'Nombre', 'Email', 'DNI', 'Teléfono', 'Dirección Productor',
+    ]);
+
+    $idx = indicesDeColumna($export['headers'], ['ID', 'Nombre', 'Email', 'DNI', 'Teléfono', 'Dirección Productor']);
+    $fila = collect($export['rows'])->firstWhere($idx['Email'], 'perfil-exportado@test.com');
+
+    expect($fila)->not->toBeNull()
+        ->and($fila[$idx['Nombre']])->toBe('Perfil Exportado')
+        ->and($fila[$idx['DNI']])->toBe('30111222')
+        ->and($fila[$idx['Teléfono']])->toBe('+5492615550000')
+        ->and($fila[$idx['Dirección Productor']])->toBe('Calle Perfil 123');
+});
+
+test('exportar todos trae todos los productores y una fila por productor', function () {
+    sembrarParaFiltros();
+    actingComoStaff();
+
+    $export = leerExportacion($this->get('/staff/producers/export-all')->assertOk(), null, 1, 2);
+    $idx = indicesDeColumna($export['headers'], ['ID']);
+
+    // `toEqual` y no `toBe`: al releer el XLSX, PhpSpreadsheet devuelve los IDs
+    // numericos, no como texto.
+    $esperados = User::query()->orderBy('id')->pluck('id')->all();
+    $obtenidos = collect($export['rows'])->pluck($idx['ID'])->all();
+
+    // Sin relaciones: un productor con dos propiedades no se duplica.
+    expect($obtenidos)->toEqual($esperados)
+        ->and($obtenidos)->toHaveCount(count($esperados))
+        ->and(count($obtenidos))->toBeGreaterThan(50);
+});
+
+test('exportar todos no hereda los filtros de la busqueda activa', function () {
+    sembrarParaFiltros();
+    actingComoStaff();
+
+    $total = User::query()->count();
+    $conFiltro = User::query()->whereHas('propiedades', fn ($q) => $q->where('rut', 1))->count();
+
+    expect($conFiltro)->toBeLessThan($total);
+
+    $idx = indicesDeColumna(
+        leerExportacion($this->get('/staff/producers/export-all'), null, 1, 2)['headers'],
+        ['ID']
+    );
+
+    // Aunque se manden todos los filtros juntos, el archivo no se recorta.
+    $export = leerExportacion(
+        $this->get('/staff/producers/export-all?dni=3012&name=Benegas&distrito=paramillo&tipo=Horticola&variedad=Tomate&rut=30123456')
+            ->assertOk(), null, 1, 2);
+
+    expect(collect($export['rows'])->pluck($idx['ID'])->all())
+        ->toHaveCount($total);
+});
+
+test('exportar todos escribe vacio donde el perfil no tiene datos', function () {
+    actingComoStaff();
+
+    // `dni` es NOT NULL en la base, asi que "sin datos" es cadena vacia.
+    $productor = User::factory()->create([
+        'name' => 'Sin Datos', 'email' => 'sin-datos@test.com',
+        'dni' => '', 'telefono' => '', 'direccion' => '',
+    ]);
+
+    $export = leerExportacion($this->get('/staff/producers/export-all')->assertOk(), null, 1, 2);
+    $idx = indicesDeColumna($export['headers'], ['Email', 'DNI', 'Teléfono', 'Dirección Productor']);
+
+    $fila = collect($export['rows'])->firstWhere($idx['Email'], 'sin-datos@test.com');
+
+    // Una celda vacia se relee como `null`; lo que importa es que no haya dato.
+    expect($fila)->not->toBeNull()
+        ->and($fila[$idx['DNI']])->toBeNull()
+        ->and($fila[$idx['Teléfono']])->toBeNull()
+        ->and($fila[$idx['Dirección Productor']])->toBeNull()
+        ->and($fila)->toHaveCount(6);
+});
+
+test('exportar todos usa la direccion del perfil y no la de una propiedad', function () {
+    actingComoStaff();
+
+    $productor = User::factory()->create([
+        'name' => 'Dos Direcciones', 'email' => 'dos-direcciones@test.com',
+        'direccion' => 'Direccion Del Perfil 999',
+    ]);
+
+    Propiedad::factory()->for($productor, 'usuario')->create([
+        'calle' => 'Calle De La Propiedad', 'distrito' => 'la-pega',
+    ]);
+
+    $export = leerExportacion($this->get('/staff/producers/export-all')->assertOk(), null, 1, 2);
+    $idx = indicesDeColumna($export['headers'], ['Email', 'Dirección Productor']);
+
+    $fila = collect($export['rows'])->firstWhere($idx['Email'], 'dos-direcciones@test.com');
+
+    expect($fila[$idx['Dirección Productor']])->toBe('Direccion Del Perfil 999')
+        ->and($fila[$idx['Dirección Productor']])->not->toContain('Propiedad');
+});
+
+test('exportar todos no arrastra datos de propiedades cultivos ni maquinarias', function () {
+    actingComoStaff();
+
+    $productor = User::factory()->create(['email' => 'solo-perfil@test.com']);
+
+    $propiedad = Propiedad::factory()->for($productor, 'usuario')->create([
+        'calle' => 'No Debe Aparecer', 'hectareas' => 999.99,
+    ]);
+    Maquinaria::factory()->for($propiedad, 'propiedad')->create(['modelo_tractor' => 1999]);
+    Cultivo::factory()->for($propiedad, 'propiedad')->create([
+        'tipo' => 'Vitícola', 'variedad' => 'Malbec',
+    ]);
+
+    $export = leerExportacion($this->get('/staff/producers/export-all')->assertOk(), null, 1, 2);
+    $idx = indicesDeColumna($export['headers'], ['Email']);
+
+    $fila = collect($export['rows'])->firstWhere($idx['Email'], 'solo-perfil@test.com');
+
+    // Seis celdas, y ninguna con datos de las relaciones.
+    expect($fila)->toHaveCount(6)
+        ->and(implode('|', $fila))->not->toContain('No Debe Aparecer')
+        ->and(implode('|', $fila))->not->toContain('Malbec')
+        ->and(implode('|', $fila))->not->toContain('1999')
+        ->and(implode('|', $fila))->not->toContain('Vitícola');
+});
+
+test('exportar todos exige autenticacion de staff', function () {
+    $this->get('/staff/producers/export-all')->assertRedirect(route('login'));
+});
+
+test('exportar todos respeta el permiso del rol', function () {
+    actingComoStaff('auditor');
+
+    // El auditor puede exportar por decision registrada (A3).
+    $this->get('/staff/producers/export-all')->assertOk();
+});
+
+test('el index de productores informa si se puede exportar todo', function () {
+    actingComoStaff();
+
+    $this->get('/staff/producers')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('Staff/Producers/Index')
+            ->where('canExportAll', true));
 });

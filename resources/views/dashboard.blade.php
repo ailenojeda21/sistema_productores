@@ -8,7 +8,7 @@
     <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-20 mb-16 mx-auto">
 
-        <h2 class="text-2xl font-bold text-naranja-oscuro mb-4 text-center">
+        <h2 class="text-2xl font-bold text-gray-600 mb-4 text-center">
             Bienvenido {{ Auth::user()->name }} a <span class="tracking-[0.2em]">RUPAL</span>
         </h2>
 

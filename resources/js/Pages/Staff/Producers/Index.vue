@@ -34,8 +34,9 @@
       </nav>
 
 
-      <!-- Título -->
-      <div class="flex items-start justify-between gap-3">
+      <!-- Título + exportación del listado completo -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
         <div class="min-w-0">
           <h1 class="text-2xl font-bold text-slate-900">
             Productores
@@ -47,29 +48,39 @@
         </div>
 
         <!-- ========================================= -->
-        <!-- EXPORTAR - SOLO MOBILE -->
+        <!-- EXPORTAR TODOS - INDEPENDIENTE DE FILTROS -->
         <!-- ========================================= -->
-        <button
-          v-if="hasResults && canExport"
-          class="md:hidden h-11 w-11 shrink-0 rounded-xl bg-green-600 text-white shadow-md hover:bg-green-700 flex items-center justify-center"
-          @click="exportResults"
-          aria-label="Exportar resultados"
-          title="Exportar resultados"
+        <div
+          v-if="canExportAll"
+          class="flex flex-col sm:items-end gap-1 shrink-0"
         >
-          <svg
-            class="h-5 w-5 shrink-0"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
+          <button
+            type="button"
+            class="inline-flex items-center justify-center gap-2 self-start sm:self-auto rounded-xl bg-green-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
+            :disabled="isExportingAll"
+            :aria-busy="isExportingAll"
+            title="Descarga el listado completo de productores registrados."
+            @click="exportAll"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
-            />
-          </svg>
-        </button>
+            <svg
+              class="h-4 w-4 shrink-0"
+              :class="{ 'animate-pulse': isExportingAll }"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+              />
+            </svg>
+
+            <span>Exportar todos</span>
+          </button>
+        </div>
       </div>
 
 
@@ -139,6 +150,37 @@
                 stroke="currentColor"
                 stroke-width="2"
                 viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+
+              <span>
+                Exportar resultados
+              </span>
+            </button>
+
+
+            <!-- ========================================= -->
+            <!-- EXPORTAR RESULTADOS - SOLO MOBILE -->
+            <!-- ========================================= -->
+            <button
+              v-if="hasResults && canExport"
+              type="button"
+              class="md:hidden flex-1 sm:flex-none px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-semibold hover:bg-green-700 items-center justify-center gap-2"
+              @click="exportResults"
+              aria-label="Exportar resultados"
+            >
+              <svg
+                class="w-5 h-5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   stroke-linecap="round"
@@ -329,6 +371,11 @@ const props = defineProps({
     default: () => ({})
   },
 
+  canExportAll: {
+    type: Boolean,
+    default: false
+  },
+
 })
 
 
@@ -483,6 +530,39 @@ const exportResults = () => {
     `/staff/producers/export?${params.toString()}`,
     '_blank'
   )
+
+}
+
+
+const isExportingAll = ref(false)
+
+
+const exportAll = () => {
+
+  // Bloquea clics accidentales mientras se genera el archivo.
+  if (isExportingAll.value) return
+
+  isExportingAll.value = true
+
+  // Se dispara con un anchor temporal en vez de `window.open` o
+  // `router.visit`: asi la descarga no depende de la sesion de Inertia, no
+  // reemplaza la pagina, no ensucia el historial y no puede ser bloqueada como
+  // popup. El nombre real lo impone el `Content-Disposition` del backend.
+  const link = document.createElement('a')
+
+  link.href = '/staff/producers/export-all'
+  link.rel = 'noopener'
+  link.style.display = 'none'
+
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+
+  // No hay forma de observar desde JS cuando el navegador termino la
+  // descarga, asi que el estado se libera con un timeout corto.
+  window.setTimeout(() => {
+    isExportingAll.value = false
+  }, 2000)
 
 }
 

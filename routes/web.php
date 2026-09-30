@@ -285,6 +285,12 @@ Route::prefix('staff')->group(function () {
         Route::get('/producers/export', [StaffProducerController::class, 'export'])
             ->name('staff.producers.export');
 
+        // Listado completo, independiente de los filtros de la pantalla.
+        // Debe declararse antes de `/producers/{id}` para no ser capturado
+        // como un id.
+        Route::get('/producers/export-all', [StaffProducerController::class, 'exportAll'])
+            ->name('staff.producers.export-all');
+
         Route::get('/producers/{id}', [StaffProducerController::class, 'show'])
             ->name('staff.producers.show');
 
