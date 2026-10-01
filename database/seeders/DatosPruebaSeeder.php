@@ -40,6 +40,12 @@ class DatosPruebaSeeder extends Seeder
 
     public function run(?string $perfil = null, bool $purgar = true, bool $escenarios = true): void
     {
+        // El dataset genera cuentas staff con contrasenas conocidas: solo
+        // entornos no productivos. Mismo guard que `UserSeeder`.
+        if (! app()->environment(['local', 'testing'])) {
+            return;
+        }
+
         $plan = (new Poblador)->plan($perfil);
 
         if ($purgar) {
