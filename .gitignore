@@ -55,8 +55,12 @@ Thumbs.db
 Homestead.json
 Homestead.yaml
 
-# SQLite local DB
+# SQLite local DB (solo tests :memory:; el runtime usa MySQL)
+# Cualquier .sqlite queda fuera del repositorio por precaucion.
+*.sqlite
+*.sqlite-journal
 /database/database.sqlite
+/database.sqlite
 
 # =========================================================
 # Node / Vite
