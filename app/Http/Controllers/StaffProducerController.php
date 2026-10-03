@@ -337,7 +337,15 @@ class StaffProducerController extends Controller
         $dateStr = date('Y-m-d');
 
         if ($searchType && $searchValue) {
-            $filename = 'productores_'.strtolower(str_replace(' ', '_', $searchValue)).'_'.$dateStr.'.xlsx';
+            $searchValueSan = str_replace(' ', '_', $searchValue);
+            $searchValueSan = preg_replace('/[^A-Za-z0-9_-]+/u', '_', $searchValueSan);
+            $searchValueSan = preg_replace('/_+/', '_', trim($searchValueSan, '_'));
+
+            if ($searchValueSan === '') {
+                $searchValueSan = 'todos';
+            }
+
+            $filename = 'productores_'.strtolower($searchValueSan).'_'.$dateStr.'.xlsx';
         } else {
             $filename = 'productores_todos_'.$dateStr.'.xlsx';
         }

@@ -49,7 +49,6 @@ Route::middleware(['auth:staff-api', 'staff.active', 'throttle:60,1'])->prefix('
 
     // Productores (admin + auditor)
     Route::get('/producers', [StaffProducerController::class, 'index']);
-    Route::get('/producers/{id}', [StaffProducerController::class, 'show']);
 
     // Solo admin
     Route::middleware('staff.role:admin')->group(function () {
@@ -61,4 +60,6 @@ Route::middleware(['auth:staff-api', 'staff.active', 'throttle:60,1'])->prefix('
         Route::patch('/users/{id}', [StaffUserController::class, 'update']);
         Route::delete('/users/{id}', [StaffUserController::class, 'destroy']);
     });
+
+    Route::get('/producers/{id}', [StaffProducerController::class, 'show']);
 });
