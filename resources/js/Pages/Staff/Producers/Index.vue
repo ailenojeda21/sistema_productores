@@ -103,6 +103,7 @@
             <option value="tipo">Tipo</option>
             <option value="name">Nombre</option>
             <option value="rut">N° RUT</option>
+            <option value="manejo">Manejo</option>
           </select>
 
 
@@ -388,6 +389,7 @@ function initialSearchType() {
   if (props.filters.distrito) return 'distrito'
   if (props.filters.variedad) return 'variedad'
   if (props.filters.tipo) return 'tipo'
+  if (props.filters.manejo) return 'manejo'
   if (props.filters.name) return 'name'
   if (props.filters.rut) return 'rut'
 
@@ -397,7 +399,7 @@ function initialSearchType() {
 
 function initialSearchValue() {
 
-  for (const key of ['dni', 'distrito', 'variedad', 'tipo', 'name', 'rut']) {
+  for (const key of ['dni', 'distrito', 'variedad', 'tipo', 'manejo', 'name', 'rut']) {
     if (props.filters[key]) return props.filters[key]
   }
 
@@ -412,6 +414,7 @@ const placeholders = {
   distrito: 'Ingrese distrito',
   variedad: 'Ingrese variedad',
   tipo: 'Ingrese tipo',
+  manejo: 'Ingrese manejo (Orgánico, Convencional, Agroecológico)',
   rut: 'Ingrese N° RUT',
 
 }
@@ -430,6 +433,7 @@ const form = reactive({
   distrito: props.filters.distrito ?? '',
   variedad: props.filters.variedad ?? '',
   tipo: props.filters.tipo ?? '',
+  manejo: props.filters.manejo ?? '',
   rut: props.filters.rut ?? '',
 
 })
@@ -474,6 +478,13 @@ const activeFilters = computed(() => {
     })
   }
 
+  if (props.filters.manejo) {
+    filters.push({
+      key: 'manejo',
+      label: `Manejo: ${props.filters.manejo}`
+    })
+  }
+
   if (props.filters.rut) {
     filters.push({
       key: 'rut',
@@ -498,6 +509,7 @@ const hasSearchPerformed = computed(() => {
     props.filters.distrito ||
     props.filters.variedad ||
     props.filters.tipo ||
+    props.filters.manejo ||
     props.filters.rut
   )
 
@@ -509,7 +521,8 @@ const canExport = computed(() => {
   return (
     props.filters.distrito ||
     props.filters.variedad ||
-    props.filters.tipo
+    props.filters.tipo ||
+    props.filters.manejo
   )
 
 })
@@ -524,6 +537,7 @@ const exportResults = () => {
   if (form.distrito) params.append('distrito', form.distrito)
   if (form.variedad) params.append('variedad', form.variedad)
   if (form.tipo) params.append('tipo', form.tipo)
+  if (form.manejo) params.append('manejo', form.manejo)
   if (form.rut) params.append('rut', form.rut)
 
   window.open(
@@ -576,6 +590,7 @@ const search = () => {
   form.distrito = ''
   form.variedad = ''
   form.tipo = ''
+  form.manejo = ''
   form.rut = ''
 
 
@@ -603,6 +618,7 @@ const clear = () => {
   form.distrito = ''
   form.variedad = ''
   form.tipo = ''
+  form.manejo = ''
   form.rut = ''
 
   searchType.value = 'dni'

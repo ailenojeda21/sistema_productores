@@ -27,6 +27,7 @@ class StaffProducerController extends Controller
         $variedad = trim((string) $request->get('variedad', ''));
         $tipo = trim((string) $request->get('tipo', ''));
         $rut = trim((string) $request->get('rut', ''));
+        $manejo = $this->normalizarManejo(trim((string) $request->get('manejo', '')));
 
         $producers = User::query()
             ->select('users.id', 'users.name', 'users.dni', 'users.email')
@@ -43,6 +44,10 @@ class StaffProducerController extends Controller
 
             ->when($tipo !== '', function ($q) use ($tipo) {
                 $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('tipo', 'like', "%{$tipo}%"));
+            })
+
+            ->when($manejo !== '', function ($q) use ($manejo) {
+                $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('manejo_cultivo', $manejo));
             })
 
             ->when($rut !== '', function ($q) use ($rut) {
@@ -74,6 +79,7 @@ class StaffProducerController extends Controller
             'variedad' => $variedad,
             'tipo' => $tipo,
             'rut' => $rut,
+            'manejo' => $manejo,
         ];
 
         if ($this->isApiRequest($request)) {
@@ -230,6 +236,7 @@ class StaffProducerController extends Controller
         $variedad = trim((string) $request->get('variedad', ''));
         $tipo = trim((string) $request->get('tipo', ''));
         $rut = trim((string) $request->get('rut', ''));
+        $manejo = $this->normalizarManejo(trim((string) $request->get('manejo', '')));
 
         $producers = User::with([
             'propiedades.cultivos',
@@ -252,6 +259,10 @@ class StaffProducerController extends Controller
                 $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('tipo', 'like', "%{$tipo}%"));
             })
 
+            ->when($manejo !== '', function ($q) use ($manejo) {
+                $q->whereHas('propiedades.cultivos', fn ($sub) => $sub->where('manejo_cultivo', $manejo));
+            })
+
             ->when($rut !== '', function ($q) use ($rut) {
                 $search = preg_replace('/\D/', '', $rut);
 
@@ -267,7 +278,7 @@ class StaffProducerController extends Controller
         // perfil + las propiedades que coinciden. `variedad` y `tipo` son
         // filtros a nivel cultivo: ademas se trae la propiedad que lo contiene
         // y el modulo cultivo.
-        $filtraCultivo = $variedad !== '' || $tipo !== '';
+        $filtraCultivo = $variedad !== '' || $tipo !== '' || $manejo !== '';
 
         // Las relaciones se recargan con la MISMA restriccion que usa el
         // `whereHas` de arriba, para que el archivo no arrastre propiedades ni
@@ -275,7 +286,7 @@ class StaffProducerController extends Controller
         // `distrito` se replica aqui a proposito: cualquier divergencia
         // haria perder filas que la consulta si habria|matchado.
         $producers->load([
-            'propiedades' => function ($q) use ($distrito, $rut, $variedad, $tipo) {
+            'propiedades' => function ($q) use ($distrito, $rut, $variedad, $tipo, $manejo) {
                 if ($distrito !== '') {
                     $this->filtrarPorDistrito($q, $distrito);
                 }
@@ -285,17 +296,23 @@ class StaffProducerController extends Controller
                         ->where('rut_valor', 'like', '%'.preg_replace('/\D/', '', $rut).'%');
                 }
 
-                if ($variedad !== '' || $tipo !== '') {
-                    $q->whereHas('cultivos', function ($sub) use ($variedad, $tipo) {
+                if ($variedad !== '' || $tipo !== '' || $manejo !== '') {
+                    $q->whereHas('cultivos', function ($sub) use ($variedad, $tipo, $manejo) {
                         $this->aplicarFiltroCultivo($sub, $variedad, $tipo);
+                        if ($manejo !== '') {
+                            $sub->where('manejo_cultivo', $manejo);
+                        }
                     });
                 }
             },
 
             // Sin filtro de cultivo se cargan todos, para el modulo completo;
             // con filtro, solo los cultivos que coinciden.
-            'propiedades.cultivos' => function ($q) use ($variedad, $tipo) {
+            'propiedades.cultivos' => function ($q) use ($variedad, $tipo, $manejo) {
                 $this->aplicarFiltroCultivo($q, $variedad, $tipo);
+                if ($manejo !== '') {
+                    $q->where('manejo_cultivo', $manejo);
+                }
             },
         ]);
 
@@ -321,8 +338,8 @@ class StaffProducerController extends Controller
             $headers[] = 'Tecnología de riego';
         }
 
-        $searchValue = $variedad ?: $tipo ?: $distrito;
-        $searchType = $variedad ? 'variedad' : ($tipo ? 'tipo' : ($distrito ? 'distrito' : null));
+        $searchValue = $variedad ?: $tipo ?: $manejo ?: $distrito;
+        $searchType = $variedad ? 'variedad' : ($tipo ? 'tipo' : ($manejo ? 'manejo' : ($distrito ? 'distrito' : null)));
 
         $titulo = 'Listado de Productores';
         if ($searchType === 'distrito') {
@@ -331,6 +348,8 @@ class StaffProducerController extends Controller
             $titulo = 'Productores que cultivan '.$variedad;
         } elseif ($searchType === 'tipo') {
             $titulo = 'Productores de tipo '.$tipo;
+        } elseif ($searchType === 'manejo') {
+            $titulo = 'Productores con manejo '.$manejo;
         }
 
         $fechaExport = date('d/m/Y H:i').' hs';
@@ -438,7 +457,7 @@ class StaffProducerController extends Controller
                 // Filtro de cultivo: la propiedad solo aparece si tiene un
                 // cultivo que coincida, y solo se emiten esos cultivos.
                 $cultivosCoincidentes = $prop->cultivos->filter(
-                    fn ($cult) => $this->cultivoCoincide($cult, $variedad, $tipo)
+                    fn ($cult) => $this->cultivoCoincide($cult, $variedad, $tipo, $manejo)
                 );
 
                 foreach ($cultivosCoincidentes as $cult) {
@@ -606,6 +625,33 @@ class StaffProducerController extends Controller
     }
 
     /**
+     * Normaliza un valor de "manejo del cultivo" a su forma exacta en BD.
+     *
+     * La BD guarda los valores sin tilde: Convencional, Agroecologico, Organico.
+     * Acepta variantes con/sin tilde y cualquier mayuscula/minuscula y las
+     * mapea al valor exacto de BD. Si no corresponde a ninguno de los 3,
+     * devuelve '' (el filtro se ignora).
+     */
+    private function normalizarManejo(string $valor): string
+    {
+        $v = mb_strtolower(trim($valor), 'UTF-8');
+        $v = strtr($v, [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'Á' => 'a', 'É' => 'e', 'Í' => 'i', 'Ó' => 'o', 'Ú' => 'u',
+            'ñ' => 'n', 'Ñ' => 'n',
+        ]);
+        $v = Str::ascii($v);
+
+        $map = [
+            'organico' => 'Organico',
+            'agroecologico' => 'Agroecologico',
+            'convencional' => 'Convencional',
+        ];
+
+        return $map[$v] ?? '';
+    }
+
+    /**
      * Espejo en PHP de `aplicarFiltroCultivo()`, para no emitir una fila de
      * cultivo que la consulta no Habria traido.
      *
@@ -614,7 +660,7 @@ class StaffProducerController extends Controller
      * un filtro mas laxo aqui no agrega filas de mas, pero uno mas estricto
      * vacia el export aunque la consulta haya encontrado productores.
      */
-    private function cultivoCoincide($cultivo, string $variedad, string $tipo): bool
+    private function cultivoCoincide($cultivo, string $variedad, string $tipo, string $manejo = ''): bool
     {
         if ($variedad !== '' && ! str_contains(
             $this->normalizarCultivo((string) $cultivo->variedad),
@@ -627,6 +673,10 @@ class StaffProducerController extends Controller
             $this->normalizarCultivo((string) $cultivo->tipo),
             $this->normalizarCultivo($tipo)
         )) {
+            return false;
+        }
+
+        if ($manejo !== '' && (string) $cultivo->manejo_cultivo !== $manejo) {
             return false;
         }
 
