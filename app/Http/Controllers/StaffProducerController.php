@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\CertificateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -486,6 +487,23 @@ class StaffProducerController extends Controller
         $writer->save('php://output');
         $content = ob_get_clean();
 
+        $filtrosActivos = array_values(array_filter([
+            $dni !== '' ? 'dni' : null,
+            $name !== '' ? 'name' : null,
+            $distrito !== '' ? 'distrito' : null,
+            $variedad !== '' ? 'variedad' : null,
+            $tipo !== '' ? 'tipo' : null,
+            $manejo !== '' ? 'manejo' : null,
+            $rut !== '' ? 'rut' : null,
+        ]));
+
+        Log::info('staff.producers.export', [
+            'user_id' => auth()->id(),
+            'tipo' => 'filtrado',
+            'filtros' => $filtrosActivos,
+            'filas' => $producers->count(),
+        ]);
+
         return response($content, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
@@ -558,6 +576,14 @@ class StaffProducerController extends Controller
         ob_start();
         $writer->save('php://output');
         $content = ob_get_clean();
+
+        // exportAll escribe una fila por productor (sin relaciones).
+        Log::info('staff.producers.export', [
+            'user_id' => auth()->id(),
+            'tipo' => 'completo',
+            'filtros' => [],
+            'filas' => (int) User::count(),
+        ]);
 
         return response($content, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

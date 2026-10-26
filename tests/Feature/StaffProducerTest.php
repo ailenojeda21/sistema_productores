@@ -1,9 +1,10 @@
 <?php
 
+use App\Models\Cultivo;
+use App\Models\Propiedad;
 use App\Models\StaffUser;
 use App\Models\User;
-use App\Models\Propiedad;
-use App\Models\Cultivo;
+use Illuminate\Support\Facades\Log;
 
 test('staff admin puede ver listado de productores', function () {
     $staff = StaffUser::factory()->create(['role' => 'admin']);
@@ -86,6 +87,42 @@ test('staff puede ver detalle de un productor', function () {
         ->has('maquinarias')
         ->has('stats')
     );
+});
+
+test('export filtrado registra log con user_id y filtros sin PII', function () {
+    $staff = StaffUser::factory()->create(['role' => 'admin']);
+    User::factory()->create(['name' => 'Juan Perez']);
+
+    Log::spy();
+
+    $response = $this->actingAs($staff, 'staff')
+        ->get(route('staff.producers.export', ['name' => 'Juan']));
+
+    $response->assertOk();
+    Log::shouldHaveReceived('info')
+        ->with('staff.producers.export', Mockery::on(function ($ctx) {
+            return isset($ctx['user_id']) && $ctx['tipo'] === 'filtrado'
+                && in_array('name', $ctx['filtros'])
+                && ! str_contains(json_encode($ctx), 'Juan');
+        }))
+        ->once();
+});
+
+test('export completo registra log con user_id y tipo completo', function () {
+    $staff = StaffUser::factory()->create(['role' => 'admin']);
+
+    Log::spy();
+
+    $response = $this->actingAs($staff, 'staff')
+        ->get(route('staff.producers.export-all'));
+
+    $response->assertOk();
+    Log::shouldHaveReceived('info')
+        ->with('staff.producers.export', Mockery::on(function ($ctx) {
+            return isset($ctx['user_id']) && $ctx['tipo'] === 'completo'
+                && $ctx['filtros'] === [];
+        }))
+        ->once();
 });
 
 test('admin puede exportar productores', function () {
