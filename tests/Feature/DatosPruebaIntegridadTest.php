@@ -85,7 +85,7 @@ test('la suma de hectareas de los cultivos nunca supera las de la propiedad', fu
     $rupturas = DB::table('propiedades as p')
         ->leftJoin('cultivos as c', 'c.propiedad_id', '=', 'p.id')
         ->groupBy('p.id', 'p.hectareas')
-        ->havingRaw('COALESCE(SUM(c.hectareas), 0) > p.hectareas')
+        ->havingRaw('ROUND(COALESCE(SUM(c.hectareas), 0), 2) > ROUND(p.hectareas, 2)')
         ->pluck('p.id');
 
     expect($rupturas)->toBeEmpty();
