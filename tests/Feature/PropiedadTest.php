@@ -2,6 +2,8 @@
 
 use App\Models\Propiedad;
 use App\Models\User;
+use App\Models\StaffUser;
+use Illuminate\Support\Facades\Storage;
 
 test('user puede ver listado de propiedades', function () {
     $user = User::factory()->create();
@@ -10,6 +12,56 @@ test('user puede ver listado de propiedades', function () {
     $response = $this->actingAs($user)->get('/propiedades');
 
     $response->assertOk();
+});
+
+test('downloadRut permite descarga valida y devuelve PDF', function () {
+    Storage::fake('rut_files');
+    $user = User::factory()->create(['name' => 'Juan Perez']);
+    $propiedad = Propiedad::factory()->for($user, 'usuario')->create([
+        'distrito' => 'la-pega',
+        'calle' => 'Calle Falsa',
+        'numeracion' => '123',
+        'rut' => true,
+        'rut_valor' => '999',
+        'rut_archivo' => 'abc.pdf',
+    ]);
+    Storage::disk('rut_files')->put('abc.pdf', 'dummy pdf content');
+
+    $response = $this->actingAs($user)->get(route('propiedades.rut', $propiedad));
+
+    $response->assertOk();
+    $response->assertHeader('Content-Type', 'application/pdf');
+});
+
+test('downloadRut sanea el nombre del archivo (sin saltos ni caracteres peligrosos)', function () {
+    Storage::fake('rut_files');
+    $user = User::factory()->create(['name' => "Juan\nPerez\"; rm -rf /"]);
+    $propiedad = Propiedad::factory()->for($user, 'usuario')->create([
+        'distrito' => 'la-pega',
+        'calle' => 'Calle 1',
+        'numeracion' => '123',
+        'rut' => true,
+        'rut_valor' => '999',
+        'rut_archivo' => 'abc.pdf',
+    ]);
+    Storage::disk('rut_files')->put('abc.pdf', 'dummy');
+
+    $response = $this->actingAs($user)->get(route('propiedades.rut', $propiedad));
+
+    $response->assertOk();
+    $cd = $response->headers->get('Content-Disposition');
+    expect($cd)->not->toContain('%0A');
+    expect($cd)->not->toContain('%0D');
+    // El nombre saneado solo contiene caracteres seguros (con o sin comillas)
+    if (preg_match('/filename="([^"]*)"/', $cd, $m)) {
+        $fname = $m[1];
+    } elseif (preg_match('/filename=([^;\s]+)/', $cd, $m)) {
+        $fname = $m[1];
+    } else {
+        $fname = '';
+    }
+    expect($fname)->not->toBe('');
+    expect($fname)->toMatch('/^[A-Za-z0-9_.-]+$/');
 });
 
 test('user puede crear propiedad', function () {

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePropiedadRequest;
 use App\Models\Propiedad;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PropiedadController extends Controller
 {
@@ -49,7 +50,7 @@ class PropiedadController extends Controller
             $validated['rut_archivo'] = null;
         }
 
-        $propiedad = new Propiedad();
+        $propiedad = new Propiedad;
         $propiedad->fill($validated);
         $propiedad->usuario_id = Auth::id();
         $propiedad->save();
@@ -168,16 +169,29 @@ class PropiedadController extends Controller
             abort(404, 'Archivo no encontrado');
         }
 
-        $nombre = preg_replace('/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/', '', $propiedad->usuario->name ?? 'productor');
-        $nombre = str_replace(' ', '_', trim($nombre));
-        $distrito = preg_replace('/[^a-zA-Z0-9\s]/', '', $propiedad->distrito ? ucwords(str_replace('-', ' ', $propiedad->distrito)) : '');
-        $calle = preg_replace('/[^a-zA-Z0-9\s]/', '', $propiedad->calle ? ucwords(str_replace('-', ' ', $propiedad->calle)) : '');
-        $numeracion = preg_replace('/[^a-zA-Z0-9]/', '', $propiedad->numeracion ?? '');
-        $calleNumero = $numeracion ? "{$calle}_{$numeracion}" : $calle;
-        $propStr = $distrito ? "{$distrito}_{$calleNumero}" : $calleNumero;
-        $propStr = str_replace(' ', '_', trim($propStr));
+        // Defensa frente a path traversal en la ruta almacenada.
+        $storedPath = (string) $propiedad->rut_archivo;
+        if ($storedPath === '' || str_contains($storedPath, '..') || str_contains($storedPath, '/') || str_contains($storedPath, '\\')) {
+            abort(404, 'Archivo no encontrado');
+        }
+
+        $ascii = static function (string $value): string {
+            $value = Str::ascii(trim($value));
+            $value = preg_replace('/[^A-Za-z0-9]+/', '_', $value);
+            $value = trim((string) $value, '_');
+
+            return $value === '' ? 'x' : $value;
+        };
+
+        $nombre = $ascii($propiedad->usuario->name ?? 'productor');
+        $distrito = $ascii($propiedad->distrito ? ucwords(str_replace('-', ' ', $propiedad->distrito)) : '');
+        $calle = $ascii($propiedad->calle ? ucwords(str_replace('-', ' ', $propiedad->calle)) : '');
+        $numeracion = $ascii($propiedad->numeracion ?? '');
+        $calleNumero = $numeracion !== 'x' ? "{$calle}_{$numeracion}" : $calle;
+        $propStr = $distrito !== 'x' ? "{$distrito}_{$calleNumero}" : $calleNumero;
         $fecha = now()->format('Y-m-d');
         $filename = "{$nombre}_{$propStr}_rut_{$fecha}.pdf";
+        $filename = preg_replace('/[^A-Za-z0-9_.-]/', '', $filename);
 
         return Storage::disk('rut_files')->download($propiedad->rut_archivo, $filename);
     }
