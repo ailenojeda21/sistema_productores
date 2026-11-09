@@ -28,7 +28,7 @@ RUN php artisan config:clear || true
 RUN php artisan route:clear || true
 RUN php artisan view:clear || true
 
-# Exponer puerto (Railway usa PORT dinámico)
+# Exponer puerto (varias plataformas asignan PORT dinámicamente)
 EXPOSE 8080
 
 # Comando de inicio

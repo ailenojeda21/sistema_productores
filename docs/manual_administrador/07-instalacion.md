@@ -29,7 +29,7 @@ Aplica a administradores del sistema, DevOps y desarrolladores responsables de l
 | Término | Definición |
 |---------|------------|
 | Entorno local | Máquina del desarrollador para pruebas locales |
-| Entorno de producción | Servidor cloud (Railway) donde se ejecuta el sistema en vivo |
+| Entorno de producción | Servidor cloud (por definir) donde se ejecuta el sistema en vivo |
 | Artisan | CLI de Laravel para tareas de administración |
 | Vite | Bundler de frontend para assets JS/CSS |
 | Sanctum | Paquete de autenticación por tokens |
@@ -137,8 +137,8 @@ Application key set successfully.
 | `APP_NAME` | `RUPAL` | `RUPAL` |
 | `APP_LOCALE` | `es` | `es` |
 | `DB_CONNECTION` | `mysql` | `mysql` |
-| `DB_HOST` | `127.0.0.1` | `<host-railway>` |
-| `DB_PORT` | `3306` | `<puerto-railway>` |
+| `DB_HOST` | `127.0.0.1` | `<host-produccion>` |
+| `DB_PORT` | `3306` | `<puerto-produccion>` |
 | `DB_DATABASE` | `sist_prod_dev` | `sist_prod` |
 | `DB_USERNAME` | `root` | `<usuario-bd>` |
 | `DB_PASSWORD` | *(vacío)* | `<contraseña-bd>` |
@@ -283,7 +283,7 @@ composer run dev
 
 ---
 
-## 7. PROCEDIMIENTO DE CONFIGURACIÓN — PRODUCCIÓN (RAILWAY)
+## 7. PROCEDIMIENTO DE CONFIGURACIÓN — PRODUCCIÓN (hosting por definir)
 
 ### 7.1 Preparar el Dockerfile
 
@@ -306,9 +306,9 @@ CMD php artisan serve --host=0.0.0.0 --port=$PORT
 
 > **Nota**: El build de frontend (`npm run build`) debe ejecutarse antes del build de Docker o por separado, ya que el Dockerfile no incluye Node.js.
 
-### 7.2 Variables de entorno en Railway
+### 7.2 Variables de entorno en el proveedor de hosting (por definir)
 
-Configurar las siguientes variables en el panel de Railway:
+Configurar las siguientes variables en el panel del proveedor de hosting (por definir):
 
 | Variable | Valor | Notas |
 |----------|-------|-------|
@@ -317,11 +317,11 @@ Configurar las siguientes variables en el panel de Railway:
 | `APP_KEY` | *(generada)* | Ejecutar `php artisan key:generate` |
 | `APP_URL` | `https://rupal.lavalle.gob.ar` | URL pública |
 | `DB_CONNECTION` | `mysql` | — |
-| `DB_HOST` | *(provisto por Railway)* | Host de la BD MySQL |
+| `DB_HOST` | *(provisto por el hosting)* | Host de la BD MySQL |
 | `DB_PORT` | `3306` | — |
-| `DB_DATABASE` | *(provisto por Railway)* | Nombre de la BD |
-| `DB_USERNAME` | *(provisto por Railway)* | Usuario de la BD |
-| `DB_PASSWORD` | *(provisto por Railway)* | Contraseña de la BD |
+| `DB_DATABASE` | *(provisto por el hosting)* | Nombre de la BD |
+| `DB_USERNAME` | *(provisto por el hosting)* | Usuario de la BD |
+| `DB_PASSWORD` | *(provisto por el hosting)* | Contraseña de la BD |
 | `SESSION_DRIVER` | `database` | Sesiones persistentes |
 | `SESSION_ENCRYPT` | `true` | Cifrar sesiones |
 | `SESSION_SECURE_COOKIE` | `true` | Cookies solo HTTPS |
@@ -335,11 +335,11 @@ Configurar las siguientes variables en el panel de Railway:
 | `MAIL_FROM_NAME` | `RUPAL` | — |
 | `BCRYPT_ROUNDS` | `12` | — |
 
-[CAPTURA DE PANTALLA: Panel de Railway con variables de entorno configuradas]
+[CAPTURA DE PANTALLA: Panel del proveedor de hosting (por definir) con variables de entorno configuradas]
 
 ### 7.3 Post-despliegue
 
-Una vez desplegado el contenedor, ejecutar los siguientes comandos vía Railway Console:
+Una vez desplegado el contenedor, ejecutar los siguientes comandos vía la consola del proveedor de hosting (por definir):
 
 | Paso | Comando | Propósito |
 |------|---------|-----------|
@@ -350,7 +350,7 @@ Una vez desplegado el contenedor, ejecutar los siguientes comandos vía Railway 
 | 5 | `php artisan route:cache` | Cachear rutas |
 | 6 | `php artisan view:cache` | Compilar vistas Blade |
 
-[CAPTURA DE PANTALLA: Consola de Railway ejecutando comandos post-despliegue]
+[CAPTURA DE PANTALLA: Consola del proveedor de hosting (por definir) ejecutando comandos post-despliegue]
 
 ---
 
@@ -440,7 +440,7 @@ apt-get install certbot python3-certbot-nginx
 certbot --nginx -d rupal.lavalle.gob.ar
 ```
 
-O configurar SSL directamente desde Railway (SSL automático con *.railway.app o dominio personalizado).
+O configurar SSL directamente desde el proveedor de hosting (por definir) (SSL automático con el dominio del hosting o dominio personalizado).
 
 ---
 

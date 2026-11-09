@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
                 ->symbols();
         });
 
-        // Fuerza el esquema HTTPS si estamos en producción (Railway)
+        // Fuerza el esquema HTTPS si estamos en producción
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }

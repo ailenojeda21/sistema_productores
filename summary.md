@@ -67,7 +67,7 @@
 
 ## Critical Context
 - **111 tests pasan, 2 skipped**  
-- **Base de datos:** SQLite local, MySQL en Railway  
+- **Base de datos:** SQLite local, MySQL en el proveedor de hosting (por definir)  
 - **Dual frontend:** Blade (Productores) + Inertia/Vue 3 (Staff)  
 - **Dos guards:** web (Productores, Spatie) + staff (StaffUser, columna role) + staff-api (Sanctum)  
 - **Sanctum tokens:** expiran 2h (ya no 24h)  

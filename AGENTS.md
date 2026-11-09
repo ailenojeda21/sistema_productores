@@ -467,10 +467,10 @@ Todo código nuevo debe cumplir con los controles aplicables de las cinco normas
 | **5.1-5.6** (Políticas) | No hardcodear credenciales, URLs, o tokens. Usar `.env` + `config/`. |
 | **6.1-6.3** (Organización) | Separación de guards: `web` (productores), `staff` (sesión staff), `staff-api` (tokens Sanctum). |
 | **8.1-8.12** (Activos) | Cachear respuestas de API cuando sea posible; documentar esquemas de BD en migraciones. |
-| **8.13-8.18** (Controles criptográficos) | `APP_KEY` rotada en producción, contraseñas hasheadas con bcrypt, HTTPS forzado en Railway. |
+| **8.13-8.18** (Controles criptográficos) | `APP_KEY` rotada en producción, contraseñas hasheadas con bcrypt, HTTPS forzado en producción. |
 | **9.1-9.4** (Control de acceso) | Mínimo privilegio: `staff.role:admin` para operaciones administrativas; ownership checks en policies. |
 | **10.1** (Cifrado) | Sesiones con `session.secure` en producción; tokens Sanctum expiran 1440 min. |
-| **11.1-11.2** (Seguridad física) | N/A (delegado a Railway / cloud provider). |
+| **11.1-11.2** (Seguridad física) | N/A (delegado al proveedor de hosting (por definir)). |
 | **12.1-12.7** (Operaciones) | Logging de eventos críticos (login, logout, creación/eliminación de usuarios). Logs sin datos sensibles. |
 | **13.1-13.2** (Comunicaciones) | HTTPS siempre; Content-Security-Policy definida; cookies `HttpOnly` + `SameSite`. |
 | **14.1-14.3** (Adquisición/desarrollo) | Migraciones versionadas; validación server-side + client-side; pruebas de seguridad. |
@@ -551,15 +551,15 @@ $user->forceDelete(); // Solo si ha pasado el período de retención
 
 ### ISO 27017 — Controles de seguridad en cloud
 
-Aplica a la infraestructura en Railway (o cualquier cloud provider).
+Aplica a la infraestructura del proveedor de hosting (por definir).
 
 | Control | Implementación |
 |---|---|
-| **17.1** (Responsabilidades compartidas) | El proveedor (Railway) maneja seguridad de red/física; el equipo maneja seguridad de aplicación y datos. |
+| **17.1** (Responsabilidades compartidas) | El proveedor de hosting (por definir) maneja seguridad de red/física; el equipo maneja seguridad de aplicación y datos. |
 | **17.2** (Aislamiento) | Base de datos con credenciales separadas por entorno; contenedores sin acceso a host. |
 | **17.3** (Configuración de cloud) | Variables de entorno para todas las credenciales; no commitear `.env`. |
-| **17.4** (Monitoreo) | Logs de acceso a Railway; rate limiting por IP. |
-| **17.5** (Virtualización) | N/A (Railway maneja la capa de contenedores). |
+| **17.4** (Monitoreo) | Logs de acceso al proveedor de hosting (por definir); rate limiting por IP. |
+| **17.5** (Virtualización) | N/A (el proveedor de hosting (por definir) maneja la capa de contenedores). |
 
 #### Prácticas cloud obligatorias
 ```bash
@@ -589,8 +589,8 @@ if (app()->environment('production')) {
 | **PII.1** (Consentimiento) | Términos y condiciones aceptados al registrarse. |
 | **PII.2** (Propósito) | Los datos solo se usan para la operación del sistema RUPAL. |
 | **PII.3** (Retención mínima) | Período de retención definido por entidad; purge job pendiente. |
-| **PII.4** (Cifrado en tránsito) | HTTPS forzado en producción (Railway). |
-| **PII.5** (Cifrado en reposo) | Base de datos cifrada a nivel de disco por Railway. |
+| **PII.4** (Cifrado en tránsito) | HTTPS forzado en producción. |
+| **PII.5** (Cifrado en reposo) | Base de datos cifrada a nivel de disco por el proveedor de hosting (por definir). |
 | **PII.6** (Notificación al titular) | Endpoint de exportación de datos implementado. |
 | **PII.7** (Eliminación segura) | SoftDeletes + forceDelete diferido en StaffUser. |
 | **PII.8** (Registro de procesamiento) | Logging de accesos a datos personales (login/logout). |
@@ -614,7 +614,7 @@ return User::all(); // Expone password, remember_token, etc.
 | ISO 27001 | SGSI general | Equipo de desarrollo + CISO |
 | ISO 27002 | Controles de seguridad | Developer (code review) |
 | ISO 27701 | Privacidad de datos | Developer + DPO |
-| ISO 27017 | Seguridad cloud | DevOps / Railway admin |
+| ISO 27017 | Seguridad cloud | DevOps / admin del proveedor de hosting (por definir) |
 | ISO 27018 | PII en cloud pública | Developer + DPO |
 
 ## Development Workflow
