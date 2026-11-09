@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\StaffUser;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
 test('admin puede ver listado de usuarios staff', function () {
@@ -47,6 +48,15 @@ test('admin puede crear usuario staff', function () {
         'email' => 'nuevo@staff.com',
         'role' => 'auditor',
     ]);
+});
+
+test('un usuario staff no puede cambiar su propio rol (policy)', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+
+    // Simula una peticion que intenta cambiar el propio rol.
+    request()->merge(['role' => 'auditor']);
+
+    expect(Gate::forUser($admin)->allows('update', $admin))->toBeFalse();
 });
 
 test('politica de contrasena rechaza claves debiles en creacion de staff', function () {

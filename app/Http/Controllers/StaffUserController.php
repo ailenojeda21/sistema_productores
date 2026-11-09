@@ -99,8 +99,6 @@ class StaffUserController extends Controller
     {
         $staffUser = StaffUser::findOrFail($id);
 
-        $this->authorize('update', $staffUser);
-
         $isSelf = (int) $id === (int) $request->user()->id;
 
         if (
@@ -109,6 +107,8 @@ class StaffUserController extends Controller
             && ! $request->filled('email')
             && ! $request->filled('role')
         ) {
+            $this->authorize('update', $staffUser);
+
             if ($isSelf && ! (bool) $request->input('active')) {
                 if ($this->isApiRequest($request)) {
                     return response()->json(['message' => 'No puedes desactivarte a ti mismo.'], 403);
@@ -158,6 +158,8 @@ class StaffUserController extends Controller
 
             return back()->with('error', 'No puedes cambiar tu propio rol.');
         }
+
+        $this->authorize('update', [$staffUser, $validated['role']]);
 
         $updateData = [
             'name' => $validated['name'],

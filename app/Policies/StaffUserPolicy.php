@@ -21,9 +21,16 @@ class StaffUserPolicy
         return $user->role === 'admin' || $user->id === $model->id;
     }
 
-    public function update(StaffUser $user, StaffUser $model): bool
+    public function update(StaffUser $user, StaffUser $model, ?string $newRole = null): bool
     {
+        // Un usuario no puede cambiar su propio rol, aunque pueda editar
+        // sus propios datos no sensibles (nombre, email, password, active).
         if ($user->id === $model->id) {
+            $roleToCheck = $newRole ?? request()->input('role');
+            if (is_string($roleToCheck) && $roleToCheck !== $model->role) {
+                return false;
+            }
+
             return true;
         }
 
