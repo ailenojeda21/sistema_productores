@@ -28,8 +28,17 @@ RUN php artisan config:clear || true
 RUN php artisan route:clear || true
 RUN php artisan view:clear || true
 
+# Usuario sin privilegios: solo storage y bootstrap/cache son escribibles
+RUN groupadd --gid 1000 laravel \
+    && useradd --uid 1000 --gid laravel --shell /bin/sh --create-home laravel \
+    && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chown -R laravel:laravel storage bootstrap/cache
+
 # Exponer puerto (varias plataformas asignan PORT dinámicamente)
 EXPOSE 8080
+
+# Ejecutar como usuario sin privilegios
+USER laravel
 
 # Comando de inicio
 CMD php artisan serve --host=0.0.0.0 --port=$PORT

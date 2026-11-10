@@ -1,0 +1,42 @@
+# =========================================================
+# Contexto de build de Docker: exclusiones
+# =========================================================
+# NOTA: public/build, database, config, app, resources, routes,
+# composer.json y composer.lock NO se excluyen: el build y la
+# aplicación en ejecución los necesitan (el Dockerfile no compila
+# assets con Vite).
+
+# Entorno y secretos: nunca dentro de la imagen
+.env
+.env.*
+!.env.example
+
+# Control de versiones y CI
+.git
+.github
+
+# Dependencias: se resuelven dentro de la imagen
+node_modules
+vendor
+
+# Contenido generado en ejecución. Se conserva solo el marcador de
+# cada directorio para que storage y bootstrap/cache existan.
+storage/logs/*
+!storage/logs/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+*.log
+
+# Tests
+tests
+
+# IDE / editores
+.idea
+.vscode
+
+# Documentación: las imágenes no se sirven en runtime
+docs/imagenes
