@@ -23,13 +23,29 @@ class LogAuthenticationAttempt
             default => null,
         };
 
-        return [
+        $context = [
             'guard' => $guard,
             'user_id' => $user?->id,
-            'user_email' => $user?->email,
             'ip' => request()->ip(),
             'user_agent' => request()->userAgent(),
         ];
+
+        // Sin usuario no hay identificador que registrar. Se usa un hash
+        // truncado del email para poder correlacionar intentos sin
+        // almacenar el dato personal en claro.
+        if ($event instanceof Failed && $user === null) {
+            $email = strtolower((string) ($event->credentials['email'] ?? ''));
+
+            if ($email !== '') {
+                $context['email_hash'] = substr(
+                    hash_hmac('sha256', $email, (string) config('app.key')),
+                    0,
+                    12
+                );
+            }
+        }
+
+        return $context;
     }
 
     public function handle($event): void

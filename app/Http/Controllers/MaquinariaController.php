@@ -159,7 +159,10 @@ class MaquinariaController extends Controller
         try {
             $maquinaria->update($validated);
         } catch (\Exception $e) {
-            \Log::error('Error actualizando maquinaria: '.$e->getMessage(), ['id' => $id]);
+            \Log::error('Error actualizando maquinaria', [
+                'id' => $id,
+                'exception' => get_class($e),
+            ]);
 
             return redirect()->back()->withInput()->withErrors(['general' => 'Ocurrió un error al actualizar la maquinaria.']);
         }
