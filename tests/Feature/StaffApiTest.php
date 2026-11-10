@@ -76,7 +76,7 @@ test('api me returns 401 when unauthenticated', function () {
     $response = $this->getJson('/api/staff/me');
 
     $response->assertStatus(401);
-})->skip('Crashes the PHP process in this environment — AuthenticationException handler compatibility issue');
+});
 
 test('api logout deletes token', function () {
     $staff = StaffUser::factory()->create();
@@ -310,4 +310,69 @@ test('api deleting staff revokes their tokens', function () {
 
     $this->assertSoftDeleted($target);
     $this->assertDatabaseCount('personal_access_tokens', 0);
+});
+
+// =====================================================================
+// REAL TOKENS (sin Sanctum::actingAs) — regresión del guard de Sanctum
+// =====================================================================
+
+test('api me (token real) devuelve 401 sin token', function () {
+    $this->getJson('/api/staff/me')->assertStatus(401);
+});
+
+test('api me (token real) devuelve 401 con token invalido', function () {
+    $this->withHeader('Authorization', 'Bearer token-invalido')
+        ->getJson('/api/staff/me')
+        ->assertStatus(401);
+});
+
+test('api me y dashboard devuelven 200 con token real de admin', function () {
+    $admin = StaffUser::factory()->create(['role' => 'admin']);
+    $token = $admin->createToken('test-device')->plainTextToken;
+
+    $this->withHeader('Authorization', 'Bearer '.$token)
+        ->getJson('/api/staff/me')
+        ->assertOk()
+        ->assertJson(['id' => $admin->id]);
+
+    $this->withHeader('Authorization', 'Bearer '.$token)
+        ->getJson('/api/staff/dashboard')
+        ->assertOk();
+});
+
+test('api auditor con token real recibe 403 en ruta de admin', function () {
+    $auditor = StaffUser::factory()->create(['role' => 'auditor']);
+    $token = $auditor->createToken('test-device')->plainTextToken;
+
+    $this->withHeader('Authorization', 'Bearer '.$token)
+        ->getJson('/api/staff/users')
+        ->assertForbidden();
+});
+
+test('productor con sesion web no accede a la api staff', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user, 'web');
+
+    $response = $this->getJson('/api/staff/me');
+
+    expect($response->getStatusCode())->toBeIn([401, 403]);
+});
+
+test('api login real devuelve token y /me responde 200', function () {
+    $staff = StaffUser::factory()->create([
+        'password' => bcrypt('secret123'),
+    ]);
+
+    $login = $this->postJson('/api/staff/login', [
+        'email' => $staff->email,
+        'password' => 'secret123',
+    ]);
+
+    $login->assertOk()->assertJsonStructure(['token']);
+    $token = $login->json('token');
+
+    $this->withHeader('Authorization', 'Bearer '.$token)
+        ->getJson('/api/staff/me')
+        ->assertOk()
+        ->assertJson(['id' => $staff->id]);
 });
