@@ -12,7 +12,7 @@ El sistema tiene tres puertas de entrada:
 
 ## Requisitos
 
-- **PHP 8.4** con las extensiones `pdo`, `pdo_mysql` y `zip` (ver `composer.json` y `Dockerfile`).
+- **PHP 8.4** con las extensiones `pdo`, `pdo_mysql`, `zip` y `gd` (ver `composer.json`, `composer check-platform-reqs --no-dev` y `Dockerfile`).
 - **Composer 2**.
 - **Node.js 22 LTS** recomendado para compilar assets (Vite 8 exige `^20.19.0 || >=22.12.0`).
 - **MySQL** como base de datos (valores por defecto en `.env.example`).
@@ -132,7 +132,7 @@ Los tests corren sobre SQLite en memoria (`phpunit.xml`), sin tocar la base de d
 
 ## Docker
 
-El `Dockerfile` compila los assets con Vite en una etapa aparte, instala solo dependencias de producción y sirve la aplicación con `php artisan serve` en el puerto indicado por la variable `PORT` (`EXPOSE 8080`). El detalle de despliegue, respaldo y monitoreo está en el manual.
+El `Dockerfile` compila los assets con Vite en una etapa aparte, instala solo dependencias de producción y sirve la aplicación con `php artisan serve` en el puerto indicado por la variable `PORT` (`EXPOSE 8080`). Al ejecutar el contenedor hay que montar volúmenes persistentes para `storage/app/rut_files` (PDF de RUT) y `storage/logs`; el detalle de despliegue, volúmenes, respaldo y monitoreo está en el manual.
 
 ## Documentación
 

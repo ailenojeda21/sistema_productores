@@ -56,19 +56,22 @@ Aplica a administradores del sistema, DevOps y desarrolladores responsables de l
 
 ### 5.2 Extensiones PHP requeridas
 
+Requeridas en producción según `composer check-platform-reqs --no-dev`:
+
 | Extensión | Propósito |
 |-----------|-----------|
 | `pdo` | Conexión a base de datos |
 | `pdo_mysql` | Driver MySQL/MariaDB |
 | `zip` | Compresión (PhpSpreadsheet, paquetes Composer) |
-| `bcmath` | Precisión matemática (Laravel core) |
-| `ctype` | Validación de tipos (Laravel core) |
+| `gd` | Generación de imágenes en PhpSpreadsheet (exportación XLSX) |
+| `dom`, `xml`, `xmlreader`, `xmlwriter`, `libxml` | Lectura y escritura de XML (PhpSpreadsheet, dependencias) |
+| `mbstring`, `iconv` | Cadenas UTF-8 (español) |
 | `fileinfo` | Detección de tipos MIME |
-| `json` | Procesamiento JSON |
-| `mbstring` | Soportes multilenguaje (UTF-8, español) |
-| `openssl` | Cifrado y conexiones HTTPS |
-| `tokenizer` | Análisis de código PHP |
-| `xml` | Procesamiento XML (PhpSpreadsheet) |
+| `ctype`, `filter`, `hash`, `json`, `openssl`, `pcre`, `session`, `tokenizer`, `zlib` | Base de Laravel y sus dependencias |
+
+La imagen `php:8.4-cli` ya compila `ctype`, `dom`, `fileinfo`, `filter`, `hash`, `iconv`, `json`, `libxml`, `mbstring`, `openssl`, `pcre`, `session`, `simplexml`, `tokenizer`, `xml`, `xmlreader`, `xmlwriter` y `zlib`. El `Dockerfile` agrega `pdo`, `pdo_mysql`, `zip` y `gd` (con `libpng`, `libjpeg` y `libfreetype`).
+
+> `bcmath` no es requerida por ningún paquete en producción; si el hosting la ofrece, no molesta, pero no es obligatoria.
 
 ### 5.3 Requisitos de hardware
 
@@ -271,7 +274,10 @@ php artisan migrate --seed
 El código actual **no depende de `public/storage`**:
 
 - Los archivos RUT se guardan en el disco privado `rut_files` (`storage/app/rut_files`, ver `config/filesystems.php`) y se descargan a través del controlador, no por URL pública.
+- El disco `local` de Laravel apunta a `storage/app/private`, pero la aplicación **no** guarda los RUT ahí: `PropiedadController` escribe siempre con `Storage::disk('rut_files')`. Si una instalación anterior tiene PDFs en `storage/app/private/rut_files`, la versión actual no los lee: hay que moverlos a `storage/app/rut_files` conservando el nombre de archivo si la base todavía los referencia.
 - No hay ningún uso del disco `public` para archivos subidos por los usuarios.
+
+En Docker, `storage/app/rut_files` es un volumen persistente obligatorio (ver 7.1 → Volúmenes persistentes).
 
 Por eso `php artisan storage:link` **no es necesario** para el funcionamiento del sistema. Solo hay que ejecutarlo si en el futuro se publican archivos mediante el disco `public` (`storage/app/public`).
 
@@ -314,7 +320,7 @@ El repositorio incluye un `Dockerfile` multi-etapa:
 |-------|-------------|----------|
 | `vendor` | `composer:2` | `composer install --no-dev` para que Vite resuelva `tightenco/ziggy`, que importa `resources/js/app.js` |
 | `assets` | `node:22-alpine` | `npm ci` + `npm run build`; los assets se copian a la imagen final |
-| final | `php:8.4-cli` | extensiones `pdo`, `pdo_mysql`, `zip` y `curl`; `composer install --no-dev --optimize-autoloader`; `route:cache` y `view:cache`; usuario `laravel` sin privilegios |
+| final | `php:8.4-cli` | extensiones `pdo`, `pdo_mysql`, `zip`, `gd` y `curl`; `composer install --no-dev --optimize-autoloader`; `route:cache` y `view:cache`; usuario `laravel` sin privilegios |
 
 El build no requiere compilar los assets en la máquina que construye la imagen: los genera la etapa `assets`.
 
@@ -323,6 +329,33 @@ Al arrancar el contenedor, el `CMD` ejecuta `php artisan config:cache` y luego `
 - **La configuración no se cachea en el build.** `APP_KEY`, `DB_*`, `APP_URL`, `TRUSTED_PROXIES` y `CORS_ALLOWED_ORIGINS` llegan en runtime; un `config:cache` durante el build congelaría esos valores vacíos dentro de la imagen.
 - El puerto se toma de `PORT` (por defecto `8080`, el mismo de `EXPOSE 8080`).
 - `HEALTHCHECK` consulta `http://127.0.0.1:${PORT:-8080}/up` cada 30 segundos con `curl` (timeout 5 s, 3 reintentos, 30 s de gracia inicial).
+
+#### Volúmenes persistentes
+
+El contenedor es efímero: lo que se escribe en `storage/` se pierde al recrearlo. La imagen no debe contener datos de usuarios (están excluidos en `.dockerignore`), así que al ejecutarla hay que montar volúmenes para:
+
+| Ruta en el contenedor | Contenido | Si falta el volumen |
+|---|---|---|
+| `/app/storage/app/rut_files` | PDF de RUT subidos por los productores (disco `rut_files`, ver `config/filesystems.php`) | los documentos se pierden al recrear el contenedor y sus descargas responden 404 |
+| `/app/storage/logs` | Logs diarios (`laravel-YYYY-MM-DD.log`), incluidos `LOGIN_SUCCESS` y `LOGOUT` | se pierde el rastro de auditoría de accesos |
+
+Ejemplo con bind mounts (el contenedor corre como usuario `laravel`, UID/GID 1000):
+
+```bash
+sudo mkdir -p /srv/rupal/rut_files /srv/rupal/logs
+sudo chown -R 1000:1000 /srv/rupal/rut_files /srv/rupal/logs
+
+docker run -d --name rupal \
+  -p 8080:8080 \
+  --env-file /srv/rupal/.env \
+  -v /srv/rupal/rut_files:/app/storage/app/rut_files \
+  -v /srv/rupal/logs:/app/storage/logs \
+  rupal:latest
+```
+
+> Los bind mounts conservan el dueño del directorio del host: sin el `chown 1000:1000` la aplicación no puede escribir. Con volúmenes nombrados (`-v rupal_rut_files:/app/storage/app/rut_files`), Docker crea el punto de montaje como `root` cuando la ruta no existe en la imagen; en ese caso hay que crear el directorio con el dueño correcto antes de arrancar.
+
+`storage/app/private` y `storage/app/public` no reciben archivos de usuario: los RUT se guardan en el disco `rut_files` (`storage/app/rut_files`) y el disco `public` no se usa para subidas (ver 6.10). Solo harían falta volúmenes en esas rutas si en el futuro se empiezan a usar los discos `local` o `public`.
 
 **Deuda conocida**: la imagen sirve la aplicación con `php artisan serve`, el servidor embebido de PHP, porque el hosting todavía no está definido. Cuando se defina, conviene migrar a **php-fpm + Nginx** (configuración de referencia en 8.3): `artisan serve` es adecuado para desarrollo y pruebas, no para tráfico de producción.
 
