@@ -34,7 +34,22 @@ storage/framework/sessions/*
 !storage/framework/sessions/.gitignore
 storage/framework/views/*
 !storage/framework/views/.gitignore
+
+# Archivos subidos por los usuarios: datos personales que no deben
+# quedar dentro de la imagen. Se conserva solo el marcador .gitignore.
+storage/app/private/*
+!storage/app/private/.gitignore
+storage/app/public/*
+!storage/app/public/.gitignore
+
+# RUT de productores (disco `rut_files`, ver config/filesystems.php):
+# son PDFs con datos personales, nunca dentro de la imagen.
+storage/app/rut_files/*
+
 *.log
+
+# Bases SQLite locales: nunca dentro de la imagen
+database/*.sqlite
 
 # Tests
 tests
