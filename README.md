@@ -1,138 +1,143 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# RUPAL — Sistema de Productores
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema de gestión de productores agrícolas: alta y mantenimiento de **propiedades, cultivos, maquinaria y comercialización** para productores, y un **panel staff** (roles `admin` / `auditor`) con consulta y exportación de productores y administración de usuarios staff.
 
-## Acceso rápido al sistema
+El sistema tiene tres puertas de entrada:
 
-### Credenciales de prueba
+| Superficie | Guard | Autenticación |
+|---|---|---|
+| Portal del productor | `web` | sesión con formulario (`/login`) |
+| Panel staff | `staff` | sesión con formulario (`/staff/login`) |
+| API staff | `staff-api` | tokens Sanctum (`POST /api/staff/login`) |
 
-| Rol       | Usuario                | Contraseña    |
-|-----------|------------------------|---------------|
-| Admin     | admin@demo.com         | admin123      |
-| Productor | productor@demo.com     | productor123  |
+## Requisitos
 
-### Acceso a la API
+- **PHP 8.4** con las extensiones `pdo`, `pdo_mysql` y `zip` (ver `composer.json` y `Dockerfile`).
+- **Composer 2**.
+- **Node.js 22 LTS** recomendado para compilar assets (Vite 8 exige `^20.19.0 || >=22.12.0`).
+- **MySQL** como base de datos (valores por defecto en `.env.example`).
 
-- **Login:**
-  - Endpoint: `/api/login`
-  - Método: `POST`
-  - Body: `{ "email": "<usuario>", "password": "<contraseña>" }`
-  - Obtendrás un token para autenticarte en los siguientes endpoints.
+## Instalación local
 
-- **Documentación interactiva (Swagger):**
-  - URL: `/api/documentation`
-  - Para actualizar la documentación después de cambios, ejecuta:
-    ```bash
-    php artisan l5-swagger:generate
-    ```
-  - Puedes agregar anotaciones en los comentarios de tus controladores para mejorar la documentación. Ejemplo:
-    ```php
-    /**
-     * @OA\Get(
-     *     path="/api/propiedades",
-     *     summary="Listar propiedades",
-     *     tags={"Propiedades"},
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Listado de propiedades"
-     *     )
-     * )
-     */
-    public function index() { ... }
-    ```
+```bash
+composer install
+cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
+php artisan key:generate
+```
 
-- **Ejemplo de uso de token:**
-  - Agrega el header: `Authorization: Bearer <token>` a tus requests protegidos.
+Crear la base de datos y ajustar `DB_HOST`, `DB_DATABASE`, `DB_USERNAME` y `DB_PASSWORD` en `.env`. Luego:
 
----
+```bash
+php artisan migrate --seed
+npm ci
+npm run build               # en desarrollo: npm run dev
+php artisan serve
+```
 
-## Inicio rápido
+Queda disponible en `http://localhost:8000`:
 
-1. **Instalar dependencias:**
-   ```bash
-   composer install
-   npm install
-   ```
+- Portal del productor: `/login`
+- Panel staff: `/staff/login`
+- Verificación pública de documentos (QR): `/verificar/{token}`
+- Health check: `/up`
 
-2. **Configurar archivo .env:**
-   Si no existe, copia el ejemplo y genera la clave de app:
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-   Ajusta los datos de conexión a tu base de datos en `.env`.
+`php artisan serve` con la cola, los logs y Vite en un solo comando:
 
-3. **Ejecutar migraciones y seeders:**
-   ```bash
-   php artisan migrate:fresh --seed
-   ```
+```bash
+composer run dev
+```
 
-4. **Levantar el servidor de desarrollo:**
-   ```bash
-   php artisan serve
-   ```
-   Accede a la API en: [http://localhost:8000](http://localhost:8000)
+> El seeding de datos de demostración (usuarios demo, propiedades, maquinaria, cultivos y el dataset de prueba) **solo corre en `local` y `testing`**. En producción `migrate --seed` crea únicamente los roles.
 
-5. **Acceder a la documentación interactiva:**
-   [http://localhost:8000/api/documentation](http://localhost:8000/api/documentation)
+## Autenticación y API staff
 
----
+El login de la API es `POST /api/staff/login` (ruta pública, limitada a 5 intentos por minuto por `email|ip`):
 
-## About Laravel
+```bash
+curl -X POST http://localhost:8000/api/staff/login \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"email":"usuario@example.com","password":"••••••••","device_name":"panel"}'
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Respuesta: `{ "token": "...", "user": { "id": 1, "name": "...", "email": "...", "role": "admin" } }`.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+El resto de las rutas se autentican con `Authorization: Bearer <token>` y están limitadas a 60 requests por minuto. `POST /api/staff/logout` revoca **todos** los tokens del usuario.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Método | Ruta | Roles |
+|---|---|---|
+| `POST` | `/api/staff/login` | público |
+| `GET` | `/api/staff/me` | admin, auditor |
+| `POST` | `/api/staff/logout` | admin, auditor |
+| `GET` | `/api/staff/dashboard` | admin, auditor |
+| `GET` | `/api/staff/producers` | admin, auditor |
+| `GET` | `/api/staff/producers/{id}` | admin, auditor |
+| `GET` | `/api/staff/producers/export` | admin |
+| `GET` `POST` `PATCH` `DELETE` | `/api/staff/users*` (index, create, store, edit, update, destroy) | admin |
 
-## Learning Laravel
+## Matriz de roles staff
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Fuente: `routes/web.php`, `routes/api.php`, los gates de `app/Providers/AuthServiceProvider.php` y `app/Policies/StaffUserPolicy.php`.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Capacidad | Admin | Auditor |
+|---|---|---|
+| Panel `/staff/dashboard` (gate `view-dashboard`) | ✅ | ✅ |
+| Consulta de productores: `/staff/producers`, `/staff/producers/{id}` (gate `view-producers`) | ✅ | ✅ |
+| Exportación desde el panel: `/staff/producers/export`, `/staff/producers/export-all` (gate `export-producers`) | ✅ | ✅ |
+| Gestión de usuarios staff `/staff/users*` (gate `manage-staff` y `StaffUserPolicy`) | ✅ | ❌ |
+| API: `me`, `logout`, `dashboard`, `producers`, `producers/{id}` | ✅ | ✅ |
+| API: `producers/export` y `users*` (grupo `staff.role:admin`) | ✅ | ❌ |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Notas:
 
-## Laravel Sponsors
+- Un usuario staff puede ver y editar sus propios datos según `StaffUserPolicy`, pero **no puede cambiar su propio rol** ni eliminarse a sí mismo; además las rutas de gestión (`/staff/users*` y `/api/staff/users*`) están restringidas al rol `admin`.
+- La exportación de productores está disponible para ambos roles en el panel web (Excel, `StaffProducerController::export` / `exportAll`); en la API la ruta de exportación está declarada dentro del grupo `staff.role:admin` (`routes/api.php`).
+- Los productores usan roles de Spatie (`admin`, `productor`) y policies por recurso con verificación de propiedad (`app/Policies/`).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Variables de entorno sensibles
 
-### Premium Partners
+### `TRUSTED_PROXIES`
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+Lista de IPs o rangos separados por coma (`10.0.0.1,10.0.0.0/8`). Sin valor, la aplicación no confía en ningún proxy y **ignora** `X-Forwarded-*`: `request()->ip()` devuelve la IP de la conexión.
 
-## Contributing
+Si la aplicación queda detrás de un proxy o balanceador y esta variable no se configura:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Todos los clientes comparten la IP del proxy, así que el límite de intentos de login (`email|ip`, 5 por minuto) pasa a ser un único bucket compartido y unos pocos intentos fallidos bloquean a todo el mundo.
+- La detección de esquema y host (`https`, `APP_URL`) puede ser incorrecta.
 
-## Code of Conduct
+`*` hace que se confíe en la IP que abre la conexión, cualquiera sea. **Solo es seguro si la aplicación es accesible únicamente a través del proxy del hosting**; si no, cargar la IP o el rango del proxy.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### `CORS_ALLOWED_ORIGINS`
 
-## Security Vulnerabilities
+`APP_URL` siempre se permite. Los orígenes adicionales se agregan separados por coma (`https://panel.example.com,https://admin.example.com`). Si se omite, los navegadores solo pueden llamar a la API desde `APP_URL`, y una SPA o panel alojado en otro dominio recibe la API sin encabezados CORS. El comodín `*` se ignora a propósito: la API no se abre a cualquier sitio.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Cookies de sesión
 
-## License
+`SESSION_SECURE_COOKIE=true` (solo HTTPS) en producción; `false` únicamente para pruebas locales servidas por HTTP. Las sesiones se cifran con `SESSION_ENCRYPT=true` y requieren `APP_KEY` (`php artisan key:generate`).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Tests y calidad de código
+
+```bash
+php artisan test                  # suite completa (Pest)
+php artisan test --filter=nombre  # un test puntual
+composer run test                 # limpia la config cacheada y corre la suite
+./vendor/bin/pint                 # formatea con Laravel Pint
+./vendor/bin/pint --test          # verifica sin corregir
+```
+
+Los tests corren sobre SQLite en memoria (`phpunit.xml`), sin tocar la base de datos de desarrollo.
+
+## Docker
+
+El `Dockerfile` compila los assets con Vite en una etapa aparte, instala solo dependencias de producción y sirve la aplicación con `php artisan serve` en el puerto indicado por la variable `PORT` (`EXPOSE 8080`). El detalle de despliegue, respaldo y monitoreo está en el manual.
+
+## Documentación
+
+| Documento | Contenido |
+|---|---|
+| [`docs/index.md`](docs/index.md) | Índice general de la documentación |
+| [`docs/manual_administrador/07-instalacion.md`](docs/manual_administrador/07-instalacion.md) | Instalación, configuración y despliegue en producción |
+| [`docs/manual_administrador/`](docs/manual_administrador/) | Manual del administrador (panel, productores, usuarios, API) |
+| [`docs/manual_usuario/`](docs/manual_usuario/) | Manual del productor |
+| [`docs/datos_prueba.md`](docs/datos_prueba.md) | Dataset de pruebas |
+| [`AGENTS.md`](AGENTS.md) | Convenciones de desarrollo y controles ISO 27001/27002/27701 |
