@@ -1,10 +1,11 @@
 # =========================================================
 # Contexto de build de Docker: exclusiones
 # =========================================================
-# NOTA: public/build, database, config, app, resources, routes,
+# NOTA: database, config, app, resources, routes,
 # composer.json y composer.lock NO se excluyen: el build y la
-# aplicación en ejecución los necesitan (el Dockerfile no compila
-# assets con Vite).
+# aplicación en ejecución los necesitan. Los assets de Vite se
+# compilan en la etapa `assets` del Dockerfile, no en la máquina
+# que construye la imagen.
 
 # Entorno y secretos: nunca dentro de la imagen
 .env
@@ -18,6 +19,10 @@
 # Dependencias: se resuelven dentro de la imagen
 node_modules
 vendor
+
+# Assets compilados: los genera la etapa `assets` a partir de
+# `resources/`. Excluirlos evita que la imagen use un build local.
+public/build
 
 # Contenido generado en ejecución. Se conserva solo el marcador de
 # cada directorio para que storage y bootstrap/cache existan.
