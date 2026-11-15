@@ -50,9 +50,12 @@ Route::middleware(['auth:staff-api', 'staff.active', 'throttle:60,1'])->prefix('
     // Productores (admin + auditor)
     Route::get('/producers', [StaffProducerController::class, 'index']);
 
+    // Exportacion XLSX (admin + auditor). Debe declararse antes de
+    // `/producers/{id}` para no ser capturada como un id.
+    Route::get('/producers/export', [StaffProducerController::class, 'export']);
+
     // Solo admin
     Route::middleware('staff.role:admin')->group(function () {
-        Route::get('/producers/export', [StaffProducerController::class, 'export']);
         Route::get('/users', [StaffUserController::class, 'index']);
         Route::get('/users/create', [StaffUserController::class, 'create']);
         Route::post('/users', [StaffUserController::class, 'store']);
