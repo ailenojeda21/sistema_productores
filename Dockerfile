@@ -42,7 +42,7 @@ RUN npm run build
 # =========================================================
 # Etapa 3: imagen final
 # =========================================================
-FROM php:8.2-cli
+FROM php:8.4-cli
 
 # Directorio de trabajo
 WORKDIR /app
