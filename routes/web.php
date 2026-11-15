@@ -260,18 +260,6 @@ Route::prefix('staff')->group(function () {
             Route::post('/users', [StaffUserController::class, 'store'])
                 ->name('staff.users.store');
 
-            Route::get('/auditors', function () {
-                return inertia('Staff/Auditors/Index');
-            })->name('staff.auditors.index');
-
-            Route::post('/auditors', function () {
-                // alta auditor
-            })->name('staff.auditors.store');
-
-            Route::delete('/auditors/{id}', function ($id) {
-                // baja auditor
-            })->name('staff.auditors.destroy');
-
         });
 
         /*
