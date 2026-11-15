@@ -29,7 +29,7 @@
 | RUPAL-MA-01 | Manual de Administrador — Introducción | Alcance del sistema staff, roles | Staff |
 | RUPAL-MA-02 | Manual de Administrador — Acceso | Inicio de sesión, recuperación de contraseña staff | Staff |
 | RUPAL-MA-03 | Manual de Administrador — Panel de Control | Dashboard con KPIs, gráficos | Staff |
-| RUPAL-MA-04 | Manual de Administrador — Gestión de Productores | Visualización, búsqueda, exportación de productores | Staff |
+| RUPAL-MA-04 | Manual de Administrador — Gestión de Productores | Visualización, búsqueda, exportación XLSX e informe PDF de productores | Staff |
 | RUPAL-MA-05 | Manual de Administrador — Gestión de Usuarios Staff | CRUD de usuarios administradores/auditores | Staff (admin) |
 | RUPAL-MA-06 | Manual de Administrador — API | Endpoints disponibles para integración | Staff (desarrollador) |
 | RUPAL-MA-07 | Manual de Administrador — Instalación y Despliegue | Instalación, configuración, despliegue y mantenimiento | Staff (admin) |

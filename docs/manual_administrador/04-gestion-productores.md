@@ -45,27 +45,28 @@ Aplica a todos los usuarios staff (admin y auditor) del sistema RUPAL.
 
 [CAPTURA DE PANTALLA: Barra de filtros del listado de productores]
 
-El sistema dispone de seis (6) filtros de búsqueda:
+El sistema dispone de siete (7) tipos de búsqueda, que se eligen en el selector de la barra y se aplican al hacer clic en **Buscar**:
 
-| Filtro | Tipo | Descripción |
-|--------|------|-------------|
+| Búsqueda | Tipo | Descripción |
+|----------|------|-------------|
 | **DNI** | Texto | Búsqueda parcial por número de DNI |
 | **Nombre** | Texto | Búsqueda parcial por nombre del productor |
-| **Distrito** | Selección | Filtro por distrito (21 distritos de Lavalle) |
-| **Variedad** | Selección | Filtro por tipo de cultivo |
-| **Tipo** | Selección | Filtro por tipo de cultivo |
+| **Distrito** | Texto | Distrito del departamento de Lavalle (acepta mayúsculas, espacios y guiones en cualquier combinación) |
+| **Variedad** | Texto | Variedad del cultivo (búsqueda parcial) |
+| **Tipo** | Texto | Tipo de cultivo (búsqueda parcial) |
+| **N° RUT** | Texto | Se comparan solo los dígitos ingresados contra el valor del RUT de las propiedades |
+| **Manejo** | Texto | Convencional, Agroecológico u Orgánico |
 
 | Paso | Acción | Resultado Esperado |
 |------|--------|--------------------|
-| 1 | Completar uno o más campos de filtro | Los campos se llenan |
+| 1 | Elegir el tipo de búsqueda y completar el valor | La barra queda configurada |
 | 2 | Hacer clic en **Buscar** | El listado se actualiza con los resultados filtrados |
-| 3 | Hacer clic en **Limpiar** | Todos los filtros se restablecen y se muestra el listado completo |
+| 3 | Hacer clic en **Limpiar** | La búsqueda se restablece y se muestra el listado completo |
 
 ### 4.1 Comportamiento de los filtros
 
-- Los filtros se combinan con **AND** (todos deben coincidir).
-- La búsqueda por texto (nombre, DNI) es **parcial** (no requiere el valor exacto).
-- Los filtros por selección (distrito, variedad, tipo) muestran todas las opciones disponibles.
+- La barra aplica una búsqueda por vez. Si la URL trae varios parámetros a la vez (enlaces compartidos o llamadas a la API), el backend los combina con **AND**.
+- La búsqueda por texto (nombre, DNI, RUT, distrito, variedad, tipo) es **parcial** (no requiere el valor exacto).
 - Los parámetros de búsqueda se mantienen en la URL, permitiendo compartir enlaces con filtros aplicados.
 
 ## 5. PROCEDIMIENTO: VER DETALLE DEL PRODUCTOR
@@ -130,13 +131,25 @@ Listado de comercios, mostrando:
 - Cooperativas.
 - Infraestructura de empaque y venta en finca.
 
+### 5.2 Exportar el informe PDF del productor
+
+[CAPTURA DE PANTALLA: Botón Exportar PDF en el detalle del productor]
+
+| Paso | Acción | Resultado Esperado |
+|------|--------|--------------------|
+| 1 | Abrir el detalle del productor (se llega desde el listado, por ejemplo buscando por **Nombre**, **DNI** o **N° RUT**) | Se muestra la ficha completa del productor |
+| 2 | Hacer clic en **Exportar PDF** | Se abre el diálogo de impresión del navegador con el informe formateado |
+| 3 | Elegir la opción de guardar como PDF | El archivo se guarda como `Informe_Productor_[nombre]_[fecha].pdf` |
+
+> El PDF se genera en el **navegador**: la pantalla del detalle arma el informe (`#pdf-report`) y lo imprime con `window.print()`. No interviene una librería PDF del servidor ni existe un endpoint que devuelva el PDF. Disponible tanto para **Admin** como para **Auditor**.
+
 ## 6. PROCEDIMIENTO: EXPORTAR PRODUCTORES A XLSX
 
 [CAPTURA DE PANTALLA: Botón de exportación y progreso]
 
 | Paso | Acción | Resultado Esperado |
 |------|--------|--------------------|
-| 1 | En el listado de productores, hacer clic en **Exportar** | El sistema genera un archivo XLSX |
+| 1 | En el listado de productores, hacer clic en **Exportar resultados** (respeta los filtros activos) o en **Exportar todos** (padrón completo, sin filtros) | El sistema genera un archivo XLSX |
 | 2 | — | El archivo se descarga automáticamente |
 | 3 | Abrir el archivo en Excel o LibreOffice Calc | Se visualizan los datos exportados |
 
@@ -151,7 +164,7 @@ El archivo XLSX arma sus columnas a partir del filtro activo. Siempre se incluye
 | Perfil | ID, Nombre, Email, DNI, Teléfono, Dirección Productor |
 | Propiedad | Dirección Propiedad, Distrito, Hectáreas, Derecho de riego, Tipo derecho de riego, Posee RUT, Valor del RUT, Latitud, Longitud, Hectáreas con malla, Cierre perimetral, Posee malla, Tipo de tenencia, Especificar tenencia |
 
-**Cuando el filtro es por Variedad o Tipo**, el archivo lleva el módulo Perfil, el módulo Propiedad y además el módulo Cultivo:
+**Cuando el filtro es por Variedad, Tipo o Manejo**, el archivo lleva el módulo Perfil, el módulo Propiedad y además el módulo Cultivo:
 
 | Módulo | Columnas |
 |--------|----------|
@@ -168,6 +181,7 @@ La exportación respeta el filtro aplicado: solo entra en el archivo lo que corr
 | Distrito | Perfil + las propiedades que están en ese distrito. Las propiedades del productor en otros distritos no aparecen. Una fila por propiedad. |
 | Variedad | Perfil + la propiedad que cultiva esa variedad + el módulo Cultivo con esa variedad. Las otras variedades del productor y sus otras propiedades no aparecen. Una fila por cultivo coincidente. |
 | Tipo | Perfil + la propiedad que cultiva ese tipo + el módulo Cultivo con ese tipo. Una fila por cultivo coincidente. |
+| Manejo | Perfil + la propiedad que tiene ese manejo + el módulo Cultivo con ese manejo. Una fila por cultivo coincidente. |
 | RUT | Perfil + las propiedades que tienen ese RUT. Una fila por propiedad. |
 | DNI / Nombre | Perfil + todas las propiedades del productor. Una fila por propiedad. |
 
@@ -194,3 +208,4 @@ Si un productor coincide con el filtro pero no tiene propiedades que mostrar, se
 - Si un productor no tiene datos en algún módulo (ej: no tiene cultivos registrados), la sección correspondiente se muestra vacía con un mensaje "Sin datos registrados".
 - La exportación puede demorar unos segundos si hay muchos productores.
 - El botón de exportación está disponible tanto para admin como para auditor.
+- Las búsquedas por Nombre, DNI y N° RUT sirven para localizar al productor; el informe PDF de ese productor se obtiene desde su detalle (§5.2). El Excel se genera con **Exportar resultados** (filtros Distrito, Variedad, Tipo, Manejo, entre otros) o con **Exportar todos** (padrón completo).

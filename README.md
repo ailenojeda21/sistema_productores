@@ -72,7 +72,7 @@ El resto de las rutas se autentican con `Authorization: Bearer <token>` y están
 | `GET` | `/api/staff/dashboard` | admin, auditor |
 | `GET` | `/api/staff/producers` | admin, auditor |
 | `GET` | `/api/staff/producers/{id}` | admin, auditor |
-| `GET` | `/api/staff/producers/export` | admin |
+| `GET` | `/api/staff/producers/export` | admin, auditor |
 | `GET` `POST` `PATCH` `DELETE` | `/api/staff/users*` (index, create, store, edit, update, destroy) | admin |
 
 ## Matriz de roles staff
@@ -84,14 +84,17 @@ Fuente: `routes/web.php`, `routes/api.php`, los gates de `app/Providers/AuthServ
 | Panel `/staff/dashboard` (gate `view-dashboard`) | ✅ | ✅ |
 | Consulta de productores: `/staff/producers`, `/staff/producers/{id}` (gate `view-producers`) | ✅ | ✅ |
 | Exportación desde el panel: `/staff/producers/export`, `/staff/producers/export-all` (gate `export-producers`) | ✅ | ✅ |
+| Informe PDF de un productor desde su detalle: botón **Exportar PDF** en `/staff/producers/{id}` | ✅ | ✅ |
 | Gestión de usuarios staff `/staff/users*` (gate `manage-staff` y `StaffUserPolicy`) | ✅ | ❌ |
-| API: `me`, `logout`, `dashboard`, `producers`, `producers/{id}` | ✅ | ✅ |
-| API: `producers/export` y `users*` (grupo `staff.role:admin`) | ✅ | ❌ |
+| API: `me`, `logout`, `dashboard`, `producers`, `producers/{id}`, `producers/export` | ✅ | ✅ |
+| API: `users*` (grupo `staff.role:admin`) | ✅ | ❌ |
 
 Notas:
 
 - Un usuario staff puede ver y editar sus propios datos según `StaffUserPolicy`, pero **no puede cambiar su propio rol** ni eliminarse a sí mismo; además las rutas de gestión (`/staff/users*` y `/api/staff/users*`) están restringidas al rol `admin`.
-- La exportación de productores está disponible para ambos roles en el panel web (Excel, `StaffProducerController::export` / `exportAll`); en la API la ruta de exportación está declarada dentro del grupo `staff.role:admin` (`routes/api.php`).
+- La exportación de productores es idéntica para Admin y Auditor: en el panel, el listado filtrado (`StaffProducerController::export`) y el completo (`exportAll`) generan XLSX; en la API, `GET /api/staff/producers/export` también responde a ambos roles.
+- El **informe PDF de un productor no lo genera el backend**: `resources/js/Pages/Staff/Producers/Show.vue` renderiza el informe (`#pdf-report`) y lo imprime con `window.print()` desde el detalle del productor. No hay ninguna librería PDF en `composer.json` ni en `package.json`, y la API no sirve PDF.
+- Regla de negocio: los filtros **Distrito, Variedad, Tipo y Manejo** alimentan el Excel de la lista; las búsquedas por **Nombre, DNI y RUT** localizan al productor, cuyo informe PDF se obtiene desde su detalle; **Exportar todos** genera el Excel completo del padrón.
 - Los productores usan roles de Spatie (`admin`, `productor`) y policies por recurso con verificación de propiedad (`app/Policies/`).
 
 ## Variables de entorno sensibles

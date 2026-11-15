@@ -236,11 +236,13 @@ Authorization: Bearer 1|sD3fG5hJ7kL9qW2eR4tY6uI8oP0aZ1bC2vB3nM4x
 
 **Endpoint**: `GET /api/staff/producers/export`
 
-**Roles**: Admin (Auditor también tiene acceso en web, pero el endpoint API está restringido a admin)
+**Roles**: Admin, Auditor
 
-**Parámetros de consulta**: Mismos filtros que el listado (dni, name, distrito, variedad, tipo, rut)
+**Parámetros de consulta**: Mismos filtros que el listado (dni, name, distrito, variedad, tipo, rut, manejo)
 
-**Response**: Archivo XLSX (Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet). El conjunto de columnas depende del filtro: con `distrito`, `rut`, `dni` o `name` lleva Perfil + Propiedad; con `variedad` o `tipo` agrega además el módulo Cultivo. Nunca incluye Maquinaria ni Comercios. Ver [Gestión de Productores → Exportar](04-gestion-productores.md#61-contenido-del-archivo-exportado).
+**Response**: Archivo XLSX (Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet). El conjunto de columnas depende del filtro: con `distrito`, `rut`, `dni` o `name` lleva Perfil + Propiedad; con `variedad`, `tipo` o `manejo` agrega además el módulo Cultivo. Nunca incluye Maquinaria ni Comercios. Ver [Gestión de Productores → Exportar](04-gestion-productores.md#61-contenido-del-archivo-exportado).
+
+> El endpoint está disponible para **ambos roles** (`staff.role` no lo restringe; el control lo aplica el gate `export-producers`). El listado completo (`/staff/producers/export-all`) y el **informe PDF del productor** son funcionalidades del panel web: la API no expone ninguna ruta que devuelva PDF.
 
 ### 4.5 Usuarios Staff — Listado
 

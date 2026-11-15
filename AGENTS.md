@@ -483,11 +483,14 @@ Todo código nuevo debe cumplir con los controles aplicables de las cinco normas
 | Habilidad (Gate/policy) | Admin | Auditor |
 |---|---|---|
 | `view-dashboard` | ✅ | ✅ |
-| `view-producers` | ✅ | ✅ |
-| `export-producers` (web + PDF/Excel) | ✅ | ✅ |
-| `manage-staff` / CRUD de usuarios staff | ✅ | ❌ |
+| `view-producers` (listado, detalle y búsquedas) | ✅ | ✅ |
+| `export-producers` (Excel de lista, `export` / `exportAll`, web y API) | ✅ | ✅ |
+| Informe PDF del productor (frontend, `window.print()` desde el detalle) | ✅ | ✅ |
+| `manage-staff` / CRUD de usuarios staff (web `/staff/users*` y API `/api/staff/users*`) | ✅ | ❌ |
 
-**Decisión A3 (revisada y cerrada 2026-08-23)**: el acceso del rol **Auditor** a la consulta y exportación de productores es **funcionalidad intencional del sistema**, no una escalación de privilegios. Admin y Auditor comparten intencionalmente los permisos de consulta/exportación; la diferenciación de privilegios entre ambos roles está exclusivamente en la gestión de usuarios Staff (`manage-staff`). Comportamiento verificado en `tests/Feature/SecurityRemediationTest.php`. Las auditorías de seguridad futuras no deben reportar este punto como hallazgo.
+**Decisión A3 (revisada y cerrada 2026-08-23)**: el acceso del rol **Auditor** a la consulta y exportación de productores es **funcionalidad intencional del sistema**, no una escalación de privilegios. Admin y Auditor comparten intencionalmente los permisos de consulta/exportación; la diferenciación de privilegios entre ambos roles está exclusivamente en la gestión de usuarios Staff (`manage-staff`). Comportamiento verificado en `tests/Feature/StaffRoleMatrixTest.php` y `tests/Feature/SecurityRemediationTest.php`. Las auditorías de seguridad futuras no deben reportar este punto como hallazgo.
+
+**Alcance de la exportación**: los filtros Distrito, Variedad, Tipo y Manejo generan un **Excel** con la lista de productores; las búsquedas por Nombre, DNI y RUT localizan al productor, y su **informe PDF** se obtiene desde el detalle en el navegador (no existe endpoint de PDF en el backend); **Exportar todos** genera el Excel completo. El PDF no lo produce ninguna librería: `resources/js/Pages/Staff/Producers/Show.vue` imprime `#pdf-report` con `window.print()`.
 
 #### Reglas de código para 27002
 ```php

@@ -32,6 +32,7 @@ El sistema staff distingue dos roles con distintos niveles de acceso:
 | Listado de Productores | ✅ | ✅ |
 | Detalle de Productor | ✅ | ✅ |
 | Exportación de Productores (XLSX) | ✅ | ✅ |
+| Informe PDF del Productor (desde el detalle) | ✅ | ✅ |
 | Gestión de Usuarios Staff | ✅ | ❌ |
 | API (token) | ✅ | ✅ |
 
@@ -47,7 +48,8 @@ Sistema Staff RUPAL
 ├── Productores
 │   ├── Listado con filtros (búsqueda)
 │   ├── Detalle del productor
-│   └── Exportación a XLSX
+│   ├── Exportación a XLSX
+│   └── Informe PDF (impresión desde el detalle)
 ├── Usuarios (solo Admin)
 │   ├── Listado de usuarios staff
 │   ├── Crear usuario staff

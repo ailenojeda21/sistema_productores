@@ -2,7 +2,7 @@
 
 Generador de datos de prueba para el sistema de productores. Produce un conjunto
 determinista, coherente con las validaciones reales de la aplicación y con
-suficientes casos borde para ejercitar filtros, dashboard, export PDF/XLSX y
+suficientes casos borde para ejercitar filtros, dashboard, export XLSX y
 paginación sin tener que fabricar datos a mano.
 
 - Comando: `php artisan datos:prueba`
