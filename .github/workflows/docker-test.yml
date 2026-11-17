@@ -1,0 +1,69 @@
+name: Probar imagen Docker
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-y-arranque:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Construir la imagen
+        run: docker build -t sistema-productores .
+
+      - name: Levantar el contenedor
+        run: |
+          docker run -d --name sp-test -p 8080:8080 \
+            -e APP_ENV=production \
+            -e APP_DEBUG=false \
+            -e APP_KEY="base64:$(openssl rand -base64 32)" \
+            -e APP_URL=http://localhost:8080 \
+            -e SESSION_DRIVER=file \
+            -e CACHE_STORE=file \
+            -e SESSION_SECURE_COOKIE=false \
+            sistema-productores
+
+      - name: Esperar a que responda /up
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8080/up > /dev/null; then
+              echo "/up responde OK"
+              exit 0
+            fi
+            sleep 3
+          done
+          docker logs sp-test
+          exit 1
+
+      - name: Esperar el estado healthy
+        run: |
+          for i in $(seq 1 24); do
+            estado=$(docker inspect --format='{{.State.Health.Status}}' sp-test)
+            echo "Estado: $estado"
+            if [ "$estado" = "healthy" ]; then exit 0; fi
+            sleep 5
+          done
+          docker logs sp-test
+          exit 1
+
+      - name: Verificar usuario no root
+        run: test "$(docker exec sp-test whoami)" = "laravel"
+
+      - name: Verificar extensiones PHP
+        run: |
+          for ext in gd pdo_mysql zip; do
+            docker exec sp-test php -m | grep -qix "$ext" || { echo "Falta la extension $ext"; exit 1; }
+          done
+
+      - name: Verificar assets compilados
+        run: docker exec sp-test test -f public/build/manifest.json
+
+      - name: Verificar que la pantalla de login carga
+        run: curl -fsS -o /dev/null -w "HTTP %{http_code}\n" http://localhost:8080/login
+
+      - name: Mostrar logs del contenedor
+        if: always()
+        run: docker logs sp-test
