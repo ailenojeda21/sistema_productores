@@ -213,6 +213,66 @@ test('el DNI vacio no bloquea a otros productores', function () {
     expect($user->refresh()->dni)->toBe('11223344');
 });
 
+test('el DNI con puntos colisiona con el mismo DNI sin puntos', function () {
+    User::factory()->create(['dni' => '20123456']);
+    $user = User::factory()->create(['dni' => '11223344']);
+
+    $response = $this
+        ->actingAs($user)
+        ->from('/profile')
+        ->patch('/profile', [
+            'name' => $user->name,
+            'dni' => '20.123.456',
+            'telefono' => '1123456789',
+            'direccion' => 'Calle Falsa 123',
+        ]);
+
+    $response
+        ->assertSessionHasErrors('dni')
+        ->assertRedirect('/profile');
+
+    expect($user->refresh()->dni)->toBe('11223344');
+});
+
+test('el DNI se guarda sin espacios ni puntuacion', function () {
+    $user = User::factory()->create(['dni' => '']);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => $user->name,
+            'dni' => ' 20123456 ',
+            'telefono' => '1123456789',
+            'direccion' => 'Calle Falsa 123',
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    expect($user->refresh()->dni)->toBe('20123456');
+});
+
+test('un DNI de 20 caracteres sigue aceptandose', function () {
+    $user = User::factory()->create(['dni' => '']);
+    $dni = str_repeat('9', 20);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => $user->name,
+            'dni' => $dni,
+            'telefono' => '1123456789',
+            'direccion' => 'Calle Falsa 123',
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    expect($user->refresh()->dni)->toBe($dni);
+});
+
 test('el indice de la BD rechaza dos DNI iguales incluso eludir la validacion', function () {
     $user = User::factory()->create(['dni' => '33445566']);
 

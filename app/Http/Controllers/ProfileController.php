@@ -29,6 +29,13 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
+        // Normaliza antes de validar: el DNI se guarda siempre sin puntos,
+        // guiones ni espacios y en mayusculas, para que las variantes de
+        // formato no eludan la regla unique.
+        $request->merge([
+            'dni' => $this->normalizarDni($request->input('dni')),
+        ]);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'dni' => [
@@ -199,5 +206,19 @@ class ProfileController extends Controller
             'maquinarias' => $user->propiedades->flatMap->maquinaria->toArray(),
             'comercios' => $user->comercializacion ? [$user->comercializacion->toArray()] : [],
         ]);
+    }
+
+    /**
+     * `trim`, sin puntos, guiones ni espacios internos, y en mayusculas.
+     * Si el valor no es un string se devuelve tal cual para que `required`
+     * y `string` lo rechacen como antes.
+     */
+    private function normalizarDni(mixed $dni): mixed
+    {
+        if (! is_string($dni)) {
+            return $dni;
+        }
+
+        return mb_strtoupper(preg_replace('/[.\-\s]+/', '', trim($dni)));
     }
 }
